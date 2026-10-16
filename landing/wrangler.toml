@@ -12,6 +12,8 @@ preview_urls = false
 # nanofactura.com zone changes.
 routes = [{ pattern = "nanoprint.nanofactura.com", custom_domain = true }]
 
+# No `main`: this Worker runs no code. Every request is answered from the static files below, by
+# Cloudflare's asset storage; never add a script, functions or bindings here.
 [assets]
 directory = "./build"
 # /en answers with a redirect to /en/ (en/index.html); unknown paths get 404.html with status 404.

@@ -113,6 +113,7 @@ export interface Messages {
       steps: string[];
       connect: string;
       wake: string;
+      wakeFailed: string;
       connecting: string;
       connected: string;
       disconnect: string;

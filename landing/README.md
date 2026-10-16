@@ -82,10 +82,20 @@ from the brand masters in `../assets/brand`. Run it after changing a master or a
 
 ## Security and licenses
 
-- Each page carries a Content-Security-Policy with the hashes of its inline scripts
-  (`svelte.config.js`); `static/_headers` adds the headers a `<meta>` tag cannot set. The only
-  outside connections allowed are to NanoPrint on `localhost`, for the developer demo.
+- Static only: `wrangler.toml` declares no script, so no code runs on Cloudflare; every request is
+  answered from the files in `build/`. There are no forms, cookies or user input to process.
+- Each page's Content-Security-Policy allows only the site's own files, the hashes of its own inline
+  scripts and connections to NanoPrint on `localhost` (the developer demo). SvelteKit writes it into
+  a `<meta>` tag (`svelte.config.js`), and `scripts/csp-headers.mjs` copies it into an HTTP header
+  for each page, adding `frame-ancestors 'none'`. `static/_headers` sets HSTS, `nosniff`,
+  `X-Frame-Options`, the referrer and permissions policies and `Cross-Origin-Opener-Policy`.
 - No cookies, analytics or third-party requests: fonts and scripts are served by the site itself.
+- `/.well-known/security.txt` says how to report a vulnerability; it expires a year after each
+  build, so deploy at least once a year.
+- HTTP to HTTPS: a Cloudflare Redirect Rule limited to `nanoprint.nanofactura.com` (dashboard →
+  nanofactura.com → Rules → Redirect Rules: when the hostname equals `nanoprint.nanofactura.com`
+  and the scheme is `http`, redirect to `https://` with the same path, status 301). Static files
+  cannot redirect by themselves, and the zone-wide "Always Use HTTPS" would affect other sites.
 - The build writes `third-party-licenses.txt` (`scripts/licenses.ts`) with the license text of every
   package whose code reaches the browser. qz-tray (LGPL-2.1) is served unmodified in its own file;
   its license text is in `licenses/`.

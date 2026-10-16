@@ -328,6 +328,8 @@ qz.security.setCertificatePromise((resolve) => {
       ],
       connect: 'Conectar con NanoPrint',
       wake: 'Abrir NanoPrint',
+      wakeFailed:
+        'NanoPrint no se abrió. Si no está instalado, descargalo; si el navegador te preguntó y no aceptaste, probá de nuevo.',
       connecting: 'Conectando…',
       connected: 'Conectado a NanoPrint',
       disconnect: 'Desconectar',

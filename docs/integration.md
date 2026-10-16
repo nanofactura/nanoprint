@@ -84,8 +84,9 @@ async function openNanoPrint() {
 ```
 
 - Offer it as a button ("Open NanoPrint") after a failed connection, rather than opening the link
-  on your own: browsers only open links to apps after a click, and when NanoPrint is not installed
-  some browsers show an error page instead.
+  on your own: browsers only open links to apps after a click. When NanoPrint is not installed,
+  Chrome and Edge do nothing and the page stays as it is; other browsers may show a message. If
+  the connection still fails, suggest downloading NanoPrint.
 - The link can only start NanoPrint: whatever follows `nanoprint:` is ignored. If NanoPrint is
   already running, nothing happens. The site still needs the user's permission to print.
 - It works once NanoPrint has been installed, on Windows, macOS and Linux (the installers register

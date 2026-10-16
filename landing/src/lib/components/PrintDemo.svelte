@@ -91,6 +91,10 @@
   async function wake(): Promise<void> {
     window.location.href = 'nanoprint://start';
     await connect(15);
+    // Not installed (the browser then does nothing) or the user declined the browser's question.
+    if (status !== 'connected' && result?.offerDownload) {
+      result = { ok: false, text: t.wakeFailed, offerDownload: true };
+    }
   }
 
   async function disconnect(): Promise<void> {
