@@ -1,5 +1,19 @@
-# Cloudflare Pages project serving nanoprint.nanofactura.com. Deploys run from a maintainer's
-# computer (npm run deploy), not from CI. No account ID or token lives here: see README.md.
+# NanoPrint's website, nanoprint.nanofactura.com: static files served by Cloudflare (Pages, now
+# part of Workers as "static assets"). Deploys run from a maintainer's computer (npm run deploy),
+# not from CI. No account ID or token lives here: see README.md.
 name = "nanoprint"
-pages_build_output_dir = "build"
 compatibility_date = "2026-10-01"
+
+# Only the custom domain serves the site: no workers.dev copy competing with it in search results.
+workers_dev = false
+preview_urls = false
+
+# Wrangler creates the DNS record and certificate for this hostname only; nothing else in the
+# nanofactura.com zone changes.
+routes = [{ pattern = "nanoprint.nanofactura.com", custom_domain = true }]
+
+[assets]
+directory = "./build"
+# /en answers with a redirect to /en/ (en/index.html); unknown paths get 404.html with status 404.
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"

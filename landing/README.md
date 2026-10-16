@@ -3,8 +3,8 @@
 The site at [nanoprint.nanofactura.com](https://nanoprint.nanofactura.com): a home page and a page
 for developers, in Spanish (`/`, `/desarrolladores/`) and English (`/en/`, `/en/developers/`).
 Built with SvelteKit, Svelte 5, Tailwind CSS 4 and Vite, rendered to static HTML at build time, and
-served by Cloudflare Pages. It is a separate npm package from the app: its dependencies, including
-Wrangler, never reach the app's build.
+served by Cloudflare (Pages, now part of Workers as static assets). It is a separate npm package
+from the app: its dependencies, including Wrangler, never reach the app's build.
 
 ## Working on it
 
@@ -22,28 +22,25 @@ language misses an entry. Text between backticks renders as inline code.
 
 ## Deploying
 
-Deploys run from a maintainer's computer, not from CI.
+Deploys run from a maintainer's computer, not from CI. Cloudflare Pages now runs as part of
+Workers ("static assets"): `wrangler.toml` names the Worker (`nanoprint`), the folder it serves,
+how it answers unknown paths (`404.html`, status 404) and trailing slashes, and its one custom
+domain. The first deploy created the Worker, the `nanoprint.nanofactura.com` DNS record and its
+certificate; nothing else in the `nanofactura.com` zone is touched.
 
-Once:
-
-1. `npx wrangler login` opens the browser to authorize Wrangler. Its credentials stay in your user
-   profile, outside the repository. If your login reaches several Cloudflare accounts, copy
-   `.env.example` to `.env` and set `CLOUDFLARE_ACCOUNT_ID` (the ID is not secret, but it does not
-   belong in the repository either).
-2. `npx wrangler pages project create nanoprint --production-branch main`
-3. In the Cloudflare dashboard, open the `nanoprint` Pages project → Custom domains → add
-   `nanoprint.nanofactura.com`. With nanofactura.com on Cloudflare, the DNS record is created for
-   you.
+Once per computer: `npx wrangler login` opens the browser to authorize Wrangler. Its credentials stay
+in your user profile, outside the repository. If your login reaches several Cloudflare accounts,
+copy `.env.example` to `.env` and set `CLOUDFLARE_ACCOUNT_ID` (not secret, but it does not belong in
+the repository either).
 
 Each time:
 
 ```sh
-npm run deploy           # builds and publishes to production
-npm run deploy:preview   # builds and publishes to a preview URL
+npm run deploy   # builds and publishes to nanoprint.nanofactura.com
 ```
 
-`wrangler.toml` holds only the project name and the output folder. Never commit `.env` or an API
-token; git ignores `.env`.
+Check the result with `npm run preview` before deploying. Never commit `.env` or an API token; git
+ignores `.env`.
 
 ## Hero video
 
