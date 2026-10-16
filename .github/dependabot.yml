@@ -10,6 +10,10 @@ updates:
     groups:
       npm:
         patterns: ['*']
+    ignore:
+      # Follows the Node.js major version in .nvmrc, and changes together with it.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: cargo
     directory: /
