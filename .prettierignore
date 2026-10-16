@@ -5,7 +5,6 @@ src-tauri/icons/
 package-lock.json
 Cargo.lock
 generated/
-landing/.svelte-kit/
-landing/build/
-landing/package-lock.json
+# The website formats itself with its own dependencies (landing/README.md).
+landing/
 fuzz/seeds/

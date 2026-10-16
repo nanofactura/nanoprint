@@ -8,12 +8,6 @@
       "options": {
         "parser": "svelte"
       }
-    },
-    {
-      "files": "landing/**",
-      "options": {
-        "tailwindStylesheet": "./landing/src/app.css"
-      }
     }
   ],
   "tailwindStylesheet": "./src/app.css"

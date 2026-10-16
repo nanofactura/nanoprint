@@ -56,6 +56,7 @@ jobs:
       - run: npm audit signatures
       # SvelteKit's cookie parser carries a low-severity advisory; the static site runs no server.
       - run: npm audit --omit=dev --audit-level=moderate
+      - run: npm run format:check
       - run: npm run check
       - run: npm run build
 
