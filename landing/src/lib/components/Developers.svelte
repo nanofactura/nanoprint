@@ -110,6 +110,13 @@
     <div class="mt-6"><CodeBlock code={dev.identity.code} {lang} /></div>
   </section>
 
+  <section id="wake" class="container-page max-w-4xl py-12">
+    <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{dev.wake.title}</h2>
+    <p class="mt-3 text-muted"><Rich text={dev.wake.text} /></p>
+    <div class="mt-6"><CodeBlock code={dev.wake.code} {lang} /></div>
+    <p class="mt-4 text-sm text-muted">{dev.wake.note}</p>
+  </section>
+
   <section id="demo" class="container-page max-w-4xl py-12">
     <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{dev.demo.title}</h2>
     <p class="mt-3 mb-6 text-muted">{dev.demo.lead}</p>

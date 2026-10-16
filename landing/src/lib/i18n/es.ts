@@ -201,6 +201,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
           a: 'No. Cada sitio tiene que pedir permiso y vos decidís. NanoPrint solo acepta conexiones de esta misma computadora, y el permiso se puede revocar desde el panel.',
         },
         {
+          q: '¿Tengo que dejar NanoPrint abierto?',
+          a: 'NanoPrint arranca con la computadora y queda en la bandeja del sistema, sin molestar. Si lo cerraste, los sitios que lo integran pueden volver a abrirlo: el navegador te pregunta antes.',
+        },
+        {
           q: '¿NanoPrint guarda lo que imprimo?',
           a: 'No. El historial registra durante 30 días la fecha, el sitio, la impresora y el resultado de cada trabajo, nunca su contenido. NanoPrint no envía datos a internet.',
         },
@@ -305,6 +309,16 @@ qz.security.setCertificatePromise((resolve) => {
   }));
 });`,
     },
+    wake: {
+      title: 'Si NanoPrint está cerrado',
+      text: 'NanoPrint arranca con la computadora, pero el usuario puede haberlo cerrado. Tu página puede volver a abrirlo con el enlace `nanoprint://start`: el navegador pregunta antes de abrirlo y NanoPrint arranca en la bandeja, sin ventanas.',
+      code: `async function openNanoPrint() {
+  window.location.href = 'nanoprint://start';
+  // NanoPrint needs a moment to start
+  await qz.websocket.connect({ retries: 15, delay: 1 });
+}`,
+      note: 'Ofrecelo como un botón «Abrir NanoPrint» después de una conexión fallida: los navegadores solo abren aplicaciones después de un clic. El enlace solo arranca NanoPrint, no lleva datos, y el sitio igual necesita permiso para imprimir.',
+    },
     demo: {
       title: 'Probalo ahora',
       lead: 'Con NanoPrint instalado y abierto, esta página se conecta, lista tus impresoras e imprime un ticket de ejemplo. Usa solo qz-tray.js y ReceiptPrinterEncoder.',
@@ -313,6 +327,7 @@ qz.security.setCertificatePromise((resolve) => {
         'Chrome puede pedir permiso para acceder a dispositivos de la red local: aceptalo para que la página llegue a NanoPrint.',
       ],
       connect: 'Conectar con NanoPrint',
+      wake: 'Abrir NanoPrint',
       connecting: 'Conectando…',
       connected: 'Conectado a NanoPrint',
       disconnect: 'Desconectar',
@@ -325,7 +340,7 @@ qz.security.setCertificatePromise((resolve) => {
       noPrinters:
         'NanoPrint no le ofrece ninguna impresora a este sitio. Revisá la pestaña Impresoras de NanoPrint.',
       notRunning:
-        'No pudimos conectar con NanoPrint. Revisá que esté instalado y abierto (ícono junto al reloj) y que los sitios seguros estén activados en Preferencias.',
+        'No pudimos conectar con NanoPrint. Si está instalado pero cerrado, abrilo con el botón (el navegador te va a pedir confirmación). Si ya está abierto, revisá que los sitios seguros estén activados en Preferencias.',
       blocked:
         'NanoPrint no permitió la conexión. Si bloqueaste este sitio, desbloquealo en la pestaña Sitios de NanoPrint.',
       failed: 'No se pudo imprimir: {message}',

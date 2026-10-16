@@ -106,11 +106,13 @@ export interface Messages {
     libraries: { title: string; lead: string; items: Library[]; license: string };
     example: { title: string; lead: string; code: string; note: string };
     identity: { title: string; text: string; code: string };
+    wake: { title: string; text: string; code: string; note: string };
     demo: {
       title: string;
       lead: string;
       steps: string[];
       connect: string;
+      wake: string;
       connecting: string;
       connected: string;
       disconnect: string;

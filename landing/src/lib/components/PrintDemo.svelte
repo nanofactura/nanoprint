@@ -61,7 +61,8 @@
     return { ok: false, text: format(t.failed, { message: text }) };
   }
 
-  async function connect(): Promise<void> {
+  /** `retries` gives a NanoPrint that is just starting time to open its servers. */
+  async function connect(retries = 0): Promise<void> {
     status = 'connecting';
     result = undefined;
     try {
@@ -72,7 +73,9 @@
         resolve(JSON.stringify({ nanoprint: { name, icon } }));
       });
       // Only this computer: qz-tray.js would otherwise also try a host name on the internet.
-      if (!qz.websocket.isActive()) await qz.websocket.connect({ host: 'localhost', retries: 0 });
+      if (!qz.websocket.isActive()) {
+        await qz.websocket.connect({ host: 'localhost', retries, delay: 1 });
+      }
       printers = await qz.printers.find();
       const preferred = await qz.printers.getDefault();
       printer = preferred && printers.includes(preferred) ? preferred : (printers[0] ?? '');
@@ -82,6 +85,12 @@
       result = describe(error);
       status = 'idle';
     }
+  }
+
+  /** Starts an installed NanoPrint that the user quit (the browser asks first), then connects. */
+  async function wake(): Promise<void> {
+    window.location.href = 'nanoprint://start';
+    await connect(15);
   }
 
   async function disconnect(): Promise<void> {
@@ -245,7 +254,14 @@
     >
       <p>{result.text}</p>
       {#if result.offerDownload}
-        <a href={`${pages.home[lang]}#download`} class="mt-2 inline-block link">{t.download}</a>
+        <div class="mt-3 flex flex-wrap items-center gap-4">
+          <button
+            type="button"
+            class="rounded-lg border border-line bg-surface-2 px-4 py-2 font-medium text-fg transition-colors hover:border-muted"
+            onclick={() => void wake()}>{t.wake}</button
+          >
+          <a href={`${pages.home[lang]}#download`} class="link">{t.download}</a>
+        </div>
       {/if}
     </div>
   {/if}

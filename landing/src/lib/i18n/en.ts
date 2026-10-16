@@ -200,6 +200,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
           a: 'No. Every site must ask for permission, and you decide. NanoPrint only accepts connections from this computer, and permissions can be revoked from its panel.',
         },
         {
+          q: 'Do I have to keep NanoPrint open?',
+          a: 'NanoPrint starts with the computer and stays in the system tray, out of the way. If you quit it, sites that integrate it can open it again: your browser asks you first.',
+        },
+        {
           q: 'Does NanoPrint store what I print?',
           a: 'No. Its history keeps the date, site, printer and result of each job for 30 days, never the content. NanoPrint sends no data to the internet.',
         },
@@ -304,6 +308,16 @@ qz.security.setCertificatePromise((resolve) => {
   }));
 });`,
     },
+    wake: {
+      title: 'When NanoPrint is closed',
+      text: 'NanoPrint starts with the computer, but the user may have quit it. Your page can start it again with the `nanoprint://start` link: the browser asks before opening it, and NanoPrint starts in the tray, with no window.',
+      code: `async function openNanoPrint() {
+  window.location.href = 'nanoprint://start';
+  // NanoPrint needs a moment to start
+  await qz.websocket.connect({ retries: 15, delay: 1 });
+}`,
+      note: 'Offer it as an "Open NanoPrint" button after a failed connection: browsers only open apps after a click. The link only starts NanoPrint, carries no data, and the site still needs permission to print.',
+    },
     demo: {
       title: 'Try it now',
       lead: 'With NanoPrint installed and running, this page connects to it, lists your printers and prints a sample receipt. It uses only qz-tray.js and ReceiptPrinterEncoder.',
@@ -312,6 +326,7 @@ qz.security.setCertificatePromise((resolve) => {
         'Chrome may ask to allow access to devices on your local network: allow it so the page can reach NanoPrint.',
       ],
       connect: 'Connect to NanoPrint',
+      wake: 'Open NanoPrint',
       connecting: 'Connecting…',
       connected: 'Connected to NanoPrint',
       disconnect: 'Disconnect',
@@ -324,7 +339,7 @@ qz.security.setCertificatePromise((resolve) => {
       noPrinters:
         "NanoPrint offers no printer to this site. Check the Printers tab in NanoPrint's panel.",
       notRunning:
-        'Could not connect to NanoPrint. Make sure it is installed and running (icon next to the clock) and that secure sites are enabled in Preferences.',
+        'Could not connect to NanoPrint. If it is installed but closed, open it with the button (your browser will ask you to confirm). If it is running, check that secure sites are enabled in Preferences.',
       blocked:
         "NanoPrint refused the connection. If you blocked this site, unblock it in NanoPrint's Sites tab.",
       failed: 'Could not print: {message}',
