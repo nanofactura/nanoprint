@@ -73,7 +73,8 @@ Quality checks: `npm run format`, `npm run lint`, `npm run check`, `npm test`, a
 `cargo fmt --all`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`
 (run `npm run build` first). See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request,
 [CLAUDE.md](CLAUDE.md) for the project rules, [docs/architecture.md](docs/architecture.md) for the
-design and [docs/releasing.md](docs/releasing.md) for releases.
+design and [docs/releasing.md](docs/releasing.md) for releases. The website lives in
+[landing/](landing/README.md).
 
 ## Privacy
 

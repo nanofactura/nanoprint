@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/* Dark only. Brand blue for actions, amber for highlights. Text on the background keeps at least
+   4.5:1 contrast: links use the lighter blue, not the brand blue itself. */
+@theme {
+  --color-bg: #0b0d14;
+  --color-surface: #12151f;
+  --color-surface-2: #181c29;
+  --color-line: #252a3b;
+  --color-fg: #e9ebf3;
+  --color-muted: #9ba1b6;
+  --color-brand: #4b5ff7;
+  --color-brand-hover: #6273ff;
+  --color-brand-soft: #8c98ff;
+  --color-accent: #d5892f;
+  --color-accent-soft: #e9a957;
+  --color-ok: #4cc38a;
+  --color-danger: #f0716a;
+
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand/40;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-soft;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+
+@utility link {
+  @apply text-brand-soft underline-offset-4 hover:underline;
+}

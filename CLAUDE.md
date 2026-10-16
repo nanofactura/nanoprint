@@ -99,6 +99,9 @@ It belongs to the [Nanofactura](https://github.com/nanofactura) organization.
 - `docs/threat-model.md`: what NanoPrint protects and how. Update it with any change to the
   print server, permissions, storage or releases.
 - `docs/releasing.md`: release process, code signing and update key custody.
+- `landing/`: the website, nanoprint.nanofactura.com (SvelteKit, static, Cloudflare Pages). Its own
+  npm package and checks; deployed by hand. Its developer page repeats facts from
+  `docs/integration.md`: keep both in step. See `landing/README.md`.
 
 ## Commands
 

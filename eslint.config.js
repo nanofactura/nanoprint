@@ -7,7 +7,8 @@ import ts from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
 
 export default defineConfig(
-  globalIgnores(['dist/', 'src-tauri/', 'target/']),
+  // The website has its own package and checks (landing/README.md).
+  globalIgnores(['dist/', 'src-tauri/', 'target/', 'landing/']),
   js.configs.recommended,
   ts.configs.strictTypeChecked,
   ts.configs.stylisticTypeChecked,

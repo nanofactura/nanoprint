@@ -15,6 +15,20 @@ updates:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
 
+  # The website (landing/) has its own package and lock file.
+  - package-ecosystem: npm
+    directory: /landing
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      landing:
+        patterns: ['*']
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: cargo
     directory: /
     schedule:

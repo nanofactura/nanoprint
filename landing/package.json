@@ -1,0 +1,39 @@
+{
+  "name": "nanoprint-landing",
+  "private": true,
+  "description": "NanoPrint's website, nanoprint.nanofactura.com: a static site deployed to Cloudflare Pages.",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "assets": "node scripts/generate-assets.mjs",
+    "deploy": "npm run build && node --env-file-if-exists=.env node_modules/wrangler/bin/wrangler.js pages deploy --branch main",
+    "deploy:preview": "npm run build && node --env-file-if-exists=.env node_modules/wrangler/bin/wrangler.js pages deploy --branch preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@lucide/svelte": "^1.53.0",
+    "@point-of-sale/receipt-printer-encoder": "^4.0.1",
+    "@sveltejs/kit": "^2.70.3",
+    "qz-tray": "^2.3.0",
+    "svelte": "^5.57.2"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tailwindcss/vite": "^4.3.3",
+    "svelte-check": "^4.6.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16",
+    "wrangler": "4.149.0"
+  }
+}

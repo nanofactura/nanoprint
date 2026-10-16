@@ -5,4 +5,7 @@ src-tauri/icons/
 package-lock.json
 Cargo.lock
 generated/
+landing/.svelte-kit/
+landing/build/
+landing/package-lock.json
 fuzz/seeds/

@@ -1,0 +1,5 @@
+# Cloudflare Pages project serving nanoprint.nanofactura.com. Deploys run from a maintainer's
+# computer (npm run deploy), not from CI. No account ID or token lives here: see README.md.
+name = "nanoprint"
+pages_build_output_dir = "build"
+compatibility_date = "2026-10-01"
