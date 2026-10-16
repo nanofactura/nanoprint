@@ -20,18 +20,18 @@ time it runs with no window open, so its footprint is one Rust process and a tra
 
 ## Components
 
-| Component                       | Status          | Responsibility                                                                                                                         |
-| ------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Tray and settings window        | Done            | Tray menu, settings window on demand, language, start with the system (quietly; opened by the user, it shows the welcome or the panel) |
-| Print server                    | Done            | `ws://` and `wss://` WebSocket server on loopback; `Host`/`Origin` validation; message limits                                          |
-| Protocol layer                  | Done            | qz-tray.js wire protocol subset needed for raw printing ([protocol.md](protocol.md)), in its own crate (`crates/protocol`), fuzzed     |
-| Permission manager              | Done            | Per-origin consent prompt, signed allow/block store, revocation, 30-day history                                                        |
-| Printer registry and transports | Partial         | OS queue in raw mode (tested on Windows; CUPS on macOS and Linux untested). Pending: USB, serial, TCP 9100, BLE, Bluetooth SPP         |
-| Local TLS                       | Done (`wss://`) | Per-install certificate for `localhost`, `127.0.0.1` and `::1`, renewed while running; trust store install from the panel              |
-| Onboarding                      | Done            | First-run welcome; offers to enable secure sites then, when a browser refuses the certificate, and from a panel banner                 |
-| Site identity                   | Done            | Optional name and logo sent by the page, sanitized and re-encoded ([integration.md](integration.md#site-name-and-logo))                |
-| LAN mode                        | Planned         | Opt-in listener on the LAN with device pairing                                                                                         |
-| Updater                         | Planned         | Signed automatic updates from GitHub Releases                                                                                          |
+| Component                       | Status          | Responsibility                                                                                                                                                                              |
+| ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tray and settings window        | Done            | Tray menu, settings window on demand, language, start with the system (quietly; opened by the user, it shows the welcome or the panel), `nanoprint://` link for pages to start it (quietly) |
+| Print server                    | Done            | `ws://` and `wss://` WebSocket server on loopback; `Host`/`Origin` validation; message limits                                                                                               |
+| Protocol layer                  | Done            | qz-tray.js wire protocol subset needed for raw printing ([protocol.md](protocol.md)), in its own crate (`crates/protocol`), fuzzed                                                          |
+| Permission manager              | Done            | Per-origin consent prompt, signed allow/block store, revocation, 30-day history                                                                                                             |
+| Printer registry and transports | Partial         | OS queue in raw mode (tested on Windows; CUPS on macOS and Linux untested). Pending: USB, serial, TCP 9100, BLE, Bluetooth SPP                                                              |
+| Local TLS                       | Done (`wss://`) | Per-install certificate for `localhost`, `127.0.0.1` and `::1`, renewed while running; trust store install from the panel                                                                   |
+| Onboarding                      | Done            | First-run welcome; offers to enable secure sites then, when a browser refuses the certificate, and from a panel banner                                                                      |
+| Site identity                   | Done            | Optional name and logo sent by the page, sanitized and re-encoded ([integration.md](integration.md#site-name-and-logo))                                                                     |
+| LAN mode                        | Planned         | Opt-in listener on the LAN with device pairing                                                                                                                                              |
+| Updater                         | Planned         | Signed automatic updates from GitHub Releases                                                                                                                                               |
 
 ## Compatibility with qz-tray.js clients
 

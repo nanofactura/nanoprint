@@ -18,6 +18,7 @@ mod tray;
 mod trust;
 mod ui_error;
 mod uninstall;
+mod url_launch;
 mod window;
 
 use std::{path::PathBuf, sync::Arc, time::Duration};
@@ -51,10 +52,14 @@ pub fn run() {
     }
 
     let app = tauri::Builder::default()
-        // Must be the first plugin: a second launch focuses the running instance instead.
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            window::show_settings(app);
+        // Must be the first plugin: a second launch focuses the running instance instead. A page
+        // starting NanoPrint with a link finds it running already: nothing to show then.
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            if !args.iter().any(|arg| url_launch::is_link(arg)) {
+                window::show_settings(app);
+            }
         }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(logs::plugin())
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
@@ -130,9 +135,12 @@ pub fn run() {
             tauri::async_runtime::spawn(purge_daily(store, app.path().app_log_dir()?));
 
             tray::create(app.handle())?;
-            let started_with_system = std::env::args().any(|arg| arg == AUTOSTART_FLAG);
-            if !onboarding::welcome(app.handle()) && !started_with_system {
-                window::show_settings(app.handle());
+            url_launch::register(app.handle());
+            // Started with the system or by a page's link: stay in the tray.
+            let quiet =
+                std::env::args().any(|arg| arg == AUTOSTART_FLAG) || url_launch::started_by_link();
+            if !onboarding::welcome(app.handle()) && !quiet {
+                url_launch::show_settings_unless_started_by_link(app.handle());
             }
             Ok(())
         })
@@ -140,6 +148,8 @@ pub fn run() {
         .expect("failed to build the NanoPrint application");
 
     app.run(|_app, event| {
+        #[cfg(target_os = "macos")]
+        url_launch::on_event(&event);
         // NanoPrint lives in the tray: closing the last window must not quit it. An explicit exit
         // (tray menu "Quit") carries an exit code and goes through.
         if let RunEvent::ExitRequested {

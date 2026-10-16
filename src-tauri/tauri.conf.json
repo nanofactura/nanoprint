@@ -27,6 +27,13 @@
       "freezePrototype": true
     }
   },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["nanoprint"]
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": ["nsis", "app", "dmg", "deb", "rpm", "appimage"],

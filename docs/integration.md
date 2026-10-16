@@ -69,6 +69,28 @@ await qz.websocket.connect({ port: { secure: [9181], insecure: [9182] } });
 Libraries that do not pass connection options through, such as `web-escpos-printer`, only find
 NanoPrint on the default ports.
 
+## When NanoPrint is not running
+
+NanoPrint starts with the computer, but a user may have quit it. A page can start it again by
+opening the `nanoprint://start` link: the browser asks the user whether to open NanoPrint, and the
+system starts it quietly in the tray. Then connect again for a few seconds:
+
+```js
+async function openNanoPrint() {
+  window.location.href = 'nanoprint://start';
+  // NanoPrint needs a moment to start its servers.
+  await qz.websocket.connect({ retries: 15, delay: 1 });
+}
+```
+
+- Offer it as a button ("Open NanoPrint") after a failed connection, rather than opening the link
+  on your own: browsers only open links to apps after a click, and when NanoPrint is not installed
+  some browsers show an error page instead.
+- The link can only start NanoPrint: whatever follows `nanoprint:` is ignored. If NanoPrint is
+  already running, nothing happens. The site still needs the user's permission to print.
+- It works once NanoPrint has been installed, on Windows, macOS and Linux (the installers register
+  the link; the AppImage registers it the first time it runs).
+
 ## Permission
 
 The first time a site connects, NanoPrint asks the user whether it may print. Until the user

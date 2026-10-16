@@ -28,6 +28,8 @@ and versions follow [Semantic Versioning](https://semver.org/).
   the certificate.
 - Limits per site: 30 print jobs a minute, 16 connections, 10 copies per job.
 - Third-party licenses window and a diagnostic log the user can open from the panel.
+- `nanoprint://start` link: a page can start NanoPrint when the user has quit it. The browser asks
+  first; NanoPrint starts quietly in the tray and the link carries nothing else.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
