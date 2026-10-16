@@ -1,0 +1,70 @@
+[package]
+name = "nanoprint"
+version.workspace = true
+description = "Open-source local print agent for thermal receipt printers."
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[lib]
+# The `_lib` suffix keeps the library name distinct from the binary name; Cargo mixes them up on
+# Windows otherwise (https://github.com/rust-lang/cargo/issues/8519).
+name = "nanoprint_lib"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+base64 = "0.23"
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+getrandom = "0.4"
+hex = "0.4"
+hmac = "0.13"
+# Normalizes site names; already used by `url` for international domain names.
+icu_normalizer = "2"
+# Site logos are decoded and re-encoded here, in memory-safe code, before a webview sees them.
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
+keyring-core = "1"
+log = "0.4"
+nanoprint-protocol = { path = "../crates/protocol" }
+# TLS with the `ring` backend: pure Rust plus small C/assembly parts, no CMake or NASM needed.
+rcgen = { version = "0.14", default-features = false, features = ["crypto", "pem", "ring"] }
+rusqlite = { version = "0.40", features = ["bundled", "functions"] }
+rustls = { version = "0.23", default-features = false, features = ["logging", "ring", "std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.11"
+sys-locale = "0.3"
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-autostart = "2"
+tauri-plugin-log = "2"
+tauri-plugin-single-instance = "2"
+thiserror = "2"
+time = { version = "0.3", default-features = false, features = ["std"] }
+tokio = { version = "1", features = ["macros", "net", "rt", "sync", "time"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["logging", "ring"] }
+tokio-tungstenite = { version = "0.30", default-features = false, features = ["handshake"] }
+url = "2.5"
+
+[target.'cfg(windows)'.dependencies]
+windows-native-keyring-store = { version = "1.1", default-features = false }
+windows-sys = { version = "0.61", features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Gdi",
+  "Win32_Graphics_Printing",
+  "Win32_Security",
+] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = { version = "1", features = ["keychain"] }
+
+[target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
+zbus-secret-service-keyring-store = { version = "1", features = ["crypto-rust"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "process", "rt-multi-thread"] }
+tokio-tungstenite = { version = "0.30", default-features = false, features = ["connect", "handshake"] }

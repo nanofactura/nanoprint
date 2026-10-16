@@ -1,0 +1,62 @@
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems go to a private advisory instead (see SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: NanoPrint version
+      description: Preferences → About.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system
+      placeholder: Windows 11 24H2, macOS 15.4, Ubuntu 24.04…
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and page
+      description: Browser and version, and whether the page is http:// or https://.
+      placeholder: Chrome 140, https://
+  - type: input
+    id: printer
+    attributes:
+      label: Printer
+      description: Model, paper width and connection (USB, network, Bluetooth).
+      placeholder: Generic 58 mm, USB
+  - type: input
+    id: client
+    attributes:
+      label: Client library
+      placeholder: qz-tray 2.3.0 + @point-of-sale/receipt-printer-encoder 3.0.3
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        Preferences → About → Diagnostic log → Open folder, then attach the file or paste the
+        relevant lines. It never contains what was printed; remove any site you would rather not
+        share.
+      render: text

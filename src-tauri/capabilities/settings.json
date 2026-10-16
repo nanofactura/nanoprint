@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "settings",
+  "description": "Permissions of the settings panel. Grant only what it uses.",
+  "windows": ["settings"],
+  "permissions": [
+    "core:app:allow-version",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "allow-get-settings",
+    "allow-set-language",
+    "allow-set-ports",
+    "allow-restart",
+    "allow-get-server-status",
+    "allow-list-sites",
+    "allow-revoke-site",
+    "allow-install-certificate",
+    "allow-remove-certificate",
+    "allow-list-history",
+    "allow-list-printers",
+    "allow-set-printer-shared",
+    "allow-print-test-page",
+    "allow-show-licenses",
+    "allow-open-log-folder"
+  ]
+}

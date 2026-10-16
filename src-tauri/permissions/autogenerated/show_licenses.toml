@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-show-licenses"
+description = "Enables the show_licenses command without any pre-configured scope."
+commands.allow = ["show_licenses"]
+
+[[permission]]
+identifier = "deny-show-licenses"
+description = "Denies the show_licenses command without any pre-configured scope."
+commands.deny = ["show_licenses"]

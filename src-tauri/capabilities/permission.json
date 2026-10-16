@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "permission",
+  "description": "Permissions of the print permission prompt: read the request and answer it.",
+  "windows": ["permission"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "allow-get-settings",
+    "allow-get-permission-request",
+    "allow-answer-permission-request"
+  ]
+}

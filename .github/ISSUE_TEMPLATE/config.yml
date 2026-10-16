@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/nanofactura/nanoprint/security/advisories/new
+    about: Privately, please. Never in a public issue (see SECURITY.md).
+  - name: Integration guide for web developers
+    url: https://github.com/nanofactura/nanoprint/blob/main/docs/integration.md
+    about: Libraries, permissions, HTTPS pages, site name and logo, limits.

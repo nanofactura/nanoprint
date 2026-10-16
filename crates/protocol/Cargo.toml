@@ -1,0 +1,21 @@
+[package]
+name = "nanoprint-protocol"
+version.workspace = true
+description = "NanoPrint's parser for the qz-tray.js wire protocol: everything a web page can send."
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = "0.23"
+hex = "0.4"
+oem_cp = "2.1"
+serde_json = "1"
+thiserror = "2"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

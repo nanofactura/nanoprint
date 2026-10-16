@@ -1,0 +1,41 @@
+# cargo-deny: dependency licenses, security advisories and sources.
+# https://embarkstudios.github.io/cargo-deny/
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "deny"
+ignore = [
+  { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained, not vulnerable. It is a compile-time macro of the GTK 0.18 bindings that Tauri uses on Linux; no upgrade exists until Tauri moves to newer gtk-rs." },
+]
+
+[licenses]
+# Every entry must be compatible with GPL-3.0-only, NanoPrint's license.
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-3-Clause",
+  "CC0-1.0",
+  "ISC",
+  "MIT",
+  "MPL-2.0",
+  "Unicode-3.0",
+  "Zlib",
+]
+confidence-threshold = 0.9
+
+[licenses.private]
+# Our own crates are `publish = false`.
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Path dependencies between the workspace crates (all `publish = false`) carry no version.
+allow-wildcard-paths = true
+
+[sources]
+unknown-git = "deny"
+unknown-registry = "deny"

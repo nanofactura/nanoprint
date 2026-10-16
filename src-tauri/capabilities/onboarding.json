@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "onboarding",
+  "description": "Permissions of the welcome and secure connections window: read the state, install the certificate and close itself.",
+  "windows": ["onboarding"],
+  "permissions": [
+    "core:window:allow-close",
+    "allow-get-settings",
+    "allow-get-server-status",
+    "allow-install-certificate",
+    "allow-get-onboarding-reason"
+  ]
+}

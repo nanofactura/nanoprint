@@ -1,0 +1,1 @@
+{"call":"print","params":{"printer":{"name":"POS-58"},"options":{"copies":2,"jobName":"Ticket","encoding":{"from":"UTF-8","to":"Cp850"}},"data":["\u001b@Año\n",{"type":"raw","format":"command","flavor":"base64","data":"G0A="},{"type":"raw","format":"command","flavor":"hex","data":"1b 40"}]},"uid":"p1","signature":"","signAlgorithm":"SHA1"}

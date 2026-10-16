@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "NanoPrint",
+  "mainBinaryName": "nanoprint",
+  "identifier": "com.nanofactura.nanoprint",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost",
+        "img-src": "'self' data:",
+        "font-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "object-src": "'none'",
+        "frame-src": "'none'",
+        "base-uri": "'none'",
+        "form-action": "'none'"
+      },
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "app", "dmg", "deb", "rpm", "appimage"],
+    "publisher": "Nanofactura",
+    "copyright": "Copyright © 2026 Nanofactura. Licensed under GPL-3.0-only.",
+    "homepage": "https://github.com/nanofactura/nanoprint",
+    "license": "GPL-3.0-only",
+    "category": "Utility",
+    "shortDescription": "Local print agent for thermal receipt printers",
+    "longDescription": "NanoPrint lets web applications print to thermal receipt printers on this computer. It runs in the system tray, asks before any site may print, and works with qz-tray.js clients.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["English", "Spanish"],
+        "installerHooks": "./windows/hooks.nsh"
+      }
+    },
+    "macOS": {
+      "signingIdentity": "-"
+    },
+    "linux": {
+      "deb": {
+        "depends": ["libnss3-tools"]
+      },
+      "rpm": {
+        "depends": ["nss-tools"]
+      }
+    }
+  }
+}

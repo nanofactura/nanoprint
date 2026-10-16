@@ -1,0 +1,4 @@
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+# `..` keeps clippy's default list.
+doc-valid-idents = ["NanoPrint", "WebSocket", ".."]

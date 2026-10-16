@@ -1,0 +1,8 @@
+dist/
+target/
+src-tauri/gen/
+src-tauri/icons/
+package-lock.json
+Cargo.lock
+generated/
+fuzz/seeds/

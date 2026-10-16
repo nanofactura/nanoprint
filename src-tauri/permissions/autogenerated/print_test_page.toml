@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-print-test-page"
+description = "Enables the print_test_page command without any pre-configured scope."
+commands.allow = ["print_test_page"]
+
+[[permission]]
+identifier = "deny-print-test-page"
+description = "Denies the print_test_page command without any pre-configured scope."
+commands.deny = ["print_test_page"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-install-certificate"
+description = "Enables the install_certificate command without any pre-configured scope."
+commands.allow = ["install_certificate"]
+
+[[permission]]
+identifier = "deny-install-certificate"
+description = "Denies the install_certificate command without any pre-configured scope."
+commands.deny = ["install_certificate"]
