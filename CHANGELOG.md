@@ -19,7 +19,8 @@ and versions follow [Semantic Versioning](https://semver.org/).
   or unblock them. Sites can send a name and logo for the prompt (NanoPrint extension).
 - Printers tab: the printers installed on the computer with their driver and port, a switch to
   offer each one to sites or not, and an ESC/POS test page. Printers are offered by default,
-  except virtual ones (PDF and XPS writers, fax, OneNote), which cannot print tickets.
+  except those that cannot print tickets: virtual ones (PDF and XPS writers, fax, OneNote) and
+  Remote Desktop printers redirected through Easy Print.
 - History of the last 30 days, searchable by site and filtered by event type. Printed content is
   never stored.
 - Fixed ports for the print servers in Preferences, for computers that also run QZ Tray.

@@ -102,8 +102,12 @@
                   {details(printer)}
                 </p>
               {/if}
-              {#if printer.isVirtual}
-                <p class="text-xs text-muted-foreground">{t('settings.printers.virtual')}</p>
+              {#if printer.limitation}
+                <p class="text-xs text-muted-foreground">
+                  {printer.limitation === 'virtual'
+                    ? t('settings.printers.virtual')
+                    : t('settings.printers.easyPrint')}
+                </p>
               {/if}
             </div>
             <div class="flex min-h-8 items-center justify-between gap-4">
@@ -117,8 +121,8 @@
                   {printer.shared ? t('settings.printers.shared') : t('settings.printers.hidden')}
                 </Label>
               </div>
-              <!-- A virtual printer would save the test page's bytes as a broken file. -->
-              {#if !printer.isVirtual}
+              <!-- The test page's raw bytes would not reach the paper. -->
+              {#if !printer.limitation}
                 <Button
                   variant="outline"
                   size="sm"

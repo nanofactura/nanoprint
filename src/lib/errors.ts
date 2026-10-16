@@ -17,6 +17,7 @@ const codes = [
   'printer_not_found',
   'print_failed',
   'virtual_printer',
+  'easy_print_printer',
   'port_invalid',
   'ports_equal',
   'unexpected',

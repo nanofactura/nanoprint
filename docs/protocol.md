@@ -75,9 +75,10 @@ Replies are `{ "uid": "…", "result": … }` or `{ "uid": "…", "error": "mess
 Every other call (files, serial, USB, HID, sockets, networking, `websocket.stop`…) returns an error
 naming the call. NanoPrint does not implement them.
 
-Sites only get the printers offered to them: by default every printer except virtual ones (PDF and
-XPS writers, fax, OneNote), which cannot print raw data; the user changes this per printer in the
-Printers tab. A printer not offered is left out of every list above, as if it were not installed,
+Sites only get the printers offered to them: by default every printer except those that cannot
+print raw data, namely virtual ones (PDF and XPS writers, fax, OneNote) and printers redirected by
+Remote Desktop through Easy Print, which drops raw data by design (Microsoft KB 2827141). The user
+changes this per printer in the Printers tab. A printer not offered is left out of every list above, as if it were not installed,
 and a `print` to it fails with `Specified printer could not be found.` On many Windows computers
 the default printer is `Microsoft Print to PDF`: `printers.getDefault` then returns `null`.
 

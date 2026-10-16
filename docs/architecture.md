@@ -212,9 +212,9 @@ carries X.509 name constraints limiting it to those loopback names and a path le
   LaunchAgent, XDG autostart); the certificate in the user's trust store only; the signing key in
   the user's credential store; data in the user's profile, readable by that user only.
 - **Clients:** loopback only, an explicit decision per origin, and only printing and printer
-  listing, limited to the printers offered to sites: by default every printer except virtual ones
-  (PDF and XPS writers, fax, OneNote), and the Printers tab changes that per printer; see the
-  [threat model](threat-model.md).
+  listing, limited to the printers offered to sites: by default every printer that can print raw
+  data (not PDF and XPS writers, fax, OneNote or Remote Desktop's Easy Print), and the Printers
+  tab changes that per printer; see the [threat model](threat-model.md).
 - **Windows of the app:** each has a capability with only the commands it calls (the settings
   window: its own commands, the app version and start with the system); the licenses window has
   none. No shell, file system, HTTP or opener plugin is included.

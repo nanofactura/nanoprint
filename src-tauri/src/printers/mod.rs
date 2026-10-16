@@ -11,6 +11,8 @@ pub use cups::{list, print_raw};
 #[cfg(windows)]
 pub use windows::{list, print_raw};
 
+use serde::Serialize;
+
 use crate::server::Printer;
 
 /// Windows ports of printers that save a file or send a fax instead of printing.
@@ -26,22 +28,35 @@ const VIRTUAL_WORDS: [&str; 6] = [
     "document writer",
 ];
 
-/// Whether `printer` makes files or sends faxes rather than printing on paper. Raw ESC/POS bytes
-/// are useless to these printers (a PDF writer saves them as a broken file), so web pages do not
-/// get them unless the user offers them.
-pub fn is_virtual(printer: &Printer) -> bool {
+/// Why raw ESC/POS bytes cannot reach a printer's paper. Such printers are not offered to web
+/// pages unless the user offers them, and get no test page.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Limitation {
+    /// It makes files or sends faxes: a PDF writer saves the bytes as a broken file.
+    Virtual,
+    /// A printer redirected by Remote Desktop through Easy Print, which turns every job into an
+    /// XPS document and drops raw data by design (Microsoft KB 2827141).
+    EasyPrint,
+}
+
+/// What keeps `printer` from printing raw tickets, if anything.
+pub fn limitation(printer: &Printer) -> Option<Limitation> {
     let port = printer.connection.as_deref().unwrap_or_default();
-    let described = format!(
-        "{} {}",
-        printer.name,
-        printer.driver.as_deref().unwrap_or_default()
-    )
-    .to_lowercase();
-    VIRTUAL_PORTS
+    let driver = printer.driver.as_deref().unwrap_or_default().to_lowercase();
+    let described = format!("{} {driver}", printer.name).to_lowercase();
+    if driver.contains("easy print") {
+        Some(Limitation::EasyPrint)
+    } else if VIRTUAL_PORTS
         .iter()
         .any(|virtual_port| port.eq_ignore_ascii_case(virtual_port))
         || port.to_lowercase().starts_with("microsoft.office.onenote")
         || VIRTUAL_WORDS.iter().any(|word| described.contains(word))
+    {
+        Some(Limitation::Virtual)
+    } else {
+        None
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -95,12 +110,26 @@ mod tests {
             ("Generic / Text Only", "Generic / Text Only", "FILE:"),
         ];
         for (name, driver, port) in windows {
-            assert!(
-                is_virtual(&printer(name, Some(driver), Some(port))),
+            assert_eq!(
+                limitation(&printer(name, Some(driver), Some(port))),
+                Some(Limitation::Virtual),
                 "{name}"
             );
         }
-        assert!(is_virtual(&printer("Cups-PDF", None, None)));
+        assert_eq!(
+            limitation(&printer("Cups-PDF", None, None)),
+            Some(Limitation::Virtual)
+        );
+    }
+
+    #[test]
+    fn recognizes_printers_redirected_through_easy_print() {
+        let redirected = printer(
+            "POS-58 (2 redireccionado)",
+            Some("Remote Desktop Easy Print"),
+            Some("TS00"),
+        );
+        assert_eq!(limitation(&redirected), Some(Limitation::EasyPrint));
     }
 
     #[test]
@@ -125,7 +154,7 @@ mod tests {
             printer("POS_80", None, None),
         ];
         for printer in physical {
-            assert!(!is_virtual(&printer), "{}", printer.name);
+            assert_eq!(limitation(&printer), None, "{}", printer.name);
         }
     }
 }

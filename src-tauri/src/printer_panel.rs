@@ -10,7 +10,7 @@ use tauri::{AppHandle, State};
 use crate::{
     agent::{self, PrinterCache},
     i18n::{self, Locale},
-    printers,
+    printers::{self, Limitation},
     settings::SettingsStore,
     store::{Event, EventKind, Store},
     ui_error::UiError,
@@ -39,12 +39,12 @@ pub struct PrinterView {
     default: bool,
     /// Whether web pages may see it and print to it.
     shared: bool,
-    /// It makes files or sends faxes (see [`printers::is_virtual`]): not offered to web pages by
-    /// default, and no test page.
-    is_virtual: bool,
+    /// Why it cannot print raw tickets, if it cannot: not offered to web pages by default, and no
+    /// test page.
+    limitation: Option<Limitation>,
 }
 
-/// The system's printers, those that print on paper first. `refresh` lists them again instead
+/// The system's printers, those that can print tickets first. `refresh` lists them again instead
 /// of reusing the recent list.
 #[tauri::command]
 pub async fn list_printers(
@@ -61,14 +61,14 @@ pub async fn list_printers(
         .into_iter()
         .map(|printer| PrinterView {
             shared: settings.shares(&printer),
-            is_virtual: printers::is_virtual(&printer),
+            limitation: printers::limitation(&printer),
             name: printer.name,
             driver: printer.driver,
             connection: printer.connection,
             default: printer.default,
         })
         .collect();
-    views.sort_by_key(|view| view.is_virtual);
+    views.sort_by_key(|view| view.limitation.is_some());
     Ok(views)
 }
 
@@ -90,8 +90,7 @@ pub fn set_printer_shared(
 }
 
 /// Prints a short ESC/POS test page, whether or not web pages may use the printer. Recorded in
-/// the history without a site. Virtual printers are refused: they would save the bytes as a broken
-/// file.
+/// the history without a site. Printers that cannot print raw tickets are refused.
 #[tauri::command]
 pub async fn print_test_page(
     app: AppHandle,
@@ -105,8 +104,10 @@ pub async fn print_test_page(
         .await
         .map_err(|error| UiError::with_detail("printers_unavailable", &error))?
         .ok_or(UiError::new("printer_not_found"))?;
-    if printers::is_virtual(&found) {
-        return Err(UiError::new("virtual_printer"));
+    match printers::limitation(&found) {
+        Some(Limitation::Virtual) => return Err(UiError::new("virtual_printer")),
+        Some(Limitation::EasyPrint) => return Err(UiError::new("easy_print_printer")),
+        None => {}
     }
     let locale = i18n::resolve(settings.get().language);
     let job_name = i18n::t(locale, "printers.testPage.jobName");

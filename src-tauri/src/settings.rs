@@ -42,13 +42,13 @@ pub struct Settings {
 }
 
 impl Settings {
-    /// Whether web pages may see and use `printer`: the user's choice, or else every printer
-    /// except virtual ones (PDF and XPS writers, fax), which cannot print tickets.
+    /// Whether web pages may see and use `printer`: the user's choice, or else every printer that
+    /// can print raw tickets (see [`printers::limitation`]).
     pub fn shares(&self, printer: &Printer) -> bool {
         self.shared_printers
             .get(&printer.name)
             .copied()
-            .unwrap_or_else(|| !printers::is_virtual(printer))
+            .unwrap_or_else(|| printers::limitation(printer).is_none())
     }
 }
 

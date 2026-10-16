@@ -66,8 +66,11 @@ export interface PrinterView {
   default: boolean;
   /** Whether web pages may see it and print to it. */
   shared: boolean;
-  /** It makes files or sends faxes: not offered to sites by default, and no test page. */
-  isVirtual: boolean;
+  /**
+   * Why it cannot print raw tickets, if it cannot: a virtual printer (PDF, XPS, fax) or a Remote
+   * Desktop printer with Easy Print. Not offered to sites by default, and no test page.
+   */
+  limitation: 'virtual' | 'easyPrint' | null;
 }
 
 /** Mirrors `PermissionRequest` in `src-tauri/src/permissions.rs`. */
