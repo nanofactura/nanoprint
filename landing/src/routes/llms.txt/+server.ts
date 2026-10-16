@@ -40,6 +40,8 @@ qz-tray.js uses) and asks the user before any website may print. It never stores
 
 ## Documentation
 
+- [Full text of the site](${SITE_URL}/llms-full.txt): every page, in English and Spanish.
+
 - [Source code](${REPO_URL})
 - [Integration guide](${docs.integration})
 - [Protocol](${docs.protocol})

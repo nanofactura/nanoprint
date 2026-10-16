@@ -71,7 +71,9 @@ The grade suits a background near `#1c1c1c`; adjust the curve for another one.
   `src/lib/i18n/index.ts`: add a page there and in `src/routes/`.
 - Structured data (schema.org): `SoftwareApplication` and `FAQPage` on the home page, `TechArticle`
   and `BreadcrumbList` on the developer page.
-- `llms.txt` summarizes the product for AI assistants, built from the same text as the pages.
+- `llms.txt` summarizes the product for AI assistants and `llms-full.txt` carries every page's text
+  in both languages; both are built from the same text as the pages. `robots.txt` allows every
+  crawler and points to the sitemap.
 - Social previews: `static/og-es.png` and `static/og-en.png`.
 
 ## Icons and preview images
