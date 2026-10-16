@@ -143,5 +143,21 @@
   "settings.ports.automatic": "Automático",
   "settings.ports.save": "Guardar",
   "settings.ports.restartNeeded": "NanoPrint usa los puertos nuevos después de reiniciarse.",
-  "settings.ports.restart": "Reiniciar NanoPrint"
+  "settings.ports.restart": "Reiniciar NanoPrint",
+  "settings.updates.title": "Actualizaciones",
+  "settings.updates.automatic": "Actualizar automáticamente",
+  "settings.updates.automaticDescription": "Busca versiones nuevas en GitHub y las instala cuando NanoPrint está libre. Si lo desactivás, NanoPrint no se conecta a internet.",
+  "settings.updates.check": "Buscar actualizaciones",
+  "settings.updates.install": "Instalar y reiniciar",
+  "settings.updates.idle": "Todavía no se buscaron actualizaciones.",
+  "settings.updates.checking": "Buscando actualizaciones…",
+  "settings.updates.upToDate": "Tenés la última versión (revisado el {date}).",
+  "settings.updates.downloading": "Descargando la versión {version}…",
+  "settings.updates.readyAutomatic": "La versión {version} está lista. Se instala sola cuando NanoPrint esté libre.",
+  "settings.updates.ready": "La versión {version} está lista para instalar.",
+  "settings.updates.failed": "No se pudo buscar actualizaciones: {message}",
+  "settings.updates.development": "La versión de desarrollo no se actualiza sola.",
+  "settings.updates.package": "Esta instalación se actualiza con el gestor de paquetes del sistema (.deb o .rpm).",
+  "error.code.update_failed": "No se pudo instalar la actualización",
+  "error.code.update_not_ready": "No hay una actualización descargada para instalar"
 }

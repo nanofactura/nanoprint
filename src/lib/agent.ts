@@ -73,6 +73,23 @@ export interface PrinterView {
   limitation: 'virtual' | 'easyPrint' | null;
 }
 
+/** Mirrors `Status` in `src-tauri/src/updates.rs`. Times are Unix seconds. */
+export type UpdateStatus =
+  | { state: 'unsupported'; reason: 'development' | 'package' }
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'upToDate'; checkedAt: number }
+  | { state: 'downloading'; version: string }
+  | { state: 'ready'; version: string }
+  | { state: 'failed'; message: string };
+
+/** Mirrors `UpdateView` in `src-tauri/src/updates.rs`. */
+export interface UpdateView {
+  status: UpdateStatus;
+  /** Checks and installs on its own; otherwise only when the user asks. */
+  automatic: boolean;
+}
+
 /** Mirrors `PermissionRequest` in `src-tauri/src/permissions.rs`. */
 export interface PermissionRequest {
   origin: string;
@@ -159,6 +176,24 @@ export function showLicenses(): Promise<void> {
 /** Shows the log folder in the system's file manager. */
 export function openLogFolder(): Promise<void> {
   return invoke('open_log_folder');
+}
+
+export function getUpdateStatus(): Promise<UpdateView> {
+  return invoke<UpdateView>('get_update_status');
+}
+
+/** Checks GitHub for a newer version now and downloads it; resolves when done. */
+export function checkForUpdates(): Promise<UpdateView> {
+  return invoke<UpdateView>('check_for_updates');
+}
+
+/** Installs the downloaded update; NanoPrint closes and starts again. */
+export function installUpdate(): Promise<void> {
+  return invoke('install_update');
+}
+
+export function setAutomaticUpdates(automatic: boolean): Promise<UpdateView> {
+  return invoke<UpdateView>('set_automatic_updates', { automatic });
 }
 
 export function getOnboardingReason(): Promise<OnboardingReason> {

@@ -178,7 +178,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         'Los instaladores de Windows se van a firmar con el programa de SignPath Foundation para proyectos de código abierto. Está en trámite: las versiones actuales todavía no están firmadas. «Free code signing provided by SignPath.io, certificate by SignPath Foundation».',
         'Cada instalador se compila con GitHub Actions a partir del código publicado, y un responsable del proyecto aprueba cada firma.',
         'Autor, revisor y aprobador: Mariano Paulin (@marianopaulin02).',
-        'Privacidad: NanoPrint no transfiere información a otros sistemas de la red salvo que la persona que lo usa lo pida.',
+        'Privacidad: NanoPrint no transfiere información a otros sistemas de la red salvo que la persona que lo usa lo pida. La única excepción, desde la versión 0.2.0, es la búsqueda de actualizaciones en GitHub, que se puede desactivar en Preferencias.',
       ],
     },
     openSource: {
@@ -219,7 +219,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         },
         {
           q: '¿NanoPrint guarda lo que imprimo?',
-          a: 'No. El historial registra durante 30 días la fecha, el sitio, la impresora y el resultado de cada trabajo, nunca su contenido. NanoPrint no envía datos a internet.',
+          a: 'No. El historial registra durante 30 días la fecha, el sitio, la impresora y el resultado de cada trabajo, nunca su contenido. NanoPrint solo se conecta a GitHub para buscar actualizaciones, y eso se puede desactivar.',
         },
         {
           q: '¿Por qué Windows o macOS muestran un aviso al instalar?',

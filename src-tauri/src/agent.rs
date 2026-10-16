@@ -19,6 +19,7 @@ use crate::{
     server::{Agent, Printer, Rejection},
     settings::{Settings, SettingsStore},
     store::{Decision, Event, EventKind, Store},
+    updates::Updates,
 };
 
 /// Print jobs a single site may send per minute.
@@ -168,6 +169,8 @@ impl Agent for AppAgent {
     }
 
     fn print(&self, origin: &str, request: PrintRequest) -> BoxFuture<'static, Result<(), String>> {
+        // An update waits until printing has been quiet for a while.
+        self.app.state::<Updates>().printed();
         let store = Arc::clone(&self.store);
         let cache = Arc::clone(&self.printers);
         let settings = self.settings();

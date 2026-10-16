@@ -7,6 +7,16 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Automatic updates: NanoPrint checks GitHub Releases every six hours, verifies each update's
+  signature and installs it once no job has printed for five minutes. Preferences → Updates turns
+  it off, checks on request and installs at once. Works on Windows, macOS and the Linux AppImage.
+
+### Changed
+
+- The welcome says NanoPrint starts with the computer and where to turn that off.
+
 ## [0.1.0] - 2026-10-16
 
 First public release.

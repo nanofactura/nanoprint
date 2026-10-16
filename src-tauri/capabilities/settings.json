@@ -22,6 +22,10 @@
     "allow-set-printer-shared",
     "allow-print-test-page",
     "allow-show-licenses",
-    "allow-open-log-folder"
+    "allow-open-log-folder",
+    "allow-get-update-status",
+    "allow-check-for-updates",
+    "allow-install-update",
+    "allow-set-automatic-updates"
   ]
 }

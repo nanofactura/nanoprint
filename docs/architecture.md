@@ -31,7 +31,7 @@ time it runs with no window open, so its footprint is one Rust process and a tra
 | Onboarding                      | Done            | First-run welcome; offers to enable secure sites then, when a browser refuses the certificate, and from a panel banner                                                                      |
 | Site identity                   | Done            | Optional name and logo sent by the page, sanitized and re-encoded ([integration.md](integration.md#site-name-and-logo))                                                                     |
 | LAN mode                        | Planned         | Opt-in listener on the LAN with device pairing                                                                                                                                              |
-| Updater                         | Planned         | Signed automatic updates from GitHub Releases                                                                                                                                               |
+| Updater                         | Done            | Signed automatic updates from GitHub Releases, installed when no job is printing; can be turned off                                                                                         |
 
 ## Compatibility with qz-tray.js clients
 
@@ -228,19 +228,25 @@ carries X.509 name constraints limiting it to those loopback names and a path le
   days. On this computer only.
 - **CI:** read-only token by default; the release job alone can write releases and sign provenance.
 
-## Automatic updates (planned)
+## Automatic updates
 
-Uses [`tauri-plugin-updater`](https://v2.tauri.app/plugin/updater/); key custody is described in
-[releasing.md](releasing.md#update-signing-key-when-the-updater-is-enabled):
+[`updates.rs`](../src-tauri/src/updates.rs), with
+[`tauri-plugin-updater`](https://v2.tauri.app/plugin/updater/); key custody is described in
+[releasing.md](releasing.md#update-signing-key):
 
-1. Each release built by GitHub Actions publishes the installers and a `latest.json` manifest on
-   GitHub Releases. Every artifact is signed with the updater private key, stored as a CI secret.
-2. NanoPrint checks the manifest at startup and every few hours.
-3. When a newer version exists it downloads it in the background, verifies the signature against
-   the public key embedded in the app, and installs it when no print job is running. The app then
-   restarts. A failed verification aborts the update.
-4. Windows runs the per-user installer silently; macOS replaces the app bundle; Linux AppImage
-   replaces itself. `.deb` and `.rpm` installs update through their package repositories.
+1. Each release built by GitHub Actions publishes the installers, their signatures and a
+   `latest.json` manifest on GitHub Releases, all signed with the update key (a CI secret).
+2. A minute after it starts and every six hours, NanoPrint reads
+   `releases/latest/download/latest.json`. A newer version is downloaded in the background and its
+   signature checked against the public key embedded in the app (`tauri.conf.json`); a failed
+   verification aborts the update.
+3. It installs once no job has printed for five minutes, so it never interrupts printing, and
+   starts again quietly in the tray (a flag in the settings marks the start after an update).
+   Windows runs the per-user installer in passive mode; macOS replaces the app bundle; the Linux
+   AppImage replaces itself. `.deb` and `.rpm` installs update through their package manager, and
+   development builds never update.
+4. Preferences → Updates shows the state, checks on request and installs a downloaded update at
+   once. Turned off, NanoPrint checks only when asked: it then makes no connection of its own.
 
 Release artifacts are additionally signed for the operating system: Authenticode on Windows (for
 example through SignPath, free for open-source projects), Developer ID plus notarization on macOS.

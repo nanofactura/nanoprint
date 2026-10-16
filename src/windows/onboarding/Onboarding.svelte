@@ -92,12 +92,12 @@
 
   {#if reason === 'welcome'}
     <p class="text-sm">{t('onboarding.welcome.running')}</p>
-    <!-- Starting with the system is a change to the user's computer: say so, and how to undo it. -->
-    <p class="text-sm text-muted-foreground">{t('onboarding.welcome.autostart')}</p>
     {#if platform === 'windows'}
       <!-- Windows hides new tray icons, and apps cannot pin themselves: say where it is. -->
       <p class="text-xs text-muted-foreground">{t('onboarding.welcome.trayWindows')}</p>
     {/if}
+    <!-- Starting with the system is a change to the user's computer: say so, and how to undo it. -->
+    <p class="text-sm text-muted-foreground">{t('onboarding.welcome.autostart')}</p>
     <p class="text-sm text-muted-foreground">{t('onboarding.welcome.permission')}</p>
   {:else}
     <p class="text-sm">{t('onboarding.refused.message')}</p>

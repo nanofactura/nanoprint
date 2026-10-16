@@ -26,7 +26,7 @@ signing certificates. It is compatible with qz-tray.js clients.
 - Listens only on the local machine. Opt-in LAN access with device pairing is planned.
 - Small footprint: a Rust core with native webviews (Tauri 2) instead of a bundled browser.
 - English and Spanish UI that follows the system language.
-- Windows, macOS and Linux. Signed automatic updates are planned.
+- Windows, macOS and Linux, with signed automatic updates (the AppImage on Linux).
 
 ## Installing
 
@@ -77,7 +77,8 @@ by [SignPath.io](https://about.signpath.io/), certificate by
 - Committers and reviewers: Mariano Paulin ([@marianopaulin02](https://github.com/marianopaulin02)).
 - Approvers: Mariano Paulin ([@marianopaulin02](https://github.com/marianopaulin02)).
 - Privacy: see [Privacy](#privacy). NanoPrint does not transfer any information to other networked
-  systems unless specifically requested by the person using it.
+  systems unless specifically requested by the person using it. The one exception, from version
+  0.2.0, is checking GitHub for updates, which can be turned off in Preferences.
 
 ## Printing from your web application
 
@@ -107,8 +108,10 @@ design and [docs/releasing.md](docs/releasing.md) for releases. The website live
 
 ## Privacy
 
-NanoPrint sends nothing to any server. It has no telemetry, analytics or crash reports, and it
-connects to no network service. Web pages reach it only on this computer. Its history (which site
+NanoPrint has no telemetry, analytics or crash reports. The only connection it makes on its own
+is checking GitHub Releases for a newer version, which, like visiting any web page, shows GitHub
+your IP address; turn it off in Preferences → Updates, and NanoPrint connects to nothing. Web
+pages reach it only on this computer. Its history (which site
 printed, when and on which printer, never the content) and its diagnostic log stay on the computer
 and are deleted after 30 days.
 

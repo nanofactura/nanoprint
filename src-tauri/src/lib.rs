@@ -18,6 +18,7 @@ mod tray;
 mod trust;
 mod ui_error;
 mod uninstall;
+mod updates;
 mod url_launch;
 mod window;
 
@@ -60,6 +61,7 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(logs::plugin())
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
@@ -82,68 +84,14 @@ pub fn run() {
             printer_panel::set_printer_shared,
             printer_panel::print_test_page,
             onboarding::get_onboarding_reason,
+            updates::get_update_status,
+            updates::check_for_updates,
+            updates::install_update,
+            updates::set_automatic_updates,
             window::show_licenses,
             window::open_log_folder,
         ])
-        .setup(|app| {
-            // Tray-only app: no Dock icon on macOS.
-            #[cfg(target_os = "macos")]
-            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
-
-            let settings = SettingsStore::load(app.handle())?;
-            if settings.is_first_run() {
-                settings.save()?;
-                enable_autostart(app.handle());
-            } else {
-                refresh_autostart(app.handle());
-            }
-            app.manage(settings);
-
-            // Permissions and history stay on this machine: never in a roaming profile.
-            let data_dir = app.path().app_local_data_dir()?;
-            let store = Arc::new(Store::open(&data_dir.join("nanoprint.db"), None)?);
-            // The credential store may wait for the user to unlock it: ask off the main thread,
-            // so the tray and the print servers start meanwhile.
-            tauri::async_runtime::spawn({
-                let store = Arc::clone(&store);
-                let dir = data_dir.clone();
-                async move {
-                    let key =
-                        tauri::async_runtime::spawn_blocking(move || keys::integrity_key(&dir))
-                            .await;
-                    match key {
-                        Ok(Some(key)) => store.set_key(key),
-                        _ => store.set_key(keys::wait_for_key().await),
-                    }
-                }
-            });
-            let permissions = Arc::new(Permissions::new(Arc::clone(&store), app.handle().clone()));
-            app.manage(Arc::clone(&store));
-            app.manage(Arc::clone(&permissions));
-
-            app.manage(Onboarding::default());
-            // Shared by the print servers and the Printers tab.
-            let printers = Arc::new(PrinterCache::default());
-            app.manage(Arc::clone(&printers));
-            let agent = Arc::new(AppAgent::new(
-                Arc::clone(&store),
-                permissions,
-                printers,
-                app.handle().clone(),
-            ));
-            servers::start(app.handle(), &agent);
-            tauri::async_runtime::spawn(purge_daily(store, app.path().app_log_dir()?));
-
-            tray::create(app.handle())?;
-            url_launch::register(app.handle());
-            // Started with the system or by a page's link: stay in the tray.
-            let quiet =
-                std::env::args().any(|arg| arg == AUTOSTART_FLAG) || url_launch::started_by_link();
-            if !onboarding::welcome(app.handle()) && !quiet {
-                url_launch::show_settings_unless_started_by_link(app.handle());
-            }
-            Ok(())
-        })
+        .setup(setup)
         .build(tauri::generate_context!())
         .expect("failed to build the NanoPrint application");
 
@@ -159,6 +107,73 @@ pub fn run() {
             api.prevent_exit();
         }
     });
+}
+
+/// Opens the stores, starts the print servers, the tray and the updater, and shows the first window
+/// when the user opened NanoPrint.
+fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    // Tray-only app: no Dock icon on macOS.
+    #[cfg(target_os = "macos")]
+    app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
+    let settings = SettingsStore::load(app.handle())?;
+    if settings.is_first_run() {
+        settings.save()?;
+        enable_autostart(app.handle());
+    } else {
+        refresh_autostart(app.handle());
+    }
+    // The start right after installing an update stays in the tray, whatever the arguments.
+    let after_update = settings.get().quiet_next_start;
+    if after_update {
+        settings.update(|settings| settings.quiet_next_start = false)?;
+    }
+    app.manage(settings);
+
+    // Permissions and history stay on this machine: never in a roaming profile.
+    let data_dir = app.path().app_local_data_dir()?;
+    let store = Arc::new(Store::open(&data_dir.join("nanoprint.db"), None)?);
+    // The credential store may wait for the user to unlock it: ask off the main thread,
+    // so the tray and the print servers start meanwhile.
+    tauri::async_runtime::spawn({
+        let store = Arc::clone(&store);
+        let dir = data_dir.clone();
+        async move {
+            let key = tauri::async_runtime::spawn_blocking(move || keys::integrity_key(&dir)).await;
+            match key {
+                Ok(Some(key)) => store.set_key(key),
+                _ => store.set_key(keys::wait_for_key().await),
+            }
+        }
+    });
+    let permissions = Arc::new(Permissions::new(Arc::clone(&store), app.handle().clone()));
+    app.manage(Arc::clone(&store));
+    app.manage(Arc::clone(&permissions));
+
+    app.manage(Onboarding::default());
+    // Shared by the print servers and the Printers tab.
+    let printers = Arc::new(PrinterCache::default());
+    app.manage(Arc::clone(&printers));
+    let agent = Arc::new(AppAgent::new(
+        Arc::clone(&store),
+        permissions,
+        printers,
+        app.handle().clone(),
+    ));
+    updates::start(app.handle());
+    servers::start(app.handle(), &agent);
+    tauri::async_runtime::spawn(purge_daily(store, app.path().app_log_dir()?));
+
+    tray::create(app.handle())?;
+    url_launch::register(app.handle());
+    // Started with the system, by a page's link or after an update: stay in the tray.
+    let quiet = after_update
+        || std::env::args().any(|arg| arg == AUTOSTART_FLAG)
+        || url_launch::started_by_link();
+    if !onboarding::welcome(app.handle()) && !quiet {
+        url_launch::show_settings_unless_started_by_link(app.handle());
+    }
+    Ok(())
 }
 
 /// Starts NanoPrint with the system by default. The user can turn it off in the panel.

@@ -32,6 +32,15 @@
       "desktop": {
         "schemes": ["nanoprint"]
       }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDdEOTI1RkY5QzVFRTM3QjIKUldTeU4rN0YrVitTZlNHRHVnWSt2eVFObmJqdVRDTlI4dTBpNTRmMVJtWEo2TWRyc3dzeFUwYkUK",
+      "endpoints": [
+        "https://github.com/nanofactura/nanoprint/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     }
   },
   "bundle": {
@@ -68,6 +77,7 @@
       "rpm": {
         "depends": ["nss-tools"]
       }
-    }
+    },
+    "createUpdaterArtifacts": true
   }
 }

@@ -18,6 +18,8 @@ const codes = [
   'print_failed',
   'virtual_printer',
   'easy_print_printer',
+  'update_failed',
+  'update_not_ready',
   'port_invalid',
   'ports_equal',
   'unexpected',

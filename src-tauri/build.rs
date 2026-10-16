@@ -21,6 +21,10 @@ fn main() {
             "get_onboarding_reason",
             "show_licenses",
             "open_log_folder",
+            "get_update_status",
+            "check_for_updates",
+            "install_update",
+            "set_automatic_updates",
         ]),
     ))
     .expect("failed to run tauri-build");

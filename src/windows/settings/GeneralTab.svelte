@@ -2,11 +2,16 @@
   import * as autostart from '@tauri-apps/plugin-autostart';
   import { onMount } from 'svelte';
   import {
+    checkForUpdates,
+    getUpdateStatus,
     installCertificate,
+    installUpdate,
     openLogFolder,
     removeCertificate,
+    setAutomaticUpdates,
     showLicenses,
     type ServerStatus,
+    type UpdateView,
   } from '$lib/agent';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
@@ -54,6 +59,31 @@
   let portError = $state('');
   /** New ports were saved: they apply once NanoPrint restarts. */
   let portsSaved = $state(false);
+  let update = $state<UpdateView>();
+  let checking = $state(false);
+
+  const updateText = $derived.by(() => {
+    const status = update?.status;
+    switch (status?.state) {
+      case undefined:
+      case 'unsupported':
+        return '';
+      case 'idle':
+        return t('settings.updates.idle');
+      case 'checking':
+        return t('settings.updates.checking');
+      case 'upToDate':
+        return t('settings.updates.upToDate', { date: formatDate(status.checkedAt) });
+      case 'downloading':
+        return t('settings.updates.downloading', { version: status.version });
+      case 'ready':
+        return update?.automatic
+          ? t('settings.updates.readyAutomatic', { version: status.version })
+          : t('settings.updates.ready', { version: status.version });
+      case 'failed':
+        return t('settings.updates.failed', { message: status.message });
+    }
+  });
 
   const portsChanged = $derived(
     insecurePort.trim() !== portText(settings.insecurePort) ||
@@ -74,6 +104,11 @@
   onMount(() => {
     insecurePort = portText(settings.insecurePort);
     securePort = portText(settings.securePort);
+    getUpdateStatus()
+      .then((view) => (update = view))
+      .catch((e: unknown) => {
+        onerror(t('error.load', { message: describeError(e) }));
+      });
     autostart
       .isEnabled()
       .then((enabled) => (autostartEnabled = enabled))
@@ -97,6 +132,27 @@
     } catch (e) {
       autostartEnabled = !enabled;
       onerror(t('error.save', { message: describeError(e) }));
+    }
+  }
+
+  async function onAutomaticUpdatesChange(automatic: boolean): Promise<void> {
+    try {
+      update = await setAutomaticUpdates(automatic);
+    } catch (e) {
+      onerror(t('error.save', { message: describeError(e) }));
+    }
+  }
+
+  /** Checks and downloads; the command resolves when both are done. */
+  async function checkUpdates(): Promise<void> {
+    checking = true;
+    if (update) update = { ...update, status: { state: 'checking' } };
+    try {
+      update = await checkForUpdates();
+    } catch (e) {
+      onerror(describeError(e));
+    } finally {
+      checking = false;
     }
   }
 
@@ -219,6 +275,56 @@
       {/if}
       {#if onLinux}
         <p class="text-xs text-muted-foreground">{t('settings.https.firefox')}</p>
+      {/if}
+    </Card.Content>
+  </Card.Root>
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>{t('settings.updates.title')}</Card.Title>
+    </Card.Header>
+    <Card.Content class="flex flex-col gap-4">
+      {#if update?.status.state === 'unsupported'}
+        <p class="text-sm text-muted-foreground">
+          {update.status.reason === 'development'
+            ? t('settings.updates.development')
+            : t('settings.updates.package')}
+        </p>
+      {:else if update}
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex flex-col gap-1">
+            <Label for="automatic-updates">{t('settings.updates.automatic')}</Label>
+            <p class="text-sm text-muted-foreground">
+              {t('settings.updates.automaticDescription')}
+            </p>
+          </div>
+          <Switch
+            id="automatic-updates"
+            bind:checked={update.automatic}
+            onCheckedChange={onAutomaticUpdatesChange}
+          />
+        </div>
+        <Separator />
+        <div class="flex items-center justify-between gap-4">
+          <p role="status" class="text-sm text-muted-foreground">{updateText}</p>
+          {#if update.status.state === 'ready'}
+            <Button
+              size="sm"
+              onclick={() => {
+                installUpdate().catch((e: unknown) => {
+                  onerror(describeError(e));
+                });
+              }}>{t('settings.updates.install')}</Button
+            >
+          {:else}
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={checking || update.status.state === 'downloading'}
+              onclick={() => void checkUpdates()}>{t('settings.updates.check')}</Button
+            >
+          {/if}
+        </div>
       {/if}
     </Card.Content>
   </Card.Root>

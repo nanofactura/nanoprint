@@ -80,7 +80,7 @@ Keychain's check for NanoPrint's signing key without a prompt. If it leaks, crea
 replace the secrets; users get one Keychain prompt after the next update. When it expires, in ten
 years, the same applies.
 
-## Update signing key (when the updater is enabled)
+## Update signing key
 
 The updater only installs updates signed with NanoPrint's update key; the matching public key is
 embedded in the app. The private key is the most sensitive secret of the project:
@@ -98,7 +98,10 @@ Custody:
 3. They are added as secrets of the protected `release` environment only:
    `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
 4. The public key goes into `tauri.conf.json` (`plugins.updater.pubkey`); it is not secret.
-5. If the key leaks: publish at once an update, signed with the old key, that embeds a new public
+   NanoPrint's key was generated on 2026-10-16; its public key is the one in `tauri.conf.json`.
+5. `npm run tauri build` on a computer needs the same two variables, because every build signs
+   its updater artifacts.
+6. If the key leaks: publish at once an update, signed with the old key, that embeds a new public
    key; revoke the old secrets; announce it.
 
 ## Repository settings (outside the repository)
