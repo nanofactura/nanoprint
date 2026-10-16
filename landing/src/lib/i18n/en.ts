@@ -28,12 +28,11 @@ export const en: Messages = {
     description:
       'Free, open-source app for Windows, macOS and Linux that prints ESC/POS receipts from your web app to thermal printers, with permission per site. Compatible with qz-tray.js.',
     hero: {
-      eyebrow: 'Free and open source',
       title: 'Print receipts from the web, straight to your thermal printer',
       lead: 'NanoPrint is a lightweight app that connects your web app to the receipt printers of the computer. Every site asks for permission before it prints.',
       platforms: 'Windows · macOS · Linux',
       compatible: 'Compatible with qz-tray.js',
-      videoLabel: 'Animation: a web app prints a receipt through NanoPrint.',
+      videoLabel: 'Play the animation again: a thermal printer prints a NanoPrint receipt.',
     },
     features: {
       title: 'Built for the counter',
@@ -199,8 +198,8 @@ export const en: Messages = {
           a: 'NanoPrint prints to the printers installed on the computer it runs on. Printers redirected by Remote Desktop through "Easy Print" cannot receive receipts: install the printer\'s driver on the remote computer and turn off Easy Print.',
         },
         {
-          q: 'Does it work on phones or tablets?',
-          a: 'No. NanoPrint is for Windows, macOS and Linux computers.',
+          q: 'Can I print from a phone or a tablet?',
+          a: 'Not yet. NanoPrint installs on Windows, macOS and Linux computers and only accepts connections from that same computer. Printing from other devices on the local network, each one approved by you, is planned for a future version.',
         },
       ],
     },

@@ -68,15 +68,9 @@
       class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_0%,color-mix(in_oklab,var(--color-brand)_22%,transparent),transparent_55%),radial-gradient(ellipse_at_0%_100%,color-mix(in_oklab,var(--color-accent)_12%,transparent),transparent_50%)]"
     ></div>
     <div
-      class="relative container-page grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1.05fr_1fr]"
+      class="relative container-page grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1fr_1.2fr]"
     >
       <div class="flex flex-col gap-7">
-        <p
-          class="flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-sm text-accent-soft"
-        >
-          <span class="size-1.5 rounded-full bg-accent" aria-hidden="true"></span>
-          {home.hero.eyebrow}
-        </p>
         <h1
           class="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.4rem] lg:leading-[1.08]"
         >
@@ -90,7 +84,7 @@
           <li class="rounded-md border border-line px-2.5 py-1">GPL-3.0</li>
         </ul>
       </div>
-      <HeroMedia {lang} />
+      <div class="lg:-mr-8 xl:-mr-16"><HeroMedia {lang} /></div>
     </div>
   </section>
 

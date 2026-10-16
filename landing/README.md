@@ -47,17 +47,24 @@ token; git ignores `.env`.
 
 ## Hero video
 
-The home page's hero plays `static/media/hero.webm` and `static/media/hero.mp4` in a loop, muted, in
-a 5:4 frame (`object-cover` crops other shapes). Until the files exist, a drawing of a web page
-printing a receipt shows instead, and the build only warns. Keep each file under a few megabytes
-(Cloudflare Pages accepts up to 25 MiB per file). From a source video:
+The home page's hero plays a 16:9 animation once, muted and without controls, and stops on its last
+frame; clicking it (or pressing Enter on it) plays it again. Visitors who ask their system for
+reduced motion see the last frame and can still play it.
+
+The files live in the repository, in `static/media/`: `hero.webm` (VP9, for most browsers),
+`hero.mp4` (H.264, for the rest) and `hero-poster.webp` (the first frame, shown until the video
+starts). None has an audio track. The source video has no transparency, so instead its dark
+background is graded to the page's color (`#0b0d14`) and the edges fade out with a CSS mask.
+Keep each file small (Cloudflare Pages accepts up to 25 MiB per file). From a new source video:
 
 ```sh
-ffmpeg -i source.mov -an -vf "scale=1200:-2" -c:v libvpx-vp9 -crf 34 -b:v 0 static/media/hero.webm
-ffmpeg -i source.mov -an -vf "scale=1200:-2" -c:v libx264 -crf 24 -preset slow -pix_fmt yuv420p -movflags +faststart static/media/hero.mp4
+GRADE="curves=all='0/0 0.12/0.055 0.5/0.47 1/1',colorbalance=rs=-0.02:bs=0.035"
+ffmpeg -i source.mp4 -an -vf "$GRADE" -c:v libvpx-vp9 -crf 34 -b:v 0 -row-mt 1 static/media/hero.webm
+ffmpeg -i source.mp4 -an -vf "$GRADE" -c:v libx264 -crf 24 -preset slow -pix_fmt yuv420p -movflags +faststart static/media/hero.mp4
+ffmpeg -i source.mp4 -frames:v 1 -vf "$GRADE" -c:v libwebp -quality 82 static/media/hero-poster.webp
 ```
 
-Visitors who ask their system for reduced motion see the first frame only.
+The grade suits a background near `#1c1c1c`; adjust the curve for another one.
 
 ## Search engines and AI assistants
 

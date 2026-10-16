@@ -10,17 +10,6 @@ export default {
   kit: {
     // Every page is rendered to HTML at build time: Cloudflare Pages serves files only.
     adapter: adapter({ strict: true }),
-    prerender: {
-      handleHttpError: ({ path, message }) => {
-        // The hero video is added by hand to static/media/ (see README.md); the page shows a
-        // drawing until it is there.
-        if (path.startsWith('/media/')) {
-          console.warn(`missing: ${message}`);
-          return;
-        }
-        throw new Error(message);
-      },
-    },
     // Each prerendered page carries a CSP with the hashes of its own inline scripts. Headers that
     // a <meta> cannot set (frame-ancestors) are in static/_headers.
     csp: {

@@ -62,7 +62,6 @@ export interface Messages {
     title: string;
     description: string;
     hero: {
-      eyebrow: string;
       title: string;
       lead: string;
       platforms: string;

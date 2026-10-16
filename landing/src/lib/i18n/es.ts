@@ -28,12 +28,12 @@ export const es: Messages = {
     description:
       'Programa gratuito y de código abierto para Windows, macOS y Linux que imprime tickets ESC/POS desde tu sistema web en impresoras térmicas, con permiso por sitio. Compatible con qz-tray.js.',
     hero: {
-      eyebrow: 'Gratis y de código abierto',
       title: 'Imprimí tickets desde la web, directo a tu impresora térmica',
       lead: 'NanoPrint es un programa liviano que conecta tu sistema web con las impresoras de tickets de la computadora. Cada sitio pide permiso antes de imprimir.',
       platforms: 'Windows · macOS · Linux',
       compatible: 'Compatible con qz-tray.js',
-      videoLabel: 'Animación: un sistema web imprime un ticket a través de NanoPrint.',
+      videoLabel:
+        'Ver de nuevo la animación: una impresora térmica imprime un ticket de NanoPrint.',
     },
     features: {
       title: 'Hecho para el mostrador',
@@ -199,8 +199,8 @@ export const es: Messages = {
           a: 'NanoPrint imprime en las impresoras instaladas en la computadora donde corre. Las impresoras redirigidas por Escritorio remoto con «Easy Print» no pueden recibir tickets: instalá el driver de la impresora en la computadora remota y desactivá Easy Print.',
         },
         {
-          q: '¿Funciona en celulares o tablets?',
-          a: 'No. NanoPrint es para computadoras con Windows, macOS o Linux.',
+          q: '¿Puedo imprimir desde un celular o una tablet?',
+          a: 'Todavía no. NanoPrint se instala en computadoras con Windows, macOS o Linux y solo acepta conexiones de esa misma computadora. Imprimir desde otros dispositivos de la red local, con tu aprobación para cada uno, está planificado para una próxima versión.',
         },
       ],
     },
