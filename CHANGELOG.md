@@ -7,6 +7,10 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-16
+
+First public release.
+
 ### Added
 
 - Tray app for Windows, macOS and Linux with a settings panel in English and Spanish that follows
@@ -33,4 +37,5 @@ and versions follow [Semantic Versioning](https://semver.org/).
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/commits/main
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/nanofactura/nanoprint/releases/tag/v0.1.0
