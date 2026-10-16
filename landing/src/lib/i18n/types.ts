@@ -57,6 +57,9 @@ export interface Messages {
     otherPlatforms: string;
     previousVersions: string;
     desktopOnly: string;
+    starting: string;
+    nextSteps: string;
+    retry: string;
   };
   home: {
     title: string;
@@ -65,12 +68,13 @@ export interface Messages {
       title: string;
       lead: string;
       platforms: string;
-      compatible: string;
+      free: string;
+      openSource: string;
       videoLabel: string;
     };
     features: { title: string; lead: string; items: [Feature, Feature, Feature] };
     how: { title: string; items: Step[] };
-    compat: { title: string; text: string; link: string; note: string };
+    integrate: { title: string; text: string; points: string[]; button: string; code: string };
     printers: {
       title: string;
       text: string;
@@ -129,6 +133,7 @@ export interface Messages {
         jobName: string;
       };
     };
+    adopt: { title: string; lead: string; items: string[]; issues: string };
     requirements: { title: string; items: string[] };
     more: string;
   };

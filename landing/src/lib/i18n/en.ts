@@ -22,21 +22,25 @@ export const en: Messages = {
     otherPlatforms: 'Other systems',
     previousVersions: 'Previous versions',
     desktopOnly: 'NanoPrint runs on Windows, macOS and Linux computers.',
+    starting: 'Your download is starting…',
+    nextSteps: 'When the download finishes:',
+    retry: "Didn't start? Download again",
   },
   home: {
-    title: 'NanoPrint: print receipts from the web to your thermal printer',
+    title: 'NanoPrint: print receipts and kitchen orders from the web to your thermal printer',
     description:
-      'Free, open-source app for Windows, macOS and Linux that prints ESC/POS receipts from your web app to thermal printers, with permission per site. Compatible with qz-tray.js.',
+      'Free, open-source app for Windows, macOS and Linux that prints receipts and kitchen orders from your web app to ESC/POS thermal printers. Each site asks for permission once, not on every receipt.',
     hero: {
       title: 'Print receipts from the web, straight to your thermal printer',
-      lead: 'NanoPrint is a lightweight app that connects your web app to the receipt printers of the computer. Every site asks for permission before it prints.',
+      lead: 'NanoPrint is a free, lightweight app that connects your web app to the receipt printers of the computer. Each site asks for permission once, not on every receipt.',
       platforms: 'Windows · macOS · Linux',
-      compatible: 'Compatible with qz-tray.js',
+      free: 'Free',
+      openSource: 'Open source',
       videoLabel: 'Play the animation again: a thermal printer prints a NanoPrint receipt.',
     },
     features: {
       title: 'Built for the counter',
-      lead: 'What a shop needs: receipts that print fast, with no odd setup and no risk.',
+      lead: 'What a shop or a kitchen needs: receipts and orders that print fast, with no odd setup and no risk.',
       items: [
         {
           title: 'Cross-platform',
@@ -48,17 +52,17 @@ export const en: Messages = {
           ],
         },
         {
-          title: 'Lightweight',
-          text: 'An installer of a few megabytes. It lives in the system tray and starts with the computer.',
+          title: 'Lightweight and free',
+          text: 'An installer of a few megabytes, free and with no sign-up. It lives in the system tray and starts with the computer.',
           points: [
+            'No cost, subscriptions or usage limits',
             'No Java or other software needed',
             'Installs without administrator rights on Windows',
-            'In English and Spanish',
           ],
         },
         {
-          title: 'Secure',
-          text: 'No site prints without your permission, and what you print never leaves your computer.',
+          title: 'Secure, not annoying',
+          text: 'No site prints without your permission. You give it once per site, and it does not ask again on every receipt.',
           points: [
             'Permission per site, revocable at any time',
             'Accepts connections from this computer only',
@@ -76,23 +80,33 @@ export const en: Messages = {
         },
         {
           title: 'Open your web app',
-          text: 'The first time a site wants to print, NanoPrint asks whether you allow it.',
+          text: 'The first time a site wants to print, NanoPrint asks. You answer once: it does not ask on every receipt.',
         },
         {
           title: 'Print',
-          text: "The receipt goes straight to the printer, without the browser's print dialog.",
+          text: "The receipt or kitchen order goes straight to the printer, without the browser's print dialog.",
         },
       ],
     },
-    compat: {
-      title: 'Does your app use QZ Tray?',
-      text: 'NanoPrint speaks the same protocol as qz-tray.js for raw printing. If your web app already prints receipts with qz-tray.js, it usually works without code changes.',
-      link: 'Details for developers',
-      note: 'QZ Tray is a trademark of QZ Industries, LLC. NanoPrint is an independent project, not affiliated with QZ Industries.',
+    integrate: {
+      title: 'Does your web app print receipts or kitchen orders?',
+      text: 'Offer NanoPrint to your users: they install it for free, allow your site once, and your receipts go straight to their printer.',
+      points: [
+        'A few lines of JavaScript, with well-known libraries',
+        'If your app already uses qz-tray.js, it works unchanged',
+        'Free for you and your users, with no per-seat licenses',
+        'Your app can have any license: NanoPrint is a separate program',
+      ],
+      button: 'Developer guide',
+      code: `import qz from 'qz-tray';
+
+await qz.websocket.connect();
+const config = qz.configs.create('POS-58');
+await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data }]);`,
     },
     printers: {
       title: 'Supported printers',
-      text: 'Thermal receipt printers that understand ESC/POS, 58 or 80 mm wide, connected by USB or over the network and installed in the system. ESC/POS is the language of most receipt printers.',
+      text: 'Thermal receipt and kitchen printers that understand ESC/POS, 58 or 80 mm wide, connected by USB or over the network and installed in the system. ESC/POS is the language of most receipt printers.',
       driversTitle: 'Do I need a driver?',
       drivers: [
         {
@@ -167,15 +181,15 @@ export const en: Messages = {
       items: [
         {
           q: 'Is NanoPrint free?',
-          a: 'Yes, for personal and commercial use. It is free software under the GPL-3.0 license.',
+          a: 'Yes, completely: for personal and commercial use, with no sign-up, subscriptions or limits. It is free software under the GPL-3.0 license.',
         },
         {
-          q: 'Does it work with apps built for QZ Tray?',
-          a: "Yes, for raw receipt printing: NanoPrint implements the qz-tray.js protocol. QZ Tray's other features (files, serial ports, USB, PDF or HTML printing) are not available.",
+          q: 'Will it ask for permission every time I print?',
+          a: 'No. NanoPrint asks once per site. For secure (https) sites the answer is kept; for sites without a padlock (http) it asks again when NanoPrint restarts, because another computer on the network could pose as them.',
         },
         {
           q: 'Which printers work?',
-          a: "ESC/POS thermal receipt printers, 58 or 80 mm, installed in the system and connected by USB or over the network. NanoPrint's panel prints a test page and chooses which printers sites can see.",
+          a: "ESC/POS thermal receipt and kitchen printers, 58 or 80 mm, installed in the system and connected by USB or over the network. NanoPrint's panel prints a test page and chooses which printers sites can see.",
         },
         {
           q: 'Do I need a special driver?',
@@ -194,6 +208,14 @@ export const en: Messages = {
           a: 'Because the installer does not have a commercial digital signature yet, as is common for new open-source projects. You can verify that each installer was built from the source published on GitHub.',
         },
         {
+          q: 'Does it work with apps that print through QZ Tray today?',
+          a: "Usually yes: NanoPrint understands the qz-tray.js protocol for printing receipts, so those apps tend to work unchanged. QZ Tray's features beyond receipt printing are not included.",
+        },
+        {
+          q: 'Can I build NanoPrint into my commercial app?',
+          a: 'Yes. Your app only talks to NanoPrint, which is a separate program, so it can have any license. The developer page explains how to integrate it.',
+        },
+        {
           q: 'Does it work over Remote Desktop?',
           a: 'NanoPrint prints to the printers installed on the computer it runs on. Printers redirected by Remote Desktop through "Easy Print" cannot receive receipts: install the printer\'s driver on the remote computer and turn off Easy Print.',
         },
@@ -205,13 +227,13 @@ export const en: Messages = {
     },
   },
   developers: {
-    title: 'NanoPrint for developers: print ESC/POS receipts from JavaScript',
+    title: 'NanoPrint for developers: print ESC/POS receipts and kitchen orders from JavaScript',
     description:
-      'How to print receipts on thermal printers from a web page with NanoPrint and qz-tray.js: compatible libraries, a code example and a live demo.',
+      'How to print receipts and kitchen orders on thermal printers from your web app with NanoPrint: compatible JavaScript libraries, a code example and a live demo.',
     hero: {
       eyebrow: 'For developers',
       title: 'Print ESC/POS receipts from JavaScript',
-      lead: 'NanoPrint has no SDK of its own: your page uses qz-tray.js, the client of QZ Tray, and sends ESC/POS bytes built with any encoder. If your app already prints with qz-tray.js, nothing needs to change.',
+      lead: 'Your page connects to NanoPrint through qz-tray.js and sends it ESC/POS receipts built with the encoder you prefer. If your app already uses qz-tray.js, it works unchanged.',
       guide: 'Integration guide',
       protocol: 'Protocol',
     },
@@ -318,6 +340,17 @@ qz.security.setCertificatePromise((resolve) => {
         thanks: 'Thanks for trying NanoPrint!',
         jobName: 'Sample receipt',
       },
+    },
+    adopt: {
+      title: 'Offer it to your users',
+      lead: 'NanoPrint is meant to be used by other projects.',
+      items: [
+        "Link to `nanoprint.nanofactura.com` for the download: it detects each user's system and walks them through the installation.",
+        'It is free for you and your users: no per-seat licenses, subscriptions or usage limits.',
+        'Your app only talks to NanoPrint, a separate program, so it can have any license, including a proprietary one.',
+        'If something is missing or broken, tell us on GitHub: real integrations help us decide what comes next.',
+      ],
+      issues: 'Open an issue on GitHub',
     },
     requirements: {
       title: 'Before you integrate',

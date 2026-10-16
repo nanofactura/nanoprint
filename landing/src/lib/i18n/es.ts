@@ -22,22 +22,26 @@ export const es: Messages = {
     otherPlatforms: 'Otros sistemas',
     previousVersions: 'Versiones anteriores',
     desktopOnly: 'NanoPrint es para computadoras con Windows, macOS o Linux.',
+    starting: 'Tu descarga está comenzando…',
+    nextSteps: 'Cuando termine la descarga:',
+    retry: '¿No empezó? Descargar de nuevo',
   },
   home: {
-    title: 'NanoPrint: imprimí tickets desde la web en tu impresora térmica',
+    title: 'NanoPrint: imprimí tickets y comandas desde la web en tu impresora térmica',
     description:
-      'Programa gratuito y de código abierto para Windows, macOS y Linux que imprime tickets ESC/POS desde tu sistema web en impresoras térmicas, con permiso por sitio. Compatible con qz-tray.js.',
+      'Programa gratuito y de código abierto para Windows, macOS y Linux que imprime tickets y comandas desde tu sistema web en impresoras térmicas ESC/POS. Cada sitio pide permiso una vez, no en cada ticket.',
     hero: {
-      title: 'Imprimí tickets desde la web, directo a tu impresora térmica',
-      lead: 'NanoPrint es un programa liviano que conecta tu sistema web con las impresoras de tickets de la computadora. Cada sitio pide permiso antes de imprimir.',
+      title: 'Imprimí tickets y comandas desde la web, directo a tu impresora térmica',
+      lead: 'NanoPrint es un programa gratuito y liviano que conecta tu sistema web con las impresoras de tickets de la computadora. Cada sitio pide permiso una vez, no en cada ticket.',
       platforms: 'Windows · macOS · Linux',
-      compatible: 'Compatible con qz-tray.js',
+      free: 'Gratis',
+      openSource: 'Código abierto',
       videoLabel:
         'Ver de nuevo la animación: una impresora térmica imprime un ticket de NanoPrint.',
     },
     features: {
       title: 'Hecho para el mostrador',
-      lead: 'Lo que necesita un comercio: que el ticket salga rápido, sin configuraciones raras y sin riesgos.',
+      lead: 'Lo que necesita un comercio o una cocina: que el ticket o la comanda salga rápido, sin configuraciones raras y sin riesgos.',
       items: [
         {
           title: 'Multiplataforma',
@@ -49,17 +53,17 @@ export const es: Messages = {
           ],
         },
         {
-          title: 'Liviano',
-          text: 'Un instalador de pocos megas que se queda en la bandeja del sistema y arranca con la computadora.',
+          title: 'Liviano y gratuito',
+          text: 'Un instalador de pocos megas, gratis y sin registro, que se queda en la bandeja del sistema y arranca con la computadora.',
           points: [
+            'Sin costo, suscripciones ni límites de uso',
             'No necesita Java ni otros programas',
             'En Windows se instala sin permisos de administrador',
-            'En español y en inglés',
           ],
         },
         {
-          title: 'Seguro',
-          text: 'Ningún sitio imprime sin tu permiso, y lo que imprimís no sale de tu computadora.',
+          title: 'Seguro, sin molestias',
+          text: 'Ningún sitio imprime sin tu permiso. Lo das una vez por sitio y no te vuelve a preguntar en cada ticket.',
           points: [
             'Permiso por sitio, revocable en cualquier momento',
             'Solo acepta conexiones de esta misma computadora',
@@ -77,23 +81,33 @@ export const es: Messages = {
         },
         {
           title: 'Abrí tu sistema web',
-          text: 'La primera vez que un sitio quiere imprimir, NanoPrint te pregunta si lo permitís.',
+          text: 'La primera vez que un sitio quiere imprimir, NanoPrint te pregunta. Respondés una vez y listo: no pregunta en cada ticket.',
         },
         {
           title: 'Imprimí',
-          text: 'El ticket sale directo en la impresora, sin el diálogo de impresión del navegador.',
+          text: 'El ticket o la comanda sale directo en la impresora, sin el diálogo de impresión del navegador.',
         },
       ],
     },
-    compat: {
-      title: '¿Tu sistema ya usa QZ Tray?',
-      text: 'NanoPrint entiende el mismo protocolo que qz-tray.js para la impresión directa (raw). Si tu sistema web ya imprime tickets con qz-tray.js, en general funciona sin cambiar código.',
-      link: 'Detalles para desarrolladores',
-      note: 'QZ Tray es una marca de QZ Industries, LLC. NanoPrint es un proyecto independiente, sin relación con QZ Industries.',
+    integrate: {
+      title: '¿Tenés un sistema web que imprime tickets o comandas?',
+      text: 'Ofrecé NanoPrint a tus usuarios: lo instalan gratis, autorizan tu sitio una vez y tus tickets salen directo en su impresora.',
+      points: [
+        'Unas pocas líneas de JavaScript, con librerías conocidas',
+        'Si tu sistema ya usa qz-tray.js, funciona sin cambios',
+        'Gratis para vos y para tus usuarios, sin licencias por puesto',
+        'Tu sistema puede tener cualquier licencia: NanoPrint es un programa aparte',
+      ],
+      button: 'Guía para desarrolladores',
+      code: `import qz from 'qz-tray';
+
+await qz.websocket.connect();
+const config = qz.configs.create('POS-58');
+await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data }]);`,
     },
     printers: {
       title: 'Impresoras compatibles',
-      text: 'Impresoras térmicas de tickets que entienden ESC/POS, de 58 u 80 mm, conectadas por USB o por red e instaladas en el sistema. ESC/POS es el lenguaje de la gran mayoría de las impresoras de tickets.',
+      text: 'Impresoras térmicas de tickets y comandas que entienden ESC/POS, de 58 u 80 mm, conectadas por USB o por red e instaladas en el sistema. ESC/POS es el lenguaje de la gran mayoría de las impresoras de tickets.',
       driversTitle: '¿Hace falta un driver?',
       drivers: [
         {
@@ -138,7 +152,7 @@ export const es: Messages = {
       },
       linux: {
         name: 'Linux',
-        requirements: '64 bits: Ubuntu 22.04, Debian 12, Fedora 38 o posteriores',
+        requirements: '64 bits: Ubuntu 22.04, Debian 12, Fedora 38+',
         files: [
           { label: '.deb (Ubuntu, Debian)', download: 'deb' },
           { label: '.rpm (Fedora, openSUSE)', download: 'rpm' },
@@ -168,15 +182,15 @@ export const es: Messages = {
       items: [
         {
           q: '¿NanoPrint es gratis?',
-          a: 'Sí, para uso personal y comercial. Es software libre bajo la licencia GPL-3.0.',
+          a: 'Sí, completamente: para uso personal y comercial, sin registro, suscripciones ni límites. Es software libre bajo la licencia GPL-3.0.',
         },
         {
-          q: '¿Funciona con sistemas que usan QZ Tray?',
-          a: 'Sí, para la impresión directa de tickets: NanoPrint implementa el protocolo de qz-tray.js. Las funciones de QZ Tray que no son impresión directa (archivos, puertos serie, USB, impresión de PDF o HTML) no están disponibles.',
+          q: '¿Me va a pedir permiso cada vez que imprima?',
+          a: 'No. NanoPrint pregunta una sola vez por sitio. En los sitios seguros (https) la respuesta queda guardada; en los sitios sin candado (http) vuelve a preguntar cuando NanoPrint se reinicia, porque otro equipo de la red podría hacerse pasar por ellos.',
         },
         {
           q: '¿Qué impresoras funcionan?',
-          a: 'Impresoras térmicas de tickets ESC/POS de 58 u 80 mm instaladas en el sistema, por USB o por red. Desde el panel de NanoPrint podés imprimir una página de prueba y elegir qué impresoras ve cada sitio.',
+          a: 'Impresoras térmicas de tickets y comandas ESC/POS de 58 u 80 mm instaladas en el sistema, por USB o por red. Desde el panel de NanoPrint podés imprimir una página de prueba y elegir qué impresoras ve cada sitio.',
         },
         {
           q: '¿Tengo que instalar un driver especial?',
@@ -195,6 +209,14 @@ export const es: Messages = {
           a: 'Porque el instalador todavía no tiene una firma digital comercial, algo habitual en proyectos de código abierto nuevos. Podés verificar que cada instalador se compiló a partir del código publicado en GitHub.',
         },
         {
+          q: '¿Sirve para sistemas que hoy imprimen con QZ Tray?',
+          a: 'En general sí: NanoPrint entiende el protocolo de qz-tray.js para imprimir tickets, así que esos sistemas suelen funcionar sin cambios. Las funciones de QZ Tray que no son impresión de tickets no están incluidas.',
+        },
+        {
+          q: '¿Puedo integrar NanoPrint en mi sistema comercial?',
+          a: 'Sí. Tu sistema solo se comunica con NanoPrint, que es un programa aparte, así que puede tener cualquier licencia. La página para desarrolladores explica cómo integrarlo.',
+        },
+        {
           q: '¿Funciona por Escritorio remoto?',
           a: 'NanoPrint imprime en las impresoras instaladas en la computadora donde corre. Las impresoras redirigidas por Escritorio remoto con «Easy Print» no pueden recibir tickets: instalá el driver de la impresora en la computadora remota y desactivá Easy Print.',
         },
@@ -206,13 +228,13 @@ export const es: Messages = {
     },
   },
   developers: {
-    title: 'NanoPrint para desarrolladores: imprimir tickets ESC/POS desde JavaScript',
+    title: 'NanoPrint para desarrolladores: imprimir tickets y comandas ESC/POS desde JavaScript',
     description:
-      'Cómo imprimir tickets en impresoras térmicas desde una página web con NanoPrint y qz-tray.js: librerías compatibles, ejemplo de código y una demo en vivo.',
+      'Cómo imprimir tickets y comandas en impresoras térmicas desde tu sistema web con NanoPrint: librerías JavaScript compatibles, ejemplo de código y una demo en vivo.',
     hero: {
       eyebrow: 'Para desarrolladores',
-      title: 'Imprimí tickets ESC/POS desde JavaScript',
-      lead: 'NanoPrint no tiene un SDK propio: tu página usa qz-tray.js, el cliente de QZ Tray, y envía bytes ESC/POS armados con cualquier encoder. Si tu sistema ya imprime con qz-tray.js, no hace falta cambiar nada.',
+      title: 'Imprimí tickets y comandas ESC/POS desde JavaScript',
+      lead: 'Tu página se conecta con NanoPrint a través de qz-tray.js y le envía tickets ESC/POS armados con el encoder que prefieras. Si tu sistema ya usa qz-tray.js, funciona sin cambios.',
       guide: 'Guía de integración',
       protocol: 'Protocolo',
     },
@@ -319,6 +341,17 @@ qz.security.setCertificatePromise((resolve) => {
         thanks: '¡Gracias por probar NanoPrint!',
         jobName: 'Ticket de ejemplo',
       },
+    },
+    adopt: {
+      title: 'Ofrecelo a tus usuarios',
+      lead: 'NanoPrint está pensado para que otros proyectos lo usen.',
+      items: [
+        'Enlazá a `nanoprint.nanofactura.com` para la descarga: detecta el sistema de cada usuario y explica la instalación paso a paso.',
+        'Es gratis para vos y para tus usuarios: sin licencias por puesto, suscripciones ni límites de uso.',
+        'Tu sistema solo se comunica con NanoPrint, un programa aparte, así que puede tener cualquier licencia, incluso privativa.',
+        'Si te falta algo o encontrás un problema, contanos en GitHub: las integraciones reales nos ayudan a decidir qué sigue.',
+      ],
+      issues: 'Abrir un issue en GitHub',
     },
     requirements: {
       title: 'Antes de integrar',

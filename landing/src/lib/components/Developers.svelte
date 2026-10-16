@@ -8,7 +8,7 @@
   import Rich from '$lib/components/Rich.svelte';
   import Seo from '$lib/components/Seo.svelte';
   import { messages, pages, type Lang } from '$lib/i18n';
-  import { docs, NANOFACTURA_URL, SITE_URL } from '$lib/site';
+  import { docs, NANOFACTURA_URL, REPO_URL, SITE_URL } from '$lib/site';
 
   let { lang }: { lang: Lang } = $props();
 
@@ -114,6 +114,26 @@
     <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{dev.demo.title}</h2>
     <p class="mt-3 mb-6 text-muted">{dev.demo.lead}</p>
     <PrintDemo {lang} />
+  </section>
+
+  <section id="adopt" class="container-page max-w-4xl py-12">
+    <div
+      class="rounded-2xl border border-brand/30 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--color-brand)_14%,transparent),transparent_60%)] p-6 sm:p-8"
+    >
+      <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{dev.adopt.title}</h2>
+      <p class="mt-3 text-muted">{dev.adopt.lead}</p>
+      <ul class="mt-6 flex flex-col gap-3">
+        {#each dev.adopt.items as item (item)}
+          <li class="flex gap-3">
+            <Check class="mt-1 size-4 shrink-0 text-accent" aria-hidden="true" />
+            <span><Rich text={item} /></span>
+          </li>
+        {/each}
+      </ul>
+      <a href={`${REPO_URL}/issues`} class="mt-6 inline-flex items-center gap-1 link"
+        >{dev.adopt.issues}<ArrowUpRight class="size-4" aria-hidden="true" /></a
+      >
+    </div>
   </section>
 
   <section class="container-page max-w-4xl py-12">

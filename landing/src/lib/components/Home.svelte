@@ -6,6 +6,7 @@
   import Feather from '@lucide/svelte/icons/feather';
   import Monitor from '@lucide/svelte/icons/monitor';
   import ShieldCheck from '@lucide/svelte/icons/shield-check';
+  import CodeBlock from '$lib/components/CodeBlock.svelte';
   import DownloadButton from '$lib/components/DownloadButton.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Header from '$lib/components/Header.svelte';
@@ -68,7 +69,7 @@
       class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_0%,color-mix(in_oklab,var(--color-brand)_22%,transparent),transparent_55%),radial-gradient(ellipse_at_0%_100%,color-mix(in_oklab,var(--color-accent)_12%,transparent),transparent_50%)]"
     ></div>
     <div
-      class="relative container-page grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1fr_1.2fr]"
+      class="relative container-page grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1fr_1.2fr] lg:items-start"
     >
       <div class="flex flex-col gap-7">
         <h1
@@ -80,11 +81,11 @@
         <DownloadButton {lang} />
         <ul class="flex flex-wrap gap-2 text-xs text-muted">
           <li class="rounded-md border border-line px-2.5 py-1">{home.hero.platforms}</li>
-          <li class="rounded-md border border-line px-2.5 py-1">{home.hero.compatible}</li>
-          <li class="rounded-md border border-line px-2.5 py-1">GPL-3.0</li>
+          <li class="rounded-md border border-line px-2.5 py-1">{home.hero.free}</li>
+          <li class="rounded-md border border-line px-2.5 py-1">{home.hero.openSource}</li>
         </ul>
       </div>
-      <div class="lg:-mr-8 xl:-mr-16"><HeroMedia {lang} /></div>
+      <div class="lg:-mr-8 lg:pt-10 xl:-mr-16"><HeroMedia {lang} /></div>
     </div>
   </section>
 
@@ -137,21 +138,30 @@
     </div>
   </section>
 
-  <!-- QZ Tray compatibility -->
-  <section class="container-page py-20">
+  <!-- For developers: other projects can offer NanoPrint to their users -->
+  <section id="developers" class="container-page py-20">
     <div
-      class="rounded-2xl border border-brand/30 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--color-brand)_14%,transparent),transparent_60%)] p-8 sm:p-10"
+      class="grid items-center gap-10 rounded-2xl border border-brand/30 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--color-brand)_14%,transparent),transparent_60%)] p-6 sm:p-10 lg:grid-cols-[1fr_1.1fr]"
     >
-      <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{home.compat.title}</h2>
-      <p class="mt-4 max-w-3xl text-lg text-muted">{home.compat.text}</p>
-      <a
-        href={pages.developers[lang]}
-        class="mt-6 inline-flex items-center gap-2 font-medium text-brand-soft hover:underline"
-      >
-        {home.compat.link}
-        <ArrowRight class="size-4" aria-hidden="true" />
-      </a>
-      <p class="mt-6 text-xs text-muted/80">{home.compat.note}</p>
+      <div>
+        <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{home.integrate.title}</h2>
+        <p class="mt-4 text-lg text-muted">{home.integrate.text}</p>
+        <ul class="mt-6 flex flex-col gap-2 text-sm">
+          {#each home.integrate.points as point (point)}
+            <li class="flex gap-2">
+              <Check class="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />{point}
+            </li>
+          {/each}
+        </ul>
+        <a
+          href={pages.developers[lang]}
+          class="mt-8 inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 font-semibold text-white transition-colors hover:bg-brand-hover"
+        >
+          {home.integrate.button}
+          <ArrowRight class="size-4" aria-hidden="true" />
+        </a>
+      </div>
+      <div class="min-w-0"><CodeBlock code={home.integrate.code} {lang} /></div>
     </div>
   </section>
 

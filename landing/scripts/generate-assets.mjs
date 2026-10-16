@@ -91,16 +91,16 @@ function socialImage(/** @type {string} */ tagline, /** @type {string} */ detail
 
 render(
   socialImage(
-    ['Imprimí tickets desde la web', 'en tu impresora térmica'],
-    'Gratis y de código abierto · Windows, macOS y Linux',
+    ['Imprimí tickets y comandas', 'en tu impresora térmica'],
+    'Desde tu sistema web · Gratis · Windows, macOS y Linux',
   ),
   1200,
   'og-es.png',
 );
 render(
   socialImage(
-    ['Print receipts from the web', 'to your thermal printer'],
-    'Free and open source · Windows, macOS and Linux',
+    ['Print receipts and orders', 'to your thermal printer'],
+    'From your web app · Free · Windows, macOS and Linux',
   ),
   1200,
   'og-en.png',
