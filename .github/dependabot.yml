@@ -38,6 +38,10 @@ updates:
     groups:
       cargo:
         patterns: ['*']
+    ignore:
+      # Does not build on Linux; see the pin in src-tauri/Cargo.toml.
+      - dependency-name: tauri-plugin-deep-link
+        versions: ['2.6.2']
 
   - package-ecosystem: github-actions
     directory: /
