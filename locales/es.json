@@ -77,6 +77,7 @@
   "settings.secureBanner": "Los sitios seguros (https) todavía no pueden imprimir.",
   "onboarding.welcome.title": "Te damos la bienvenida a NanoPrint",
   "onboarding.welcome.running": "NanoPrint ya está funcionando. Lo encontrás en la bandeja del sistema, junto al reloj.",
+  "onboarding.welcome.autostart": "Se inicia junto con la computadora, para estar listo cuando lo necesites. Podés desactivarlo en Preferencias.",
   "onboarding.welcome.permission": "Cuando una página quiera imprimir, NanoPrint te va a pedir permiso primero.",
   "onboarding.refused.title": "Falta un paso para imprimir",
   "onboarding.refused.message": "Una página segura intentó imprimir, pero los sitios seguros todavía no están activados.",

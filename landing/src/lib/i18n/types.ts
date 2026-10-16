@@ -97,6 +97,7 @@ export interface Messages {
       verifyText: string;
     };
     openSource: { title: string; text: string; button: string };
+    signing: { title: string; items: string[] };
     faq: { title: string; items: Faq[] };
   };
   developers: {
@@ -148,6 +149,7 @@ export interface Messages {
       security: string;
       licenses: string;
       developers: string;
+      signing: string;
     };
     legal: string[];
     privacy: string;

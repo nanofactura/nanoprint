@@ -99,6 +99,16 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: NanoPrint ${{ github.ref_name }}
+          # The download page of each release; SignPath requires the code signing policy on it.
+          releaseBody: |
+            Download the installer for your system below. Installation steps for each system:
+            https://nanoprint.nanofactura.com/en/#download (en español: https://nanoprint.nanofactura.com/#download).
+
+            What changed: [CHANGELOG.md](https://github.com/nanofactura/nanoprint/blob/main/CHANGELOG.md).
+
+            Verify a download: `gh attestation verify <file> --repo nanofactura/nanoprint`
+
+            **Code signing policy:** Windows releases are going to be signed through the SignPath Foundation program for open-source projects; until it accepts NanoPrint, installers are not signed. Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/). Roles and privacy: [code signing policy](https://github.com/nanofactura/nanoprint#code-signing-policy).
           releaseDraft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
           releaseAssetNamePattern: '[name]_[arch][setup][ext]'

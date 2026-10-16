@@ -256,6 +256,28 @@
     </div>
   </section>
 
+  <!-- Code signing policy: SignPath Foundation requires it on the home and download pages. -->
+  <section id="code-signing-policy" class="container-page py-8">
+    <div class="rounded-2xl border border-line bg-surface/60 p-6 sm:p-8">
+      <h2 class="flex items-center gap-2 text-xl font-semibold">
+        <ShieldCheck class="size-5 text-brand-soft" aria-hidden="true" />
+        {home.signing.title}
+      </h2>
+      <ul class="mt-4 flex max-w-4xl flex-col gap-2 text-sm text-muted">
+        {#each home.signing.items as item (item)}
+          <li class="flex gap-2">
+            <Check class="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />{item}
+          </li>
+        {/each}
+      </ul>
+      <p class="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+        <a href="https://about.signpath.io/" class="link">SignPath.io</a>
+        <a href="https://signpath.org/" class="link">SignPath Foundation</a>
+        <a href={`${REPO_URL}#code-signing-policy`} class="link">GitHub</a>
+      </p>
+    </div>
+  </section>
+
   <!-- Open source -->
   <section class="container-page py-12">
     <div

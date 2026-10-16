@@ -172,6 +172,15 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
       verifyText:
         'Cada instalador se compila en GitHub a partir del código publicado y lleva una certificación de origen. Con la herramienta `gh` de GitHub podés comprobarlo: `gh attestation verify NanoPrint_x64-setup.exe --repo nanofactura/nanoprint`',
     },
+    signing: {
+      title: 'Política de firma de código (Code signing policy)',
+      items: [
+        'Los instaladores de Windows se van a firmar con el programa de SignPath Foundation para proyectos de código abierto. Está en trámite: las versiones actuales todavía no están firmadas. «Free code signing provided by SignPath.io, certificate by SignPath Foundation».',
+        'Cada instalador se compila con GitHub Actions a partir del código publicado, y un responsable del proyecto aprueba cada firma.',
+        'Autor, revisor y aprobador: Mariano Paulin (@marianopaulin02).',
+        'Privacidad: NanoPrint no transfiere información a otros sistemas de la red salvo que la persona que lo usa lo pida.',
+      ],
+    },
     openSource: {
       title: 'Código abierto',
       text: 'NanoPrint es software libre bajo la licencia GPL-3.0. Todo el código está en GitHub: podés revisarlo, reportar problemas o colaborar.',
@@ -203,6 +212,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         {
           q: '¿Tengo que dejar NanoPrint abierto?',
           a: 'NanoPrint arranca con la computadora y queda en la bandeja del sistema, sin molestar. Si lo cerraste, los sitios que lo integran pueden volver a abrirlo: el navegador te pregunta antes.',
+        },
+        {
+          q: '¿Qué cambia NanoPrint en mi computadora?',
+          a: 'Agrega una entrada para iniciarse con la computadora (se desactiva en Preferencias) y el enlace nanoprint:// para que los sitios puedan abrirlo, siempre con tu confirmación. Si activás los sitios seguros, instala su propio certificado en tu usuario, con la confirmación del sistema. Guarda su configuración y su historial en tu perfil. El desinstalador de Windows quita todo si marcás borrar los datos de la aplicación.',
         },
         {
           q: '¿NanoPrint guarda lo que imprimo?',
@@ -390,6 +403,7 @@ qz.security.setCertificatePromise((resolve) => {
       security: 'Seguridad',
       licenses: 'Licencias de terceros',
       developers: 'Desarrolladores',
+      signing: 'Política de firma de código',
     },
     legal: [
       'NanoPrint se distribuye sin ninguna garantía, según los términos de la licencia GPL-3.0.',

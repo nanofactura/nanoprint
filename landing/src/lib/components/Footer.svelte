@@ -11,6 +11,7 @@
     { href: docs.security, label: t.footer.links.security },
     { href: '/third-party-licenses.txt', label: t.footer.links.licenses },
     { href: pages.developers[lang], label: t.footer.links.developers },
+    { href: `${pages.home[lang]}#code-signing-policy`, label: t.footer.links.signing },
   ]);
 </script>
 

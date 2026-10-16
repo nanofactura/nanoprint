@@ -171,6 +171,15 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
       verifyText:
         "Every installer is built on GitHub from the published source and carries a provenance attestation. GitHub's `gh` tool checks it: `gh attestation verify NanoPrint_x64-setup.exe --repo nanofactura/nanoprint`",
     },
+    signing: {
+      title: 'Code signing policy',
+      items: [
+        'Windows installers are going to be signed through the SignPath Foundation program for open-source projects. The application is in progress: current releases are not signed yet. "Free code signing provided by SignPath.io, certificate by SignPath Foundation".',
+        'Every installer is built by GitHub Actions from the published source, and a project maintainer approves each signing.',
+        'Author, reviewer and approver: Mariano Paulin (@marianopaulin02).',
+        'Privacy: NanoPrint does not transfer any information to other networked systems unless specifically requested by the person using it.',
+      ],
+    },
     openSource: {
       title: 'Open source',
       text: 'NanoPrint is free software under the GPL-3.0 license. All of its code is on GitHub: review it, report issues or contribute.',
@@ -202,6 +211,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         {
           q: 'Do I have to keep NanoPrint open?',
           a: 'NanoPrint starts with the computer and stays in the system tray, out of the way. If you quit it, sites that integrate it can open it again: your browser asks you first.',
+        },
+        {
+          q: 'What does NanoPrint change on my computer?',
+          a: 'It adds an entry to start with the computer (turn it off in Preferences) and the nanoprint:// link so sites can open it, always after you confirm. If you enable secure sites, it installs its own certificate for your user, after the system asks you. It keeps its settings and history in your profile. The Windows uninstaller removes everything when you choose to delete the application data.',
         },
         {
           q: 'Does NanoPrint store what I print?',
@@ -389,6 +402,7 @@ qz.security.setCertificatePromise((resolve) => {
       security: 'Security',
       licenses: 'Third-party licenses',
       developers: 'Developers',
+      signing: 'Code signing policy',
     },
     legal: [
       'NanoPrint comes with absolutely no warranty, under the terms of the GPL-3.0 license.',

@@ -77,6 +77,7 @@
   "settings.secureBanner": "Secure sites (https) cannot print yet.",
   "onboarding.welcome.title": "Welcome to NanoPrint",
   "onboarding.welcome.running": "NanoPrint is running. You will find it in the system tray, next to the clock.",
+  "onboarding.welcome.autostart": "It starts with the computer, so it is ready whenever you need it. You can turn this off in Preferences.",
   "onboarding.welcome.permission": "When a page wants to print, NanoPrint asks you first.",
   "onboarding.refused.title": "One more step to print",
   "onboarding.refused.message": "A secure page tried to print, but secure sites are not enabled yet.",

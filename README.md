@@ -50,6 +50,35 @@ To uninstall on Windows, use **Settings → Apps** and tick "Delete the applicat
 remove its certificate and keys. On macOS and Linux, run `nanoprint --uninstall` before deleting the
 app.
 
+### What NanoPrint changes on your computer
+
+- **Start with the system:** a startup entry for your user (Windows registry `Run` key, macOS
+  LaunchAgent, Linux XDG autostart). Turn it off in Preferences.
+- **`nanoprint://` links:** a handler so web pages can start NanoPrint when it is closed; the
+  browser asks you first, and the link can do nothing else.
+- **Secure sites**, only when you enable them and confirm in the system's dialog: NanoPrint's own
+  certificate authority in your user's trust store (and in Firefox's on Linux).
+- **Its own data:** the key that signs your permissions, in the system credential store; settings,
+  permissions, history and logs in your user profile.
+
+The Windows uninstaller removes the startup entry and the link handler, and, with "Delete the
+application data", the certificate, the key and the data. On macOS and Linux, `nanoprint --uninstall`
+removes the certificate and the key; turn off "Start with the system" first.
+
+## Code signing policy
+
+Windows releases are going to be signed through the SignPath Foundation program for open-source
+projects (application in progress; current releases are not signed yet): free code signing provided
+by [SignPath.io](https://about.signpath.io/), certificate by
+[SignPath Foundation](https://signpath.org/).
+
+- Every installer is built by GitHub Actions from this repository's source; a maintainer approves
+  each signing request.
+- Committers and reviewers: Mariano Paulin ([@marianopaulin02](https://github.com/marianopaulin02)).
+- Approvers: Mariano Paulin ([@marianopaulin02](https://github.com/marianopaulin02)).
+- Privacy: see [Privacy](#privacy). NanoPrint does not transfer any information to other networked
+  systems unless specifically requested by the person using it.
+
 ## Printing from your web application
 
 Use [qz-tray.js](https://www.npmjs.com/package/qz-tray) to connect and send raw jobs, with an
