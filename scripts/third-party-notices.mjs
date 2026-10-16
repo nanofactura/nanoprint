@@ -10,7 +10,8 @@
 // Fails on a license that is not accepted or a package without license text.
 // Usage: npm run notices   (needs cargo-about on PATH, or its path in CARGO_ABOUT)
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
 
@@ -68,21 +69,33 @@ const clarified = {
 
 /** @returns {License[]} */
 function rustLicenses() {
-  const json = execFileSync(
-    process.env.CARGO_ABOUT ?? 'cargo-about',
-    [
-      'generate',
-      '--format',
-      'json',
-      '--locked',
-      '--fail',
-      '--config',
-      join(root, 'about.toml'),
-      '--manifest-path',
-      join(root, 'src-tauri', 'Cargo.toml'),
-    ],
-    { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'inherit'] },
-  );
+  // Written to a file: cargo-about refuses to write to a redirected output under PowerShell (the
+  // Windows runners' shell), because PowerShell would re-encode it.
+  const dir = mkdtempSync(join(tmpdir(), 'nanoprint-about-'));
+  const output = join(dir, 'about.json');
+  let json;
+  try {
+    execFileSync(
+      process.env.CARGO_ABOUT ?? 'cargo-about',
+      [
+        'generate',
+        '--format',
+        'json',
+        '--locked',
+        '--fail',
+        '--config',
+        join(root, 'about.toml'),
+        '--manifest-path',
+        join(root, 'src-tauri', 'Cargo.toml'),
+        '--output-file',
+        output,
+      ],
+      { stdio: ['ignore', 'ignore', 'inherit'] },
+    );
+    json = readFileSync(output, 'utf8');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
   // JSON.parse returns `any`; the JSDoc cast types it, and `tsc -p tsconfig.node.json` checks it.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const about =
