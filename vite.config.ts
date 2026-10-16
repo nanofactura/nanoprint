@@ -52,7 +52,8 @@ export default defineConfig({
     strictPort: true,
     host: host ?? '127.0.0.1',
     hmr: host ? { protocol: 'ws', host, port: 1421 } : undefined,
-    watch: { ignored: ['**/src-tauri/**', '**/target/**'] },
+    // The website (landing/) is a separate project: its builds must not reload the app.
+    watch: { ignored: ['**/src-tauri/**', '**/target/**', '**/landing/**'] },
   },
   build: {
     // Tauri's webviews are evergreen (WebView2, WKWebView, WebKitGTK 4.1).
