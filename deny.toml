@@ -18,6 +18,16 @@ targets = [
 yanked = "deny"
 ignore = [
   { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained, not vulnerable. It is a compile-time macro of the GTK 0.18 bindings that Tauri uses on Linux; no upgrade exists until Tauri moves to newer gtk-rs." },
+  # zip 4 is only reachable through tauri-plugin-updater, which extracts an update archive after
+  # verifying its signature with our update key: an attacker cannot hand it a crafted archive. The
+  # fix needs zip 9, which no stable updater release uses yet.
+  { id = "RUSTSEC-2026-0367", reason = "zip extraction flaw; zip only extracts signature-verified updates. No updater release on zip >= 9 yet." },
+  { id = "RUSTSEC-2026-0368", reason = "zip extraction flaw; zip only extracts signature-verified updates. No updater release on zip >= 9 yet." },
+  { id = "RUSTSEC-2026-0369", reason = "zip extraction flaw; zip only extracts signature-verified updates. No updater release on zip >= 9 yet." },
+  # zbus 5 crates, merged into zbus 6. They come through keyring and single-instance on Linux.
+  { id = "RUSTSEC-2026-0370", reason = "Unmaintained, not vulnerable; part of zbus 5, which our dependencies have not left yet." },
+  { id = "RUSTSEC-2026-0371", reason = "Unmaintained, not vulnerable; part of zbus 5, which our dependencies have not left yet." },
+  { id = "RUSTSEC-2026-0372", reason = "Unmaintained, not vulnerable; part of zbus 5, which our dependencies have not left yet." },
 ]
 
 [licenses]
