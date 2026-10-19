@@ -96,7 +96,7 @@ export interface Messages {
       verifyTitle: string;
       verifyText: string;
     };
-    openSource: { title: string; text: string; button: string };
+    openSource: { title: string; text: string; button: string; alternativeTo: string };
     signing: { title: string; items: string[] };
     faq: { title: string; items: Faq[] };
   };

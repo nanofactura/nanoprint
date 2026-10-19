@@ -4,6 +4,8 @@ export const SITE_URL = 'https://nanoprint.nanofactura.com';
 export const REPO_URL = 'https://github.com/nanofactura/nanoprint';
 export const RELEASES_URL = `${REPO_URL}/releases`;
 export const NANOFACTURA_URL = 'https://nanofactura.com';
+export const ALTERNATIVETO_URL =
+  'https://alternativeto.net/software/nanoprint/about/?utm_source=badge&utm_medium=referral';
 
 export const docs = {
   integration: `${REPO_URL}/blob/main/docs/integration.md`,

@@ -15,9 +15,9 @@ NanoPrint is an open-source print agent for thermal receipt printers. It lives i
 and lets web applications print raw ESC/POS jobs, with a permission prompt per site instead of
 signing certificates. It is compatible with qz-tray.js clients.
 
-> **Status:** early development, no release yet. Printing to printers installed in the operating
-> system works over `ws://` and `wss://` (tested on Windows); see the
-> [roadmap](docs/architecture.md#roadmap).
+> **Status:** pre-1.0, with releases for Windows, macOS and Linux. Printing to printers installed in
+> the operating system works over `ws://` and `wss://` (tested on Windows); see the
+> [roadmap](docs/architecture.md#roadmap-to-10).
 
 ## Highlights
 

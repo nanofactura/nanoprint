@@ -14,7 +14,14 @@
   import Rich from '$lib/components/Rich.svelte';
   import Seo from '$lib/components/Seo.svelte';
   import { messages, pages, type Lang } from '$lib/i18n';
-  import { downloads, NANOFACTURA_URL, RELEASES_URL, REPO_URL, SITE_URL } from '$lib/site';
+  import {
+    ALTERNATIVETO_URL,
+    downloads,
+    NANOFACTURA_URL,
+    RELEASES_URL,
+    REPO_URL,
+    SITE_URL,
+  } from '$lib/site';
 
   let { lang }: { lang: Lang } = $props();
 
@@ -286,6 +293,16 @@
       <div class="max-w-2xl">
         <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{home.openSource.title}</h2>
         <p class="mt-3 text-muted">{home.openSource.text}</p>
+        <!-- AlternativeTo's dark compact badge, served from this site (img-src 'self'). -->
+        <a href={ALTERNATIVETO_URL} class="mt-5 inline-block rounded-md">
+          <img
+            src="/badges/alternativeto.svg"
+            alt={home.openSource.alternativeTo}
+            width="117"
+            height="40"
+            class="h-10 w-auto"
+          />
+        </a>
       </div>
       <a
         href={REPO_URL}

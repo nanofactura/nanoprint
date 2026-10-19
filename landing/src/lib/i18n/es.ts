@@ -185,6 +185,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
       title: 'Código abierto',
       text: 'NanoPrint es software libre bajo la licencia GPL-3.0. Todo el código está en GitHub: podés revisarlo, reportar problemas o colaborar.',
       button: 'Ver en GitHub',
+      alternativeTo: 'NanoPrint en AlternativeTo',
     },
     faq: {
       title: 'Preguntas frecuentes',
