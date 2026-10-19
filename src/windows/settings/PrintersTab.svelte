@@ -1,13 +1,25 @@
 <script lang="ts">
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
-  import { listPrinters, printTestPage, setPrinterShared, type PrinterView } from '$lib/agent';
+  import {
+    addNetworkPrinter,
+    listPrinters,
+    printTestPage,
+    removeNetworkPrinter,
+    setPrinterShared,
+    type PrinterView,
+  } from '$lib/agent';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { Switch } from '$lib/components/ui/switch';
   import { describeError } from '$lib/errors';
   import { t } from '$lib/i18n/index.svelte';
+
+  /** The port of raw TCP printing, which nearly every network receipt printer uses. */
+  const RAW_PORT = '9100';
 
   /** `refreshKey` changes when the panel regains focus, so the list reloads. */
   let { refreshKey, onerror }: { refreshKey: number; onerror: (message: string) => void } =
@@ -18,6 +30,10 @@
   /** The printer a test page is being sent to. */
   let testing = $state<string>();
   let notice = $state('');
+  /** The form to add a network printer, while it is open. */
+  let adding = $state<{ name: string; host: string; port: string }>();
+  let addError = $state('');
+  let saving = $state(false);
 
   /**
    * `refresh` asks the system again; otherwise a list from the last 30 seconds is reused.
@@ -60,7 +76,39 @@
     }
   }
 
+  async function add(): Promise<void> {
+    if (!adding) return;
+    const port = Number(adding.port.trim());
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      addError = t('error.code.network_port_invalid');
+      return;
+    }
+    saving = true;
+    addError = '';
+    try {
+      await addNetworkPrinter(adding.name, adding.host, port);
+      adding = undefined;
+      await load(false);
+    } catch (e) {
+      addError = describeError(e);
+    } finally {
+      saving = false;
+    }
+  }
+
+  async function remove(name: string): Promise<void> {
+    try {
+      await removeNetworkPrinter(name);
+      await load(false);
+    } catch (e) {
+      onerror(t('error.save', { message: describeError(e) }));
+    }
+  }
+
   function details(printer: PrinterView): string {
+    if (printer.network) {
+      return t('settings.printers.address', { address: printer.connection ?? '' });
+    }
     const parts = [];
     if (printer.driver) parts.push(t('settings.printers.driver', { driver: printer.driver }));
     if (printer.connection) {
@@ -96,6 +144,9 @@
                 {#if printer.default}
                   <Badge variant="secondary">{t('settings.printers.default')}</Badge>
                 {/if}
+                {#if printer.network}
+                  <Badge variant="outline">{t('settings.printers.network')}</Badge>
+                {/if}
               </p>
               {#if details(printer)}
                 <p class="truncate text-xs text-muted-foreground select-text">
@@ -121,19 +172,26 @@
                   {printer.shared ? t('settings.printers.shared') : t('settings.printers.hidden')}
                 </Label>
               </div>
-              <!-- The test page's raw bytes would not reach the paper. -->
-              {#if !printer.limitation}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={testing !== undefined}
-                  onclick={() => void test(printer.name)}
-                >
-                  {testing === printer.name
-                    ? t('settings.printers.testing')
-                    : t('settings.printers.test')}
-                </Button>
-              {/if}
+              <div class="flex items-center gap-2">
+                {#if printer.network}
+                  <Button variant="ghost" size="sm" onclick={() => void remove(printer.name)}>
+                    {t('settings.printers.remove')}
+                  </Button>
+                {/if}
+                <!-- The test page's raw bytes would not reach the paper. -->
+                {#if !printer.limitation}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={testing !== undefined}
+                    onclick={() => void test(printer.name)}
+                  >
+                    {testing === printer.name
+                      ? t('settings.printers.testing')
+                      : t('settings.printers.test')}
+                  </Button>
+                {/if}
+              </div>
             </div>
           </li>
         {/each}
@@ -142,6 +200,73 @@
         <p role="status" class="text-xs text-muted-foreground">{notice}</p>
       {/if}
       <p class="text-xs text-muted-foreground">{t('settings.printers.testHint')}</p>
+    {/if}
+
+    {#if adding}
+      <form
+        class="flex flex-col gap-3 rounded-md border p-3"
+        onsubmit={(event) => {
+          event.preventDefault();
+          void add();
+        }}
+      >
+        <p class="text-xs text-muted-foreground">{t('settings.printers.addDescription')}</p>
+        <div class="flex flex-col gap-2">
+          <Label for="network-name">{t('settings.printers.name')}</Label>
+          <Input
+            id="network-name"
+            maxlength={64}
+            placeholder={t('settings.printers.namePlaceholder')}
+            bind:value={adding.name}
+          />
+        </div>
+        <div class="grid grid-cols-[1fr_6rem] gap-3">
+          <div class="flex flex-col gap-2">
+            <Label for="network-host">{t('settings.printers.host')}</Label>
+            <Input
+              id="network-host"
+              maxlength={253}
+              placeholder="192.168.1.50"
+              spellcheck={false}
+              autocapitalize="off"
+              bind:value={adding.host}
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <Label for="network-port">{t('settings.printers.port')}</Label>
+            <Input id="network-port" inputmode="numeric" maxlength={5} bind:value={adding.port} />
+          </div>
+        </div>
+        {#if addError}
+          <p role="alert" class="text-xs text-destructive">{addError}</p>
+        {/if}
+        <div class="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={() => {
+              adding = undefined;
+              addError = '';
+            }}>{t('settings.printers.cancel')}</Button
+          >
+          <Button
+            type="submit"
+            size="sm"
+            disabled={saving || !adding.name.trim() || !adding.host.trim()}
+            >{t('settings.printers.confirmAdd')}</Button
+          >
+        </div>
+      </form>
+    {:else if printers}
+      <Button
+        variant="outline"
+        size="sm"
+        class="self-start"
+        onclick={() => (adding = { name: '', host: '', port: RAW_PORT })}
+      >
+        <PlusIcon class="size-4" />
+        {t('settings.printers.add')}
+      </Button>
     {/if}
   </Card.Content>
 </Card.Root>

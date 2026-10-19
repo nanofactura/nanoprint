@@ -18,7 +18,8 @@
     "test": "vitest run",
     "icons": "node scripts/generate-icons.mjs",
     "tauri": "tauri",
-    "notices": "node scripts/third-party-notices.mjs"
+    "notices": "node scripts/third-party-notices.mjs",
+    "fake-printer": "node scripts/fake-printer.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

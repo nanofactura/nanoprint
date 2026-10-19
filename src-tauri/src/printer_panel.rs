@@ -1,5 +1,5 @@
-//! The Printers tab: the printers the system reports, which of them web pages may use, and a test
-//! page to check one.
+//! The Printers tab: the printers the system reports and the network printers the user adds,
+//! which of them web pages may use, and a test page to check one.
 
 use std::{sync::Arc, time::Instant};
 
@@ -8,9 +8,12 @@ use serde::Serialize;
 use tauri::{AppHandle, State};
 
 use crate::{
-    agent::{self, PrinterCache},
+    agent::{self, Destination, PrinterCache},
     i18n::{self, Locale},
-    printers::{self, Limitation},
+    printers::{
+        self, Limitation,
+        network::{self, Links},
+    },
     settings::SettingsStore,
     store::{Event, EventKind, Store},
     ui_error::UiError,
@@ -42,6 +45,8 @@ pub struct PrinterView {
     /// Why it cannot print raw tickets, if it cannot: not offered to web pages by default, and no
     /// test page.
     limitation: Option<Limitation>,
+    /// Added by the user by address, rather than reported by the system: the tab can remove it.
+    network: bool,
 }
 
 /// The system's printers, those that can print tickets first. `refresh` lists them again instead
@@ -52,20 +57,27 @@ pub async fn list_printers(
     settings: State<'_, SettingsStore>,
     refresh: bool,
 ) -> Result<Vec<PrinterView>, UiError> {
-    let printers = cache
-        .list(refresh)
-        .await
-        .map_err(|error| UiError::with_detail("printers_unavailable", &error))?;
+    let unavailable = |error: String| UiError::with_detail("printers_unavailable", &error);
+    if refresh {
+        cache.list(true).await.map_err(unavailable)?;
+    }
     let settings = settings.get();
-    let mut views: Vec<_> = printers
+    let mut views: Vec<_> = agent::all_printers(&cache, &settings)
+        .await
+        .map_err(unavailable)?
         .into_iter()
-        .map(|printer| PrinterView {
-            shared: settings.shares(&printer),
-            limitation: printers::limitation(&printer),
-            name: printer.name,
-            driver: printer.driver,
-            connection: printer.connection,
-            default: printer.default,
+        .map(|destination| {
+            let network = matches!(destination, Destination::Network(_));
+            let printer = destination.printer();
+            PrinterView {
+                shared: settings.shares(&printer),
+                limitation: printers::limitation(&printer),
+                network,
+                name: printer.name,
+                driver: printer.driver,
+                connection: printer.connection,
+                default: printer.default,
+            }
         })
         .collect();
     views.sort_by_key(|view| view.limitation.is_some());
@@ -89,41 +101,91 @@ pub fn set_printer_shared(
     Ok(())
 }
 
+/// Adds a network printer by address. Offered to web pages like any printer that prints tickets.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)] // Tauri passes command arguments by value.
+pub async fn add_network_printer(
+    cache: State<'_, Arc<PrinterCache>>,
+    settings: State<'_, SettingsStore>,
+    name: String,
+    host: String,
+    port: u16,
+) -> Result<(), UiError> {
+    let printer =
+        network::check(&name, &host, port).map_err(|invalid| UiError::new(invalid.code()))?;
+    // Names differing only in case would read as the same printer in the tab and in pages.
+    let same_name = |other: &str| other.to_lowercase() == printer.name.to_lowercase();
+    let system = cache
+        .list(false)
+        .await
+        .map_err(|error| UiError::with_detail("printers_unavailable", &error))?;
+    if system.iter().any(|known| same_name(&known.name))
+        || settings
+            .get()
+            .network_printers
+            .iter()
+            .any(|known| same_name(&known.name))
+    {
+        return Err(UiError::new("printer_name_taken"));
+    }
+    log::info!("added the network printer at {}", printer.address());
+    settings
+        .update(|settings| {
+            // A choice left by a removed printer with the same name does not carry over.
+            settings.shared_printers.remove(&printer.name);
+            settings.network_printers.push(printer);
+        })
+        .map_err(|error| UiError::with_detail("settings", &error))?;
+    Ok(())
+}
+
+/// Removes a network printer the user added. Jobs to it are refused from then on.
+#[tauri::command]
+#[allow(clippy::needless_pass_by_value)] // Tauri passes command arguments by value.
+pub fn remove_network_printer(
+    settings: State<'_, SettingsStore>,
+    name: String,
+) -> Result<(), UiError> {
+    settings
+        .update(|settings| {
+            settings
+                .network_printers
+                .retain(|printer| printer.name != name);
+            settings.shared_printers.remove(&name);
+        })
+        .map_err(|error| UiError::with_detail("settings", &error))?;
+    Ok(())
+}
+
 /// Prints a short ESC/POS test page, whether or not web pages may use the printer. Recorded in
 /// the history without a site. Printers that cannot print raw tickets are refused.
 #[tauri::command]
 pub async fn print_test_page(
     app: AppHandle,
     cache: State<'_, Arc<PrinterCache>>,
+    links: State<'_, Arc<Links>>,
     store: State<'_, Arc<Store>>,
     settings: State<'_, SettingsStore>,
     name: String,
 ) -> Result<(), UiError> {
-    let found = cache
-        .find(&name)
+    let settings = settings.get();
+    let found = agent::find_printer(&cache, &settings, &name)
         .await
         .map_err(|error| UiError::with_detail("printers_unavailable", &error))?
         .ok_or(UiError::new("printer_not_found"))?;
-    match printers::limitation(&found) {
+    match printers::limitation(&found.printer()) {
         Some(Limitation::Virtual) => return Err(UiError::new("virtual_printer")),
         Some(Limitation::EasyPrint) => return Err(UiError::new("easy_print_printer")),
         None => {}
     }
-    let locale = i18n::resolve(settings.get().language);
+    let locale = i18n::resolve(settings.language);
     let job_name = i18n::t(locale, "printers.testPage.jobName");
     let data = test_page(locale, &name, &app.package_info().version.to_string());
     let bytes = data.len();
     let started = Instant::now();
-    let printed = {
-        let (name, job_name) = (name.clone(), job_name.clone());
-        tauri::async_runtime::spawn_blocking(move || printers::print_raw(&name, &job_name, &data))
-            .await
-    };
-    let error = match printed {
-        Ok(Ok(())) => None,
-        Ok(Err(error)) => Some(error.to_string()),
-        Err(error) => Some(error.to_string()),
-    };
+    let error = agent::send(&links, found, job_name.clone(), data)
+        .await
+        .err();
     let event = Event {
         origin: None,
         printer: Some(&name),

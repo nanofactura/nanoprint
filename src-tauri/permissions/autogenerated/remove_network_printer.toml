@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-remove-network-printer"
+description = "Enables the remove_network_printer command without any pre-configured scope."
+commands.allow = ["remove_network_printer"]
+
+[[permission]]
+identifier = "deny-remove-network-printer"
+description = "Denies the remove_network_printer command without any pre-configured scope."
+commands.deny = ["remove_network_printer"]
