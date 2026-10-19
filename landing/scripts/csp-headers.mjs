@@ -7,13 +7,15 @@ import { join, relative, sep } from 'node:path';
 
 const BUILD = 'build';
 const META = /<meta http-equiv="content-security-policy" content="([^"]+)"/;
+// Google Search Console's ownership file (static/google<token>.html): one line of text, not a page.
+const VERIFICATION = /^google[0-9a-f]+\.html$/;
 
 /** Every HTML file under `dir`. */
 function pages(/** @type {string} */ dir) {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return pages(path);
-    return name.endsWith('.html') ? [path] : [];
+    return name.endsWith('.html') && !VERIFICATION.test(name) ? [path] : [];
   });
 }
 
