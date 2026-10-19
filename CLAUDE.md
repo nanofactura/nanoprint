@@ -113,6 +113,7 @@ npm run format           # Prettier
 npm run lint             # ESLint
 npm run check            # svelte-check + tsc
 npm test                 # Vitest
+npm run fake-printer     # a network printer (127.0.0.1:9100) that shows each job in the terminal
 cargo fmt --all
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace   # includes a compatibility test that runs qz-tray.js (needs npm install)

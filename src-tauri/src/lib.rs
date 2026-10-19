@@ -34,6 +34,7 @@ use crate::{
     agent::{AppAgent, PrinterCache},
     onboarding::Onboarding,
     permissions::Permissions,
+    printers::network,
     settings::SettingsStore,
     store::Store,
 };
@@ -83,6 +84,8 @@ pub fn run() {
             printer_panel::list_printers,
             printer_panel::set_printer_shared,
             printer_panel::print_test_page,
+            printer_panel::add_network_printer,
+            printer_panel::remove_network_printer,
             onboarding::get_onboarding_reason,
             updates::get_update_status,
             updates::check_for_updates,
@@ -154,6 +157,7 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // Shared by the print servers and the Printers tab.
     let printers = Arc::new(PrinterCache::default());
     app.manage(Arc::clone(&printers));
+    app.manage(Arc::new(network::Links::default()));
     let agent = Arc::new(AppAgent::new(
         Arc::clone(&store),
         permissions,

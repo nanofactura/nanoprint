@@ -22,6 +22,10 @@ const codes = [
   'update_not_ready',
   'port_invalid',
   'ports_equal',
+  'network_name_invalid',
+  'network_host_invalid',
+  'network_port_invalid',
+  'printer_name_taken',
   'unexpected',
 ] as const;
 type Code = (typeof codes)[number];

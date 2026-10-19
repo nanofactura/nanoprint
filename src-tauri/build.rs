@@ -18,6 +18,8 @@ fn main() {
             "list_printers",
             "set_printer_shared",
             "print_test_page",
+            "add_network_printer",
+            "remove_network_printer",
             "get_onboarding_reason",
             "show_licenses",
             "open_log_folder",

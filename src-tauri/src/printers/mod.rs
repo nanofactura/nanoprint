@@ -1,8 +1,9 @@
 //! Printers installed in the operating system, printed to in raw mode (the bytes reach the printer
-//! untouched by the driver).
+//! untouched by the driver), and network printers the user adds by address ([`network`]).
 
 #[cfg(not(windows))]
 mod cups;
+pub mod network;
 #[cfg(windows)]
 mod windows;
 
