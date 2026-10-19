@@ -21,6 +21,8 @@
     "allow-list-printers",
     "allow-set-printer-shared",
     "allow-print-test-page",
+    "allow-add-network-printer",
+    "allow-remove-network-printer",
     "allow-show-licenses",
     "allow-open-log-folder",
     "allow-get-update-status",

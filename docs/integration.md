@@ -175,20 +175,24 @@ Compatibility:
 
 ## Limits
 
-| Limit                       | Value                                                                                                                                               |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Print jobs per site         | 30 per minute; more fail with `Too many print jobs; try again in a minute`                                                                          |
-| Copies per job              | 1 to 10                                                                                                                                             |
-| Message size                | 2 MiB per message                                                                                                                                   |
-| Connections per site        | 16 at a time; more are closed right away                                                                                                            |
-| Asking for permission       | Within 30 seconds of connecting (qz-tray.js does it immediately), or the connection closes                                                          |
-| Idle connections            | Closed after 3 minutes without messages. qz-tray.js pings every 60 seconds unless `keepAlive` is 0                                                  |
-| Printers                    | Installed in the operating system and offered to sites: by default all but virtual ones (PDF, XPS, fax) and Remote Desktop printers with Easy Print |
-| Network printers by address | Not yet: `{host, port}` fails with `Network printers must be added in NanoPrint first`                                                              |
+| Limit                       | Value                                                                                                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Print jobs per site         | 30 per minute; more fail with `Too many print jobs; try again in a minute`                                                                                                                      |
+| Copies per job              | 1 to 10                                                                                                                                                                                         |
+| Message size                | 2 MiB per message                                                                                                                                                                               |
+| Connections per site        | 16 at a time; more are closed right away                                                                                                                                                        |
+| Asking for permission       | Within 30 seconds of connecting (qz-tray.js does it immediately), or the connection closes                                                                                                      |
+| Idle connections            | Closed after 3 minutes without messages. qz-tray.js pings every 60 seconds unless `keepAlive` is 0                                                                                              |
+| Printers                    | Installed in the operating system, or added in NanoPrint as network printers, and offered to sites: by default all but virtual ones (PDF, XPS, fax) and Remote Desktop printers with Easy Print |
+| Network printers by address | `{host, port}` must match a network printer the user added in NanoPrint (Printers tab); others fail with `Network printers must be added in NanoPrint first`. Prefer the printer's name         |
 
 NanoPrint never stores what is printed. Its history keeps the time, site, printer, job name, size
-and result of each job for 30 days. A job succeeds once the system's print queue accepts it:
-NanoPrint cannot tell whether paper came out.
+and result of each job for 30 days. A job succeeds once the system's print queue accepts it, or a
+network printer takes all of its bytes: NanoPrint cannot tell whether paper came out.
+
+A network receipt printer (Ethernet or Wi-Fi) works in two ways: installed in the operating system
+like any other printer, or added in NanoPrint by IP address and port (usually 9100). Added in
+NanoPrint, it needs no driver, and NanoPrint sends it one job at a time.
 
 Over Remote Desktop, a printer redirected with Easy Print (driver "Remote Desktop Easy Print")
 cannot receive raw data. Install the printer's own driver on the remote computer and turn off the

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-add-network-printer"
+description = "Enables the add_network_printer command without any pre-configured scope."
+commands.allow = ["add_network_printer"]
+
+[[permission]]
+identifier = "deny-add-network-printer"
+description = "Denies the add_network_printer command without any pre-configured scope."
+commands.deny = ["add_network_printer"]

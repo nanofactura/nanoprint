@@ -75,7 +75,9 @@ Replies are `{ "uid": "…", "result": … }` or `{ "uid": "…", "error": "mess
 Every other call (files, serial, USB, HID, sockets, networking, `websocket.stop`…) returns an error
 naming the call. NanoPrint does not implement them.
 
-Sites only get the printers offered to them: by default every printer except those that cannot
+Printers are those the operating system reports, followed by the network printers the user added
+in the Printers tab (their `driver` is `null`, their `connection` is `host:port`, and they are
+never the default). Sites only get the printers offered to them: by default every printer except those that cannot
 print raw data, namely virtual ones (PDF and XPS writers, fax, OneNote) and printers redirected by
 Remote Desktop through Easy Print, which drops raw data by design (Microsoft KB 2827141). The user
 changes this per printer in the Printers tab. A printer not offered is left out of every list above, as if it were not installed,
@@ -84,8 +86,10 @@ the default printer is `Microsoft Print to PDF`: `printers.getDefault` then retu
 
 ### `print`
 
-- `printer`: `{name}` of a printer the operating system reports. `{host, port}` (network printers)
-  are refused until the user can add them in NanoPrint.
+- `printer`: `{name}` of a printer the operating system reports or the user added in NanoPrint as
+  a network printer. `{host, port}` (`port` defaults to 9100) must match the address of a network
+  printer the user added (an IP address compares in its canonical form, a host name ignoring
+  case); any other address fails with `Network printers must be added in NanoPrint first`.
 - `options`: `jobName` (shown in the queue), `copies` (1–10), `encoding` for plain text: a name,
   or `{from, to}`, of which only `to` (the printer's encoding) matters because JSON text is already
   Unicode. An `encoding` of any other shape, or an object without `to`, refuses the job instead of
