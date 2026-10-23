@@ -51,7 +51,7 @@
     "qz-tray": "^2.3.0",
     "shadcn-svelte": "^1.7.0",
     "svelte-check": "^4.6.0",
-    "typescript": "~6.0.3",
+    "typescript": "~7.0.2",
     "typescript-eslint": "^8.71.2",
     "vite": "^8.0.16",
     "vitest": "^5.0.5",
