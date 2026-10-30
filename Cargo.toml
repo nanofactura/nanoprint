@@ -7,7 +7,7 @@ resolver = "3"
 [workspace.package]
 # The single source of the NanoPrint version (SemVer). Tauri, the installers, the updater and the
 # UI read it from here. MSI installers only accept numeric pre-release identifiers (`1.2.0-1`).
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "GPL-3.0-only"
 repository = "https://github.com/nanofactura/nanoprint"
