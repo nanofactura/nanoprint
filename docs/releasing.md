@@ -10,6 +10,18 @@
    Linux installers from scratch, generates the third-party license notices, attests the build
    provenance of every file and attaches an SBOM, all to a **draft** release.
 4. A maintainer checks the draft (install it on at least one system) and publishes it.
+5. While Windows installers are unsigned, submit the published `NanoPrint_x64-setup.exe` to
+   [Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission) as a software developer.
+   Without a signature, SmartScreen judges each file by its own hash, so every release starts with
+   no reputation and needs its own submission. It may clear the warning within a day or two; it is
+   not guaranteed. Fill in:
+   - Product: **Microsoft Defender Smartscreen**; the file is **Incorrectly detected as
+     malware/malicious**.
+   - Detection name: `SmartScreen: Unrecognized app ("Windows protected your PC")`. Leave the
+     definition version empty.
+   - Additional information: what NanoPrint is, the repository and release URLs, the installer's
+     SHA-256 (`gh release view v1.2.3 --json assets` shows each asset's `digest`), the
+     `gh attestation verify` command below, and that the installer is not code-signed yet.
 
 Assets keep version-less names (`NanoPrint_<arch><-setup><ext>`, for example
 `NanoPrint_x64-setup.exe`), so `https://github.com/nanofactura/nanoprint/releases/latest/download/<name>`
