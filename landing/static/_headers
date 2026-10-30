@@ -1,5 +1,5 @@
 # Cloudflare Pages response headers. Each page also carries its own Content-Security-Policy in a
-# <meta> tag, with the hashes of its inline scripts (svelte.config.js); a header policy adds what a
+# <meta> tag, with the hashes of its inline scripts (vite.config.ts); a header policy adds what a
 # <meta> cannot express. Both apply.
 /*
   Strict-Transport-Security: max-age=31536000

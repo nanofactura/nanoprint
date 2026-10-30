@@ -1,5 +1,5 @@
-import type { Handle } from '@sveltejs/kit';
-import { languageOf } from '$lib/i18n';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { languageOf } from '#lib/i18n/index.ts';
 
 /** Runs while prerendering: each page's <html lang> follows its URL (`/en/…` is English). */
 export const handle: Handle = ({ event, resolve }) =>

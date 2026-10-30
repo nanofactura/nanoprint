@@ -1,4 +1,4 @@
-import { REPO_URL, SITE_URL } from '$lib/site';
+import { REPO_URL, SITE_URL } from '#lib/site.ts';
 
 export const prerender = true;
 export const trailingSlash = 'never';

@@ -1,5 +1,5 @@
-import { messages, pages, type Lang } from '$lib/i18n';
-import { RELEASES_URL, REPO_URL, SITE_URL } from '$lib/site';
+import { messages, pages, type Lang } from '#lib/i18n/index.ts';
+import { RELEASES_URL, REPO_URL, SITE_URL } from '#lib/site.ts';
 
 export const prerender = true;
 export const trailingSlash = 'never';

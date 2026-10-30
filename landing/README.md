@@ -88,7 +88,7 @@ from the brand masters in `../assets/brand`. Run it after changing a master or a
   answered from the files in `build/`. There are no forms, cookies or user input to process.
 - Each page's Content-Security-Policy allows only the site's own files, the hashes of its own inline
   scripts and connections to NanoPrint on `localhost` (the developer demo). SvelteKit writes it into
-  a `<meta>` tag (`svelte.config.js`), and `scripts/csp-headers.mjs` copies it into an HTTP header
+  a `<meta>` tag (`vite.config.ts`), and `scripts/csp-headers.mjs` copies it into an HTTP header
   for each page, adding `frame-ancestors 'none'`. `static/_headers` sets HSTS, `nosniff`,
   `X-Frame-Options`, the referrer and permissions policies and `Cross-Origin-Opener-Policy`.
 - No cookies, analytics or third-party requests: fonts and scripts are served by the site itself.

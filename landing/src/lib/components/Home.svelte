@@ -6,14 +6,14 @@
   import Feather from '@lucide/svelte/icons/feather';
   import Monitor from '@lucide/svelte/icons/monitor';
   import ShieldCheck from '@lucide/svelte/icons/shield-check';
-  import CodeBlock from '$lib/components/CodeBlock.svelte';
-  import DownloadButton from '$lib/components/DownloadButton.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-  import Header from '$lib/components/Header.svelte';
-  import HeroMedia from '$lib/components/HeroMedia.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import { messages, pages, type Lang } from '$lib/i18n';
+  import CodeBlock from '#lib/components/CodeBlock.svelte';
+  import DownloadButton from '#lib/components/DownloadButton.svelte';
+  import Footer from '#lib/components/Footer.svelte';
+  import Header from '#lib/components/Header.svelte';
+  import HeroMedia from '#lib/components/HeroMedia.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import Seo from '#lib/components/Seo.svelte';
+  import { messages, pages, type Lang } from '#lib/i18n/index.ts';
   import {
     ALTERNATIVETO_URL,
     downloads,
@@ -21,7 +21,7 @@
     RELEASES_URL,
     REPO_URL,
     SITE_URL,
-  } from '$lib/site';
+  } from '#lib/site.ts';
 
   let { lang }: { lang: Lang } = $props();
 

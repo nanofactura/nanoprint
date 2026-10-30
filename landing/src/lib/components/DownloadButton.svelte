@@ -7,9 +7,9 @@
   import Download from '@lucide/svelte/icons/download';
   import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import { onMount } from 'svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import { messages, type Lang } from '$lib/i18n';
-  import { detectPlatform, downloads, RELEASES_URL, type Platform } from '$lib/site';
+  import Rich from '#lib/components/Rich.svelte';
+  import { messages, type Lang } from '#lib/i18n/index.ts';
+  import { detectPlatform, downloads, RELEASES_URL, type Platform } from '#lib/site.ts';
 
   let { lang }: { lang: Lang } = $props();
 
