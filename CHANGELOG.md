@@ -7,6 +7,19 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-30
+
+### Security
+
+- HTTPS connections, such as the update check, reject certificate chains that pass through the
+  distrusted emSign intermediates (rustls-webpki 0.103.16, RUSTSEC-2026-0382).
+- Constant-time helpers used by the hash functions no longer leak timing in `u128` comparisons
+  (ctutils 0.4.5, RUSTSEC-2026-0385).
+
+### Changed
+
+- Updated Tauri to 2.12.5, the updater plugin to 2.14.0 and other dependencies.
+
 ## [0.2.0] - 2026-10-16
 
 ### Added
@@ -49,6 +62,7 @@ First public release.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/nanofactura/nanoprint/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/nanofactura/nanoprint/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/nanofactura/nanoprint/releases/tag/v0.1.0
