@@ -20,7 +20,8 @@ tray, listens only on this computer (wss://localhost:8181 and ws://localhost:818
 qz-tray.js uses) and asks the user before any website may print. It never stores printed content.
 
 - Platforms: ${en.home.downloads.windows.requirements}; ${en.home.downloads.mac.requirements}; Linux ${en.home.downloads.linux.requirements}.
-- Printers: ESC/POS thermal receipt printers (58 and 80 mm) installed in the operating system.
+- Printers: ESC/POS thermal receipt printers (58 and 80 mm) installed in the operating system, or
+  network printers the user adds in NanoPrint by IP address and port (raw TCP, usually 9100).
 - Compatible client libraries: qz-tray (2.2 or later), @point-of-sale/receipt-printer-encoder, web-escpos-printer.
 - Not supported: QZ Tray's file, serial, USB, HID, pixel, HTML and PDF printing calls.
 
