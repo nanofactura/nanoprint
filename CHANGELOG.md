@@ -7,6 +7,17 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Windows installer: the desktop shortcut is unchecked by default. Installing a new version by hand
+  keeps the shortcut if there was one; updates never add it.
+
+### Fixed
+
+- Windows: when an update fails to install (an antivirus blocking the installer, for example),
+  NanoPrint starts again with the installed version instead of staying closed, and tries the
+  update again later.
+
 ## [0.2.1] - 2026-10-30
 
 ### Security

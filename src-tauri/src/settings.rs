@@ -43,6 +43,8 @@ pub struct Settings {
     pub manual_updates: bool,
     /// Set before installing an update, so the start that follows stays quietly in the tray.
     pub quiet_next_start: bool,
+    /// The version an update was installing, so the next start can tell whether it installed.
+    pub installing_update: Option<String>,
 }
 
 impl Settings {
@@ -237,7 +239,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             json,
-            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false}"#
+            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false,"installingUpdate":null}"#
         );
     }
 

@@ -245,6 +245,10 @@ carries X.509 name constraints limiting it to those loopback names and a path le
    Windows runs the per-user installer in passive mode; macOS replaces the app bundle; the Linux
    AppImage replaces itself. `.deb` and `.rpm` installs update through their package manager, and
    development builds never update.
+   If the Windows installer fails (an antivirus blocking it, for example), it starts the installed
+   version again instead of leaving NanoPrint closed ([hooks.nsh](../src-tauri/windows/hooks.nsh)).
+   The settings record which version was being installed: a start that is still on the previous
+   version waits six hours before trying again, so a blocked update does not retry every minute.
 4. Preferences → Updates shows the state, checks on request and installs a downloaded update at
    once. Turned off, NanoPrint checks only when asked: it then makes no connection of its own.
 
@@ -257,8 +261,9 @@ The updater key must be backed up: losing it strands installed copies on the cur
 Built by the [release workflow](../.github/workflows/release.yml); see
 [releasing.md](releasing.md).
 
-- Windows: per-user NSIS installer in English and Spanish (no administrator rights). An MSI for
-  managed fleets would need a per-machine install and is left out for now.
+- Windows: per-user NSIS installer in English and Spanish (no administrator rights). The desktop
+  shortcut is unchecked by default and kept when a new version is installed by hand over one that
+  had it. An MSI for managed fleets would need a per-machine install and is left out for now.
 - macOS: universal (Apple silicon and Intel) DMG, signed with a stable self-signed identity (or
   ad-hoc without it) until there is a Developer ID; tray-only (no Dock icon).
 - Linux: `.deb` and `.rpm` (depending on the NSS tools for the certificate; udev rules for USB
