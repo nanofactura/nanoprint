@@ -17,6 +17,7 @@ and versions follow [Semantic Versioning](https://semver.org/).
 - Windows: when an update fails to install (an antivirus blocking the installer, for example),
   NanoPrint starts again with the installed version instead of staying closed, and tries the
   update again later.
+- Windows: installing a new version by hand no longer turns off start with the system.
 
 ## [0.2.1] - 2026-10-30
 

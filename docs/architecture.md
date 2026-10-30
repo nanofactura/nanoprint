@@ -262,8 +262,9 @@ Built by the [release workflow](../.github/workflows/release.yml); see
 [releasing.md](releasing.md).
 
 - Windows: per-user NSIS installer in English and Spanish (no administrator rights). The desktop
-  shortcut is unchecked by default and kept when a new version is installed by hand over one that
-  had it. An MSI for managed fleets would need a per-machine install and is left out for now.
+  shortcut is unchecked by default. Installing a new version by hand uninstalls the previous one,
+  which removes its desktop shortcut and its start-with-the-system entry; the installer puts back
+  the ones the user had ([hooks.nsh](../src-tauri/windows/hooks.nsh)). An MSI for managed fleets would need a per-machine install and is left out for now.
 - macOS: universal (Apple silicon and Intel) DMG, signed with a stable self-signed identity (or
   ad-hoc without it) until there is a Developer ID; tray-only (no Dock icon).
 - Linux: `.deb` and `.rpm` (depending on the NSS tools for the certificate; udev rules for USB

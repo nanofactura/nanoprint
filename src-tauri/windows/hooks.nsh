@@ -10,18 +10,22 @@
 Var NanoPrintExe
 ; Whether the desktop shortcut existed when the installer started.
 Var NanoPrintHadDesktopShortcut
+; The start-with-the-system entry when the installer started, or empty.
+Var NanoPrintAutostart
 
 ; The finish page offers the desktop shortcut unchecked: NanoPrint lives in the tray and starts with
 ; the system. An upgrade keeps the shortcut if the user had it (see NSIS_HOOK_POSTINSTALL).
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_CUSTOMFUNCTION_GUIINIT NanoPrintGuiInit
 
-; Runs before an upgrade uninstalls the previous version, which removes its shortcuts.
+; Runs before an upgrade uninstalls the previous version, which removes its shortcuts and its
+; start-with-the-system entry.
 Function NanoPrintGuiInit
   StrCpy $NanoPrintHadDesktopShortcut 0
   ${If} ${FileExists} "$DESKTOP\$(^Name).lnk"
     StrCpy $NanoPrintHadDesktopShortcut 1
   ${EndIf}
+  ReadRegStr $NanoPrintAutostart HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "$(^Name)"
 FunctionEnd
 
 ; An update that fails (an antivirus blocking it, for example) leaves NanoPrint closed, because the
@@ -49,12 +53,20 @@ FunctionEnd
   StrCpy $NanoPrintExe "$INSTDIR\${MAINBINARYNAME}.exe"
 !macroend
 
-; Uninstalling the previous version during an upgrade removed its desktop shortcut: put it back.
-; Updates never uninstall, so their shortcuts stay as they are.
+; Uninstalling the previous version during an upgrade removed its desktop shortcut and its
+; start-with-the-system entry: put back the ones the user had. Updates never uninstall, so they
+; keep both as they are.
 !macro NSIS_HOOK_POSTINSTALL
   ${If} $NanoPrintHadDesktopShortcut = 1
   ${AndIfNot} ${FileExists} "$DESKTOP\${PRODUCTNAME}.lnk"
     Call CreateOrUpdateDesktopShortcut
+  ${EndIf}
+  ${If} $NanoPrintAutostart != ""
+    ClearErrors
+    ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCTNAME}"
+    ${If} ${Errors}
+      WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCTNAME}" "$NanoPrintAutostart"
+    ${EndIf}
   ${EndIf}
 !macroend
 
