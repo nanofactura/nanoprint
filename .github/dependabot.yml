@@ -14,6 +14,9 @@ updates:
       # Follows the Node.js major version in .nvmrc, and changes together with it.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # svelte-check does not accept TypeScript 7 yet.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
 
   # The website (landing/) has its own package and lock file.
   - package-ecosystem: npm
@@ -27,6 +30,8 @@ updates:
         patterns: ['*']
     ignore:
       - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      - dependency-name: typescript
         update-types: ['version-update:semver-major']
 
   - package-ecosystem: cargo
@@ -49,3 +54,7 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    groups:
+      # Every step of a workflow must run the same codeql-action version.
+      actions:
+        patterns: ['*']
