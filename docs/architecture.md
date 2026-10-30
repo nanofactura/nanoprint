@@ -26,7 +26,7 @@ time it runs with no window open, so its footprint is one Rust process and a tra
 | Print server                    | Done            | `ws://` and `wss://` WebSocket server on loopback; `Host`/`Origin` validation; message limits                                                                                               |
 | Protocol layer                  | Done            | qz-tray.js wire protocol subset needed for raw printing ([protocol.md](protocol.md)), in its own crate (`crates/protocol`), fuzzed                                                          |
 | Permission manager              | Done            | Per-origin consent prompt, signed allow/block store, revocation, 30-day history                                                                                                             |
-| Printer registry and transports | Partial         | OS queue in raw mode (tested on Windows; CUPS on macOS and Linux untested). Pending: USB, serial, TCP 9100, BLE, Bluetooth SPP                                                              |
+| Printer registry and transports | Partial         | OS queue in raw mode (tested on Windows; CUPS on macOS and Linux untested); network printers the user adds by address, over raw TCP (port 9100). Pending: USB, serial, BLE, Bluetooth SPP   |
 | Local TLS                       | Done (`wss://`) | Per-install certificate for `localhost`, `127.0.0.1` and `::1`, renewed while running; trust store install from the panel                                                                   |
 | Onboarding                      | Done            | First-run welcome; offers to enable secure sites then, when a browser refuses the certificate, and from a panel banner                                                                      |
 | Site identity                   | Done            | Optional name and logo sent by the page, sanitized and re-encoded ([integration.md](integration.md#site-name-and-logo))                                                                     |
@@ -215,6 +215,10 @@ carries X.509 name constraints limiting it to those loopback names and a path le
   listing, limited to the printers offered to sites: by default every printer that can print raw
   data (not PDF and XPS writers, fax, OneNote or Remote Desktop's Easy Print), and the Printers
   tab changes that per printer; see the [threat model](threat-model.md).
+- **Outbound connections:** only to the network printers the user added, by their address
+  (`printers/network.rs`): one connection per job, one job at a time per printer, with time
+  limits to connect (5 s per address) and to send (60 s). A page's `{host, port}` must match one
+  of them; NanoPrint never connects to an address a page chose.
 - **Windows of the app:** each has a capability with only the commands it calls (the settings
   window: its own commands, the app version and start with the system); the licenses window has
   none. No shell, file system, HTTP or opener plugin is included.
@@ -280,15 +284,16 @@ redeploying it:
 
 ## Testing
 
-| Level         | Tool                        | Covers                                                                                     | Status  |
-| ------------- | --------------------------- | ------------------------------------------------------------------------------------------ | ------- |
-| Unit (Rust)   | `cargo test`                | i18n, settings, protocol parsing, signed store and migrations, site name and logo checks   | Done    |
-| Unit (web)    | Vitest                      | Locale catalogs share keys and placeholders, message formatting                            | Done    |
-| Integration   | `cargo test` + tokio client | Print server: `Host`/`Origin` checks, handshake, permissions, limits, `wss://`, TLS alerts | Done    |
-| Compatibility | `cargo test` + Node         | Real qz-tray.js over `ws://` and `wss://`, with a site name, and `web-escpos-printer`      | Done    |
-| Fuzzing       | proptest + `cargo fuzz`     | Protocol parser: properties on every build, two minutes of coverage-guided fuzzing in CI   | Done    |
-| End to end    | `tauri-driver` (WebDriver)  | Settings window and permission prompt (Windows and Linux; macOS has no WebDriver support)  | M3      |
-| Manual        | Test page + real printers   | Printing on a 58 mm clone, an 80 mm printer and a network printer                          | Release |
+| Level         | Tool                        | Covers                                                                                                                        | Status  |
+| ------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Unit (Rust)   | `cargo test`                | i18n, settings, protocol parsing, signed store and migrations, site name and logo checks                                      | Done    |
+| Unit (web)    | Vitest                      | Locale catalogs share keys and placeholders, message formatting                                                               | Done    |
+| Integration   | `cargo test` + tokio client | Print server: `Host`/`Origin` checks, handshake, permissions, limits, `wss://`, TLS alerts; jobs to network printers over TCP | Done    |
+| Compatibility | `cargo test` + Node         | Real qz-tray.js over `ws://` and `wss://`, with a site name, and `web-escpos-printer`                                         | Done    |
+| Fuzzing       | proptest + `cargo fuzz`     | Protocol parser: properties on every build, two minutes of coverage-guided fuzzing in CI                                      | Done    |
+| End to end    | `tauri-driver` (WebDriver)  | Settings window and permission prompt (Windows and Linux; macOS has no WebDriver support)                                     | M3      |
+| Manual        | Test page + real printers   | Printing on a 58 mm clone, an 80 mm printer and a network printer                                                             | Release |
+| Emulated      | `npm run fake-printer`      | A network printer that shows each job as a ticket preview and answers status requests                                         | Done    |
 
 CI runs every automated level on Windows, macOS and Linux.
 
@@ -297,14 +302,14 @@ CI runs every automated level on Windows, macOS and Linux.
 **1.0 means a business can replace QZ Tray with NanoPrint** on Windows, macOS and Linux for
 printers installed in the operating system or reachable on the network (TCP 9100).
 
-| Milestone                                   | Scope                                                                                                                                                                                                  |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **M0, foundation** (done)                   | Tauri + Svelte app, tray, settings window, i18n, start with the system, lint and CI                                                                                                                    |
-| **M1, print server** (done except TCP 9100) | Loopback WebSocket, `Host`/`Origin` validation, qz-tray.js protocol subset, permission prompt, SQLite store (sites, history), OS print queue on the three systems, TCP 9100 printers added by the user |
-| **M2, local TLS** (done except Firefox)     | `wss://` with the per-install certificate, trust store integration including Firefox                                                                                                                   |
-| **M3, settings UI** (done except roles)     | Sites (granted since, last use, revoke), printers (default, roles, test page), 30-day history, port, about                                                                                             |
-| **M4, releases**                            | Signed installers, automatic updates, landing page with downloads                                                                                                                                      |
-| **M5, hardening**                           | Fuzzing, security review, compatibility matrix, user and integration guides                                                                                                                            |
+| Milestone                               | Scope                                                                                                                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **M0, foundation** (done)               | Tauri + Svelte app, tray, settings window, i18n, start with the system, lint and CI                                                                                                                    |
+| **M1, print server** (done)             | Loopback WebSocket, `Host`/`Origin` validation, qz-tray.js protocol subset, permission prompt, SQLite store (sites, history), OS print queue on the three systems, TCP 9100 printers added by the user |
+| **M2, local TLS** (done except Firefox) | `wss://` with the per-install certificate, trust store integration including Firefox                                                                                                                   |
+| **M3, settings UI** (done except roles) | Sites (granted since, last use, revoke), printers (default, roles, test page), 30-day history, port, about                                                                                             |
+| **M4, releases**                        | Signed installers, automatic updates, landing page with downloads                                                                                                                                      |
+| **M5, hardening**                       | Fuzzing, security review, compatibility matrix, user and integration guides                                                                                                                            |
 
 ### 1.0 release criteria
 

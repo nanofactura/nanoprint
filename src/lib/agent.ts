@@ -71,6 +71,8 @@ export interface PrinterView {
    * Desktop printer with Easy Print. Not offered to sites by default, and no test page.
    */
   limitation: 'virtual' | 'easyPrint' | null;
+  /** Added by the user by address (`connection` is `host:port`), rather than by the system. */
+  network: boolean;
 }
 
 /** Mirrors `Status` in `src-tauri/src/updates.rs`. Times are Unix seconds. */
@@ -141,7 +143,10 @@ export function listHistory(
   return invoke<HistoryEntry[]>('list_history', { search, category });
 }
 
-/** The system's printers. `refresh` asks the system again instead of reusing the recent list. */
+/**
+ * The system's printers, then the network printers the user added. `refresh` asks the system
+ * again instead of reusing the recent list.
+ */
 export function listPrinters(refresh: boolean): Promise<PrinterView[]> {
   return invoke<PrinterView[]>('list_printers', { refresh });
 }
@@ -149,6 +154,15 @@ export function listPrinters(refresh: boolean): Promise<PrinterView[]> {
 /** Offers a printer to web pages, or hides it from them. */
 export function setPrinterShared(name: string, shared: boolean): Promise<void> {
   return invoke('set_printer_shared', { name, shared });
+}
+
+/** Adds a network printer that prints raw jobs over TCP (usually port 9100). */
+export function addNetworkPrinter(name: string, host: string, port: number): Promise<void> {
+  return invoke('add_network_printer', { name, host, port });
+}
+
+export function removeNetworkPrinter(name: string): Promise<void> {
+  return invoke('remove_network_printer', { name });
 }
 
 /** Prints NanoPrint's ESC/POS test page, recorded in the history. */

@@ -12,7 +12,7 @@ use tauri::{AppHandle, Manager, State};
 
 use crate::{
     i18n::{self, Locale},
-    printers,
+    printers::{self, network::NetworkPrinter},
     server::Printer,
     tray,
     ui_error::UiError,
@@ -36,6 +36,8 @@ pub struct Settings {
     /// The printers the user offered to web pages (`true`) or kept from them (`false`), by name.
     /// Printers not listed follow the default (see [`Settings::shares`]).
     pub shared_printers: BTreeMap<String, bool>,
+    /// Network printers the user added by address (Printers tab).
+    pub network_printers: Vec<NetworkPrinter>,
     /// Fixed ports, or `None` for the first free one of the ports qz-tray.js clients look for.
     pub insecure_port: Option<u16>,
     pub secure_port: Option<u16>,
@@ -237,7 +239,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             json,
-            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false}"#
+            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"networkPrinters":[],"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false}"#
         );
     }
 

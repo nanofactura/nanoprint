@@ -106,7 +106,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
     },
     printers: {
       title: 'Supported printers',
-      text: 'Thermal receipt and kitchen printers that understand ESC/POS, 58 or 80 mm wide, connected by USB or over the network and installed in the system. ESC/POS is the language of most receipt printers.',
+      text: 'Thermal receipt and kitchen printers that understand ESC/POS, 58 or 80 mm wide, connected by USB or over the network. ESC/POS is the language of most receipt printers.',
       driversTitle: 'Do I need a driver?',
       drivers: [
         {
@@ -120,6 +120,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         {
           os: 'Linux',
           text: "Add it in the printer settings (CUPS) with the manufacturer's driver or as a generic printer. NanoPrint prints without filters, in raw mode.",
+        },
+        {
+          os: 'Network printer',
+          text: "It needs no driver. Add it in NanoPrint's Printers tab by IP address and port (usually 9100), and give it a fixed IP address in your router so it does not change. It can also be installed in the system like any other printer.",
         },
       ],
       note: 'NanoPrint does not install drivers, so it needs no administrator rights. Virtual printers (PDF, XPS, fax) are not offered to sites.',
@@ -199,11 +203,11 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         },
         {
           q: 'Which printers work?',
-          a: "ESC/POS thermal receipt and kitchen printers, 58 or 80 mm, installed in the system and connected by USB or over the network. NanoPrint's panel prints a test page and chooses which printers sites can see.",
+          a: "ESC/POS thermal receipt and kitchen printers, 58 or 80 mm, connected by USB or over the network: installed in the system or, for network printers, added in NanoPrint by IP address. NanoPrint's panel prints a test page and chooses which printers sites can see.",
         },
         {
           q: 'Do I need a special driver?',
-          a: "No. The printer must be installed in the operating system, with the manufacturer's driver or a generic one. NanoPrint sends the commands as they are.",
+          a: "No. A network printer can be added in NanoPrint by IP address, with no driver. Otherwise the printer must be installed in the operating system, with the manufacturer's driver or a generic one. NanoPrint sends the commands as they are.",
         },
         {
           q: 'Can a web page print without me noticing?',

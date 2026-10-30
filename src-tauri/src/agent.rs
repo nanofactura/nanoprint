@@ -14,7 +14,10 @@ use crate::{
     identity::Identity,
     onboarding,
     permissions::Permissions,
-    printers,
+    printers::{
+        self,
+        network::{Links, NetworkPrinter},
+    },
     protocol::{PrintRequest, PrinterTarget},
     server::{Agent, Printer, Rejection},
     settings::{Settings, SettingsStore},
@@ -157,12 +160,17 @@ impl Agent for AppAgent {
         self.permissions.subscribe()
     }
 
-    /// The printers web pages may see: those the system reports and the user offers them.
+    /// The printers web pages may see: those the system reports or the user added, and the user
+    /// offers them.
     fn printers(&self) -> BoxFuture<'static, Result<Vec<Printer>, String>> {
         let cache = Arc::clone(&self.printers);
         let settings = self.settings();
         Box::pin(async move {
-            let mut printers = cache.list(false).await?;
+            let mut printers: Vec<_> = all_printers(&cache, &settings)
+                .await?
+                .iter()
+                .map(Destination::printer)
+                .collect();
             printers.retain(|printer| settings.shares(printer));
             Ok(printers)
         })
@@ -173,6 +181,7 @@ impl Agent for AppAgent {
         self.app.state::<Updates>().printed();
         let store = Arc::clone(&self.store);
         let cache = Arc::clone(&self.printers);
+        let links = Arc::clone(&self.app.state::<Arc<Links>>());
         let settings = self.settings();
         let origin = origin.to_owned();
         let admission = self.admit(&origin);
@@ -197,7 +206,7 @@ impl Agent for AppAgent {
             };
             let bytes = request.data.len() * usize::try_from(request.copies).unwrap_or(1);
             let started = Instant::now();
-            let result = deliver(&cache, &settings, request, &job_name).await;
+            let result = deliver(&cache, &links, &settings, request, &job_name).await;
             let event = Event {
                 origin: Some(&origin),
                 printer: Some(&target),
@@ -266,29 +275,39 @@ impl Failure {
     }
 }
 
-/// Sends the job to the printer queue.
+/// Sends the job to the printer queue, or straight to a network printer.
 async fn deliver(
     cache: &PrinterCache,
+    links: &Links,
     settings: &Settings,
     request: PrintRequest,
     job_name: &str,
 ) -> Result<(), Failure> {
-    let PrinterTarget::Name(printer) = request.printer else {
-        return Err(Failure::coded(
-            "network_printer",
-            "Network printers must be added in NanoPrint first",
-        ));
-    };
-    // Only printers the operating system reports can be used: the name never reaches the spooler
-    // unless it matches one exactly.
-    let Some(found) = cache.find(&printer).await.map_err(Failure::system)? else {
-        return Err(Failure::coded(
-            "printer_not_found",
-            "Specified printer could not be found.",
-        ));
+    // Only printers the operating system reports or the user added can be used: the name never
+    // reaches the spooler unless it matches one exactly, and a page's address must be one the
+    // user added.
+    let destination = match &request.printer {
+        PrinterTarget::Name(name) => find_printer(cache, settings, name)
+            .await
+            .map_err(Failure::system)?
+            .ok_or_else(|| {
+                Failure::coded("printer_not_found", "Specified printer could not be found.")
+            })?,
+        PrinterTarget::Host { host, port } => settings
+            .network_printers
+            .iter()
+            .find(|printer| printer.is_at(host, *port))
+            .cloned()
+            .map(Destination::Network)
+            .ok_or_else(|| {
+                Failure::coded(
+                    "network_printer",
+                    "Network printers must be added in NanoPrint first",
+                )
+            })?,
     };
     // A printer kept from web pages does not exist as far as the page knows.
-    if !settings.shares(&found) {
+    if !settings.shares(&destination.printer()) {
         return Err(Failure::coded(
             "printer_hidden",
             "Specified printer could not be found.",
@@ -297,11 +316,81 @@ async fn deliver(
     let data = request
         .data
         .repeat(usize::try_from(request.copies).unwrap_or(1));
-    let job_name = job_name.to_owned();
-    tauri::async_runtime::spawn_blocking(move || printers::print_raw(&printer, &job_name, &data))
+    send(links, destination, job_name.to_owned(), data)
         .await
-        .map_err(|error| Failure::system(error.to_string()))?
-        .map_err(|error| Failure::system(error.to_string()))
+        .map_err(Failure::system)
+}
+
+/// A printer jobs can go to.
+#[derive(Debug, Clone)]
+pub enum Destination {
+    /// Reported by the operating system: jobs go through its queue.
+    System(Printer),
+    /// Added by the user: jobs go over the network to its address.
+    Network(NetworkPrinter),
+}
+
+impl Destination {
+    pub fn printer(&self) -> Printer {
+        match self {
+            Self::System(printer) => printer.clone(),
+            Self::Network(printer) => printer.printer(),
+        }
+    }
+}
+
+/// The printers the system reports, then the network printers the user added. A system printer
+/// with the name of an added one is left out, so every name leads to one printer.
+pub async fn all_printers(
+    cache: &PrinterCache,
+    settings: &Settings,
+) -> Result<Vec<Destination>, String> {
+    let added = &settings.network_printers;
+    Ok(cache
+        .list(false)
+        .await?
+        .into_iter()
+        .filter(|printer| added.iter().all(|known| known.name != printer.name))
+        .map(Destination::System)
+        .chain(added.iter().cloned().map(Destination::Network))
+        .collect())
+}
+
+/// The printer named exactly `name`: a network printer the user added, or one the system reports.
+pub async fn find_printer(
+    cache: &PrinterCache,
+    settings: &Settings,
+    name: &str,
+) -> Result<Option<Destination>, String> {
+    if let Some(printer) = settings
+        .network_printers
+        .iter()
+        .find(|printer| printer.name == name)
+    {
+        return Ok(Some(Destination::Network(printer.clone())));
+    }
+    Ok(cache.find(name).await?.map(Destination::System))
+}
+
+/// Prints `data` as one raw job. The error is the system's message.
+pub async fn send(
+    links: &Links,
+    destination: Destination,
+    job_name: String,
+    data: Vec<u8>,
+) -> Result<(), String> {
+    match destination {
+        Destination::Network(printer) => links
+            .send(&printer, &data)
+            .await
+            .map_err(|error| format!("{}: {error}", printer.address())),
+        Destination::System(printer) => tauri::async_runtime::spawn_blocking(move || {
+            printers::print_raw(&printer.name, &job_name, &data)
+        })
+        .await
+        .map_err(|error| error.to_string())?
+        .map_err(|error| error.to_string()),
+    }
 }
 
 /// The system's printer list. Listing can take seconds (an offline network printer on Windows),
@@ -350,5 +439,109 @@ async fn identity(certificate: Option<String>) -> Option<Identity> {
 pub fn record(store: &Store, kind: EventKind, event: &Event<'_>) {
     if let Err(error) = store.record(kind, event) {
         log::warn!("could not record history: {error}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use tokio::{io::AsyncReadExt, net::TcpListener, task::JoinHandle};
+
+    use super::*;
+    use crate::printers::network;
+
+    /// A network printer on this computer that hands back the bytes of the first job it gets.
+    async fn fake_printer() -> (u16, JoinHandle<Vec<u8>>) {
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let job = tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut data = Vec::new();
+            socket.read_to_end(&mut data).await.unwrap();
+            data
+        });
+        (port, job)
+    }
+
+    fn added(name: &str, port: u16) -> Settings {
+        Settings {
+            network_printers: vec![network::check(name, "127.0.0.1", port).unwrap()],
+            ..Settings::default()
+        }
+    }
+
+    fn job(printer: PrinterTarget, copies: u32) -> PrintRequest {
+        PrintRequest {
+            printer,
+            job_name: None,
+            copies,
+            data: b"\x1b@ticket\n".to_vec(),
+        }
+    }
+
+    async fn deliver_to(settings: &Settings, printer: PrinterTarget) -> Result<(), Failure> {
+        // Network printers are found without listing the system's printers.
+        let cache = PrinterCache::default();
+        deliver(&cache, &Links::default(), settings, job(printer, 2), "Test").await
+    }
+
+    #[tokio::test]
+    async fn prints_to_an_added_network_printer_by_name() {
+        let (port, received) = fake_printer().await;
+        let settings = added("Kitchen", port);
+        let printed = deliver_to(&settings, PrinterTarget::Name("Kitchen".into())).await;
+        assert!(printed.is_ok());
+        assert_eq!(received.await.unwrap(), b"\x1b@ticket\n\x1b@ticket\n");
+    }
+
+    #[tokio::test]
+    async fn prints_to_the_address_of_an_added_printer() {
+        let (port, received) = fake_printer().await;
+        let settings = added("Kitchen", port);
+        let target = PrinterTarget::Host {
+            host: "127.0.0.1".into(),
+            port,
+        };
+        assert!(deliver_to(&settings, target).await.is_ok());
+        assert_eq!(received.await.unwrap().len(), 2 * b"\x1b@ticket\n".len());
+    }
+
+    #[tokio::test]
+    async fn refuses_an_address_the_user_did_not_add() {
+        let (port, _received) = fake_printer().await;
+        let settings = added("Kitchen", port);
+        for (host, port) in [("127.0.0.1", port ^ 1), ("127.0.0.2", port)] {
+            let target = PrinterTarget::Host {
+                host: host.into(),
+                port,
+            };
+            let failure = deliver_to(&settings, target).await.err().unwrap();
+            assert_eq!(failure.history, "network_printer", "{host}:{port}");
+        }
+    }
+
+    #[tokio::test]
+    async fn refuses_a_network_printer_kept_from_sites() {
+        let (port, _received) = fake_printer().await;
+        let mut settings = added("Kitchen", port);
+        settings.shared_printers.insert("Kitchen".into(), false);
+        let target = PrinterTarget::Host {
+            host: "127.0.0.1".into(),
+            port,
+        };
+        let failure = deliver_to(&settings, target).await.err().unwrap();
+        assert_eq!(failure.history, "printer_hidden");
+    }
+
+    #[tokio::test]
+    async fn reports_a_network_printer_that_does_not_answer() {
+        let (port, received) = fake_printer().await;
+        received.abort();
+        let _ = received.await;
+        let settings = added("Kitchen", port);
+        let failure = deliver_to(&settings, PrinterTarget::Name("Kitchen".into()))
+            .await
+            .err()
+            .unwrap();
+        assert!(failure.history.starts_with(&format!("127.0.0.1:{port}: ")));
     }
 }

@@ -7,6 +7,13 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Network printers: add a printer connected by cable or Wi-Fi in the Printers tab, by IP address
+  or host name and port (9100 by default), with no driver. Sites see it next to the system's
+  printers and print to it by name, or by `{host, port}` when it matches one the user added;
+  NanoPrint never connects to an address a page chose. Jobs go one at a time per printer.
+
 ## [0.2.1] - 2026-10-30
 
 ### Security

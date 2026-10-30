@@ -107,7 +107,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
     },
     printers: {
       title: 'Impresoras compatibles',
-      text: 'Impresoras térmicas de tickets y comandas que entienden ESC/POS, de 58 u 80 mm, conectadas por USB o por red e instaladas en el sistema. ESC/POS es el lenguaje de la gran mayoría de las impresoras de tickets.',
+      text: 'Impresoras térmicas de tickets y comandas que entienden ESC/POS, de 58 u 80 mm, conectadas por USB o por red. ESC/POS es el lenguaje de la gran mayoría de las impresoras de tickets.',
       driversTitle: '¿Hace falta un driver?',
       drivers: [
         {
@@ -121,6 +121,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         {
           os: 'Linux',
           text: 'Agregala en la configuración de impresoras (CUPS) con el driver del fabricante o como impresora genérica. NanoPrint imprime sin filtros, en modo raw.',
+        },
+        {
+          os: 'Impresora de red',
+          text: 'No necesita driver. Agregala en la pestaña Impresoras de NanoPrint con su dirección IP y puerto (casi siempre 9100), y dale una IP fija en el router para que no cambie. También se puede instalar en el sistema como cualquier otra.',
         },
       ],
       note: 'NanoPrint no instala drivers: así no necesita permisos de administrador. Las impresoras virtuales (PDF, XPS, fax) no se ofrecen a los sitios.',
@@ -200,11 +204,11 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         },
         {
           q: '¿Qué impresoras funcionan?',
-          a: 'Impresoras térmicas de tickets y comandas ESC/POS de 58 u 80 mm instaladas en el sistema, por USB o por red. Desde el panel de NanoPrint podés imprimir una página de prueba y elegir qué impresoras ve cada sitio.',
+          a: 'Impresoras térmicas de tickets y comandas ESC/POS de 58 u 80 mm, por USB o por red: instaladas en el sistema o, las de red, agregadas en NanoPrint con su dirección IP. Desde el panel de NanoPrint podés imprimir una página de prueba y elegir qué impresoras ve cada sitio.',
         },
         {
           q: '¿Tengo que instalar un driver especial?',
-          a: 'No. La impresora tiene que estar instalada en el sistema operativo, con el driver del fabricante o uno genérico. NanoPrint envía los comandos tal cual.',
+          a: 'No. Una impresora de red se puede agregar en NanoPrint con su dirección IP, sin driver. Si no, la impresora tiene que estar instalada en el sistema operativo, con el driver del fabricante o uno genérico. NanoPrint envía los comandos tal cual.',
         },
         {
           q: '¿Una página puede imprimir sin que me dé cuenta?',
