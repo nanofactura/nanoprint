@@ -1,14 +1,14 @@
 <script lang="ts">
   import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
   import Check from '@lucide/svelte/icons/check';
-  import CodeBlock from '$lib/components/CodeBlock.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-  import Header from '$lib/components/Header.svelte';
-  import PrintDemo from '$lib/components/PrintDemo.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import { messages, pages, type Lang } from '$lib/i18n';
-  import { docs, NANOFACTURA_URL, REPO_URL, SITE_URL } from '$lib/site';
+  import CodeBlock from '#lib/components/CodeBlock.svelte';
+  import Footer from '#lib/components/Footer.svelte';
+  import Header from '#lib/components/Header.svelte';
+  import PrintDemo from '#lib/components/PrintDemo.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import Seo from '#lib/components/Seo.svelte';
+  import { messages, pages, type Lang } from '#lib/i18n/index.ts';
+  import { docs, NANOFACTURA_URL, REPO_URL, SITE_URL } from '#lib/site.ts';
 
   let { lang }: { lang: Lang } = $props();
 

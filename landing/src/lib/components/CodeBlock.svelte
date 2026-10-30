@@ -2,7 +2,7 @@
 <script lang="ts">
   import Check from '@lucide/svelte/icons/check';
   import Copy from '@lucide/svelte/icons/copy';
-  import { messages, type Lang } from '$lib/i18n';
+  import { messages, type Lang } from '#lib/i18n/index.ts';
 
   let { code, lang, label = 'JavaScript' }: { code: string; lang: Lang; label?: string } = $props();
 

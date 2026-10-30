@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pages } from '$lib/i18n';
+  import { pages } from '#lib/i18n/index.ts';
 </script>
 
 <svelte:head>

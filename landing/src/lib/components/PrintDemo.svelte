@@ -8,8 +8,8 @@
   import Printer from '@lucide/svelte/icons/printer';
   import type { Qz } from 'qz-tray';
   import { onDestroy } from 'svelte';
-  import { format, messages, pages, type Lang } from '$lib/i18n';
-  import { SITE_URL } from '$lib/site';
+  import { format, messages, pages, type Lang } from '#lib/i18n/index.ts';
+  import { SITE_URL } from '#lib/site.ts';
 
   let { lang }: { lang: Lang } = $props();
 

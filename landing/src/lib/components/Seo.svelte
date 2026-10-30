@@ -3,8 +3,15 @@
   language (hreflang, with English for every other language), social previews and structured data.
 -->
 <script lang="ts">
-  import { FALLBACK_LANG, languages, messages, pages, type Lang, type Page } from '$lib/i18n';
-  import { SITE_URL } from '$lib/site';
+  import {
+    FALLBACK_LANG,
+    languages,
+    messages,
+    pages,
+    type Lang,
+    type Page,
+  } from '#lib/i18n/index.ts';
+  import { SITE_URL } from '#lib/site.ts';
 
   let {
     lang,

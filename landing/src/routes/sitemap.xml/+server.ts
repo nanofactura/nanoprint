@@ -1,5 +1,5 @@
-import { FALLBACK_LANG, languages, pages } from '$lib/i18n';
-import { SITE_URL } from '$lib/site';
+import { FALLBACK_LANG, languages, pages } from '#lib/i18n/index.ts';
+import { SITE_URL } from '#lib/site.ts';
 
 export const prerender = true;
 export const trailingSlash = 'never';

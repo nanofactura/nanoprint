@@ -1,4 +1,4 @@
-import type { downloads } from '$lib/site';
+import type { downloads } from '#lib/site.ts';
 
 export interface Faq {
   q: string;

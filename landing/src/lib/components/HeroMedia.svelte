@@ -6,7 +6,7 @@
 <script lang="ts">
   import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
   import { onMount } from 'svelte';
-  import { messages, type Lang } from '$lib/i18n';
+  import { messages, type Lang } from '#lib/i18n/index.ts';
 
   let { lang }: { lang: Lang } = $props();
 

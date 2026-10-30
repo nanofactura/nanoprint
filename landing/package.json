@@ -4,6 +4,12 @@
   "description": "NanoPrint's website, nanoprint.nanofactura.com: a static site deployed to Cloudflare Pages.",
   "license": "GPL-3.0-only",
   "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "overrides": {
+    "undici": "7.30.1"
+  },
   "engines": {
     "node": ">=24"
   },
@@ -21,14 +27,14 @@
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@point-of-sale/receipt-printer-encoder": "^4.0.1",
-    "@sveltejs/kit": "^2.70.3",
     "qz-tray": "^2.3.0",
     "svelte": "^5.57.2"
   },
   "devDependencies": {
     "@lucide/svelte": "^1.61.0",
     "@resvg/resvg-js": "^2.6.2",
-    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/adapter-static": "^4.0.0",
+    "@sveltejs/kit": "^3.1.0",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.19.2",

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { messages, pages, type Lang } from '$lib/i18n';
-  import { docs, NANOFACTURA_URL, REPO_URL } from '$lib/site';
+  import { messages, pages, type Lang } from '#lib/i18n/index.ts';
+  import { docs, NANOFACTURA_URL, REPO_URL } from '#lib/site.ts';
 
   let { lang }: { lang: Lang } = $props();
 

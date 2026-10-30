@@ -1,7 +1,7 @@
 <script lang="ts">
   import Menu from '@lucide/svelte/icons/menu';
-  import { messages, pages, type Lang, type Page } from '$lib/i18n';
-  import { REPO_URL } from '$lib/site';
+  import { messages, pages, type Lang, type Page } from '#lib/i18n/index.ts';
+  import { REPO_URL } from '#lib/site.ts';
 
   let { lang, page }: { lang: Lang; page: Page } = $props();
 
