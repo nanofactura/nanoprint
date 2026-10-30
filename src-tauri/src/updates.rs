@@ -6,6 +6,10 @@
 //!
 //! The user can turn automatic updates off in Preferences: NanoPrint then connects to nothing, and
 //! a check happens only when the user asks for one.
+//!
+//! If an update did not install (an antivirus blocked the installer, for example), the installer
+//! starts the previous version again (`src-tauri/windows/hooks.nsh`), which waits six hours before
+//! it tries again instead of a minute.
 
 use std::{
     sync::{Mutex, MutexGuard, PoisonError},
@@ -126,12 +130,13 @@ impl Updates {
 
 pub fn start(app: &AppHandle) {
     app.manage(Updates::new());
+    let first_check = first_check(app);
     if unsupported().is_some() {
         return;
     }
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
-        tokio::time::sleep(FIRST_CHECK).await;
+        tokio::time::sleep(first_check).await;
         let mut next_check = Instant::now();
         loop {
             if automatic(&app) {
@@ -150,6 +155,31 @@ pub fn start(app: &AppHandle) {
             tokio::time::sleep(TICK).await;
         }
     });
+}
+
+/// When to check first: soon, unless the update this start follows did not install.
+fn first_check(app: &AppHandle) -> Duration {
+    let settings = app.state::<SettingsStore>();
+    let Some(attempted) = settings.get().installing_update else {
+        return FIRST_CHECK;
+    };
+    if let Err(error) = settings.update(|settings| settings.installing_update = None) {
+        log::warn!("could not save the settings: {error}");
+    }
+    let running = app.package_info().version.to_string();
+    if installed(&attempted, &running) {
+        log::info!("updated to NanoPrint {running}");
+        FIRST_CHECK
+    } else {
+        log::warn!(
+            "NanoPrint {attempted} did not install; still on {running}, trying again in six hours"
+        );
+        CHECK_EVERY
+    }
+}
+
+fn installed(attempted: &str, running: &str) -> bool {
+    attempted == running
 }
 
 fn automatic(app: &AppHandle) -> bool {
@@ -212,7 +242,10 @@ fn install(app: &AppHandle) -> Result<(), UiError> {
     // The installer starts NanoPrint again with the arguments it has now; the next start stays
     // in the tray whatever they are.
     app.state::<SettingsStore>()
-        .update(|settings| settings.quiet_next_start = true)
+        .update(|settings| {
+            settings.quiet_next_start = true;
+            settings.installing_update = Some(update.version.clone());
+        })
         .map_err(|error| UiError::with_detail("settings", &error))?;
     if let Err(error) = update.install(bytes) {
         log::warn!("could not install NanoPrint {}: {error}", update.version);
@@ -286,6 +319,15 @@ mod tests {
         assert!(!updates.idle(), "a job just printed");
         *updates.last_print.lock().unwrap() = Instant::now().checked_sub(IDLE_BEFORE_INSTALL);
         assert!(updates.idle(), "the last job is old enough");
+    }
+
+    #[test]
+    fn tells_whether_the_update_installed() {
+        assert!(installed("0.3.0", "0.3.0"));
+        assert!(
+            !installed("0.3.0", "0.2.1"),
+            "still on the previous version"
+        );
     }
 
     #[test]
