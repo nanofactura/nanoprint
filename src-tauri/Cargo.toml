@@ -33,7 +33,7 @@ log = "0.4"
 nanoprint-protocol = { path = "../crates/protocol" }
 # TLS with the `ring` backend: pure Rust plus small C/assembly parts, no CMake or NASM needed.
 rcgen = { version = "0.14", default-features = false, features = ["crypto", "pem", "ring"] }
-rusqlite = { version = "0.40", features = ["bundled", "functions"] }
+rusqlite = { version = "0.41", features = ["bundled", "functions"] }
 rustls = { version = "0.23", default-features = false, features = ["logging", "ring", "std"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
