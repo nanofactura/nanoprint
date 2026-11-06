@@ -181,7 +181,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         'Windows installers are going to be signed through the SignPath Foundation program for open-source projects. The application is in progress: current releases are not signed yet. "Free code signing provided by SignPath.io, certificate by SignPath Foundation".',
         'Every installer is built by GitHub Actions from the published source, and a project maintainer approves each signing.',
         'Author, reviewer and approver: Mariano Paulin (@marianopaulin02).',
-        'Privacy: NanoPrint does not transfer any information to other networked systems unless specifically requested by the person using it. The one exception, from version 0.2.0, is checking GitHub for updates, which can be turned off in Preferences.',
+        'Privacy: NanoPrint does not transfer any information to other networked systems unless specifically requested by the person using it. The one exception, from version 0.2.0, is checking GitHub for new versions, a minute after it starts and every six hours.',
       ],
     },
     openSource: {
@@ -223,7 +223,7 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         },
         {
           q: 'Does NanoPrint store what I print?',
-          a: 'No. Its history keeps the date, site, printer and result of each job for 30 days, never the content. NanoPrint only connects to GitHub to look for updates, and you can turn that off.',
+          a: 'No. Its history keeps the date, site, printer and result of each job for 30 days, never the content. NanoPrint only connects to GitHub to look for new versions; with automatic updates off, it lets you know and you decide when to install.',
         },
         {
           q: 'Why do Windows and macOS warn me when installing?',

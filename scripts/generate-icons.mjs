@@ -25,6 +25,36 @@ function squared(svg, padding = 0) {
 }
 
 /**
+ * Returns `svg` (already squared) with a dot in its top-right corner, the update badge of the tray
+ * icon. A transparent ring cuts the mark around the dot, so it stands apart at 16 px.
+ * @param {string} svg
+ * @param {string} color
+ * @returns {string}
+ */
+function withBadge(svg, color) {
+  const match = /viewBox="([^"]+)"/.exec(svg);
+  const open = /<svg[^>]*>/.exec(svg);
+  if (!match || !open) throw new Error('SVG master without a viewBox');
+  const [x, y, side] = match[1].trim().split(/\s+/).map(Number);
+  const radius = side * 0.22;
+  const ring = side * 0.07;
+  const cx = x + side - radius;
+  const cy = y + radius;
+  const body = svg.slice(open.index + open[0].length, svg.lastIndexOf('</svg>'));
+  const area = `x="${String(x)}" y="${String(y)}" width="${String(side)}" height="${String(side)}"`;
+  return `${open[0]}
+  <defs>
+    <mask id="badge-ring" maskUnits="userSpaceOnUse" ${area}>
+      <rect ${area} fill="#fff"/>
+      <circle cx="${String(cx)}" cy="${String(cy)}" r="${String(radius + ring)}" fill="#000"/>
+    </mask>
+  </defs>
+  <g mask="url(#badge-ring)">${body}</g>
+  <circle cx="${String(cx)}" cy="${String(cy)}" r="${String(radius)}" fill="${color}"/>
+</svg>`;
+}
+
+/**
  * @param {string} svg
  * @param {number} size Width and height in pixels.
  * @param {string} file
@@ -41,13 +71,18 @@ const mono = readFileSync(`${BRAND}/isologo-nanoprint-mono.svg`, 'utf8');
 // Tray, Windows (16–48 px for 100–300% display scale) and Linux panels (22–48 px). The mark fills
 // the whole height: at these sizes every pixel counts.
 mkdirSync(`${ICONS}/tray`, { recursive: true });
+// The badge variants show that an update waits for the user (`tray::show_update`).
+const BADGE = '#e5484d';
 for (const size of [16, 20, 22, 24, 32, 40, 48]) {
   render(squared(isologo), size, `${ICONS}/tray/tray-${String(size)}.png`);
+  render(withBadge(squared(isologo), BADGE), size, `${ICONS}/tray/tray-badge-${String(size)}.png`);
 }
 
 // Tray, macOS: template images (black + alpha) that the menu bar tints for light and dark modes.
 render(squared(mono), 18, `${ICONS}/tray/tray-template.png`);
 render(squared(mono), 36, `${ICONS}/tray/tray-template@2x.png`);
+render(withBadge(squared(mono), '#000'), 18, `${ICONS}/tray/tray-badge-template.png`);
+render(withBadge(squared(mono), '#000'), 36, `${ICONS}/tray/tray-badge-template@2x.png`);
 
 // App icon master, then `tauri icon` derives the .ico, .icns and PNG sizes from it.
 render(squared(isologo, 0.06), 1024, APP_ICON);

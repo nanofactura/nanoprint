@@ -81,6 +81,8 @@ export type UpdateStatus =
   | { state: 'idle' }
   | { state: 'checking' }
   | { state: 'upToDate'; checkedAt: number }
+  /** Found while automatic updates are off: waits for the user to install it. */
+  | { state: 'available'; version: string }
   | { state: 'downloading'; version: string }
   | { state: 'ready'; version: string }
   | { state: 'failed'; message: string };
@@ -88,9 +90,12 @@ export type UpdateStatus =
 /** Mirrors `UpdateView` in `src-tauri/src/updates.rs`. */
 export interface UpdateView {
   status: UpdateStatus;
-  /** Checks and installs on its own; otherwise only when the user asks. */
+  /** Downloads and installs on its own; otherwise it lets the user know and waits. */
   automatic: boolean;
 }
+
+/** Sent with an `UpdateView` whenever it changes. Mirrors `STATUS_CHANGED` in `updates.rs`. */
+export const UPDATE_STATUS_CHANGED = 'update-status-changed';
 
 /** Mirrors `PermissionRequest` in `src-tauri/src/permissions.rs`. */
 export interface PermissionRequest {
@@ -196,12 +201,15 @@ export function getUpdateStatus(): Promise<UpdateView> {
   return invoke<UpdateView>('get_update_status');
 }
 
-/** Checks GitHub for a newer version now and downloads it; resolves when done. */
+/**
+ * Checks GitHub for a newer version now, and downloads it if updates are automatic; resolves when
+ * done.
+ */
 export function checkForUpdates(): Promise<UpdateView> {
   return invoke<UpdateView>('check_for_updates');
 }
 
-/** Installs the downloaded update; NanoPrint closes and starts again. */
+/** Downloads the update if needed and installs it; NanoPrint closes and starts again. */
 export function installUpdate(): Promise<void> {
   return invoke('install_update');
 }

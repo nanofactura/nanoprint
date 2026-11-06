@@ -7,8 +7,16 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- With automatic updates off, a new version puts a dot on the tray icon, its number in the
+  tooltip and a banner at the top of the panel, with a button that downloads and installs it.
+
 ### Changed
 
+- With automatic updates off, NanoPrint now checks GitHub for new versions too, a minute after it
+  starts and every six hours, instead of connecting to nothing. It stops checking once it finds
+  one, and downloads it only when you install it.
 - Windows: updates install without showing the installer. If one cannot install, NanoPrint starts
   again with the installed version and tries later, with no message to dismiss. This applies to
   updates installed from this version on.

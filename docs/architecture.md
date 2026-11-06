@@ -31,7 +31,7 @@ time it runs with no window open, so its footprint is one Rust process and a tra
 | Onboarding                      | Done            | First-run welcome; offers to enable secure sites then, when a browser refuses the certificate, and from a panel banner                                                                      |
 | Site identity                   | Done            | Optional name and logo sent by the page, sanitized and re-encoded ([integration.md](integration.md#site-name-and-logo))                                                                     |
 | LAN mode                        | Planned         | Opt-in listener on the LAN with device pairing                                                                                                                                              |
-| Updater                         | Done            | Signed automatic updates from GitHub Releases, installed when no job is printing; can be turned off                                                                                         |
+| Updater                         | Done            | Signed updates from GitHub Releases, installed when no job is printing, or with automatic updates off announced on the tray icon and in the panel                                           |
 
 ## Compatibility with qz-tray.js clients
 
@@ -255,8 +255,10 @@ carries X.509 name constraints limiting it to those loopback names and a path le
    NanoPrint closed ([hooks.nsh](../src-tauri/windows/hooks.nsh)).
    The settings record which version was being installed: a start that is still on the previous
    version waits six hours before trying again, so a blocked update does not retry every minute.
-4. Preferences → Updates shows the state, checks on request and installs a downloaded update at
-   once. Turned off, NanoPrint checks only when asked: it then makes no connection of its own.
+4. Preferences → Updates shows the state, checks on request and installs an update at once. With
+   automatic updates off, NanoPrint still checks but does not download: a version it finds puts a
+   dot on the tray icon and a banner in the settings window, and NanoPrint stops checking until
+   the user installs it (which downloads and verifies it first) or turns automatic updates on.
 
 Release artifacts are additionally signed for the operating system: Authenticode on Windows (for
 example through SignPath, free for open-source projects), Developer ID plus notarization on macOS.
