@@ -7,6 +7,8 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-06
+
 ### Added
 
 - Network printers: add a printer connected by cable or Wi-Fi in the Printers tab, by IP address
@@ -18,6 +20,7 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 - Windows installer: the desktop shortcut is unchecked by default. Installing a new version by hand
   keeps the shortcut if there was one; updates never add it.
+- Updated SQLite to 3.54.0, the updater and single-instance plugins and other dependencies.
 
 ### Fixed
 
@@ -25,6 +28,14 @@ and versions follow [Semantic Versioning](https://semver.org/).
   NanoPrint starts again with the installed version instead of staying closed, and tries the
   update again later.
 - Windows: installing a new version by hand no longer turns off start with the system.
+- Linux: async-executor 1.14.0, withdrawn for a use-after-free when an executor is dropped, is
+  replaced with 1.13.3.
+
+### Security
+
+- Updates are extracted with zip 9.1.3, which fixes three extraction flaws (RUSTSEC-2026-0367,
+  RUSTSEC-2026-0368, RUSTSEC-2026-0369). Updates were already verified against NanoPrint's update
+  key before extraction.
 
 ## [0.2.1] - 2026-10-30
 
@@ -81,7 +92,8 @@ First public release.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/nanofactura/nanoprint/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/nanofactura/nanoprint/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/nanofactura/nanoprint/releases/tag/v0.1.0
