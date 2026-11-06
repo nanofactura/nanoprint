@@ -246,9 +246,9 @@ carries X.509 name constraints limiting it to those loopback names and a path le
    verification aborts the update.
 3. It installs once no job has printed for five minutes, so it never interrupts printing, and
    starts again quietly in the tray (a flag in the settings marks the start after an update).
-   Windows runs the per-user installer in passive mode; macOS replaces the app bundle; the Linux
-   AppImage replaces itself. `.deb` and `.rpm` installs update through their package manager, and
-   development builds never update.
+   Windows runs the per-user installer silently, with no window; macOS replaces the app bundle;
+   the Linux AppImage replaces itself. `.deb` and `.rpm` installs update through their package
+   manager, and development builds never update.
    During an update, the Windows installer waits up to 30 seconds for NanoPrint's executable to be
    free (NanoPrint finishing closing, an antivirus scanning it) before it checks that nothing runs
    it. If the installation still fails, it starts the installed version again instead of leaving

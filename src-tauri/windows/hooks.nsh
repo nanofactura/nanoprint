@@ -6,6 +6,11 @@
 
 !include LogicLib.nsh
 
+; A file the installer cannot write (an antivirus holding it, for example) fails the installation
+; instead of being skipped. Updates run silently, where NSIS would otherwise skip it and report
+; success: the old program would stay while the registry and the uninstaller said the new version.
+AllowSkipFiles off
+
 ; The installed NanoPrint, known once the installation starts.
 Var NanoPrintExe
 ; Whether the desktop shortcut existed when the installer started.
