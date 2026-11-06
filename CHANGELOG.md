@@ -7,6 +7,12 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Windows: an update no longer fails with "could not close NanoPrint" while something still holds
+  NanoPrint's program file, such as an antivirus scanning it right after the download or NanoPrint
+  itself finishing closing. The installer waits up to 30 seconds for the file to be free.
+
 ## [0.3.0] - 2026-11-06
 
 ### Added

@@ -249,8 +249,10 @@ carries X.509 name constraints limiting it to those loopback names and a path le
    Windows runs the per-user installer in passive mode; macOS replaces the app bundle; the Linux
    AppImage replaces itself. `.deb` and `.rpm` installs update through their package manager, and
    development builds never update.
-   If the Windows installer fails (an antivirus blocking it, for example), it starts the installed
-   version again instead of leaving NanoPrint closed ([hooks.nsh](../src-tauri/windows/hooks.nsh)).
+   During an update, the Windows installer waits up to 30 seconds for NanoPrint's executable to be
+   free (NanoPrint finishing closing, an antivirus scanning it) before it checks that nothing runs
+   it. If the installation still fails, it starts the installed version again instead of leaving
+   NanoPrint closed ([hooks.nsh](../src-tauri/windows/hooks.nsh)).
    The settings record which version was being installed: a start that is still on the previous
    version waits six hours before trying again, so a blocked update does not retry every minute.
 4. Preferences → Updates shows the state, checks on request and installs a downloaded update at
