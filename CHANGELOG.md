@@ -18,8 +18,12 @@ and versions follow [Semantic Versioning](https://semver.org/).
   starts and every six hours, instead of connecting to nothing. It stops checking once it finds
   one, and downloads it only when you install it.
 - Windows: updates install without showing the installer. If one cannot install, NanoPrint starts
-  again with the installed version and tries later, with no message to dismiss. This applies to
-  updates installed from this version on.
+  again with the installed version, with no message to dismiss. This applies to updates installed
+  from this version on.
+- An update that could not install (an antivirus blocking it, for example) is no longer tried
+  again by itself, which only raised the antivirus alert again: the dot on the tray icon and the
+  banner say it could not be installed, with a button to try again. A newer version installs
+  automatically as usual.
 
 ### Fixed
 

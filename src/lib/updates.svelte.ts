@@ -14,15 +14,17 @@ export function setUpdateView(view: UpdateView): void {
 }
 
 /**
- * The version that waits for the user to install it: found while automatic updates are off.
- * Mirrors `waiting` in `src-tauri/src/updates.rs`, which also puts a dot on the tray icon.
+ * The version that waits for the user to install it: found while automatic updates are off, or
+ * one that could not be installed. Mirrors `waiting` in `src-tauri/src/updates.rs`, which also puts
+ * a dot on the tray icon.
  */
 export function waitingVersion(view: UpdateView | undefined = current): string | undefined {
-  if (!view || view.automatic) return undefined;
+  if (!view) return undefined;
   const { status } = view;
-  return status.state === 'available' || status.state === 'downloading' || status.state === 'ready'
-    ? status.version
-    : undefined;
+  if (status.state !== 'available' && status.state !== 'downloading' && status.state !== 'ready') {
+    return undefined;
+  }
+  return !view.automatic || view.failed === status.version ? status.version : undefined;
 }
 
 /** Loads the status and follows its changes. Returns the function that stops following them. */

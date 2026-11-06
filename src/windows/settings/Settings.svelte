@@ -32,9 +32,11 @@
   let refreshKey = $state(0);
   let updating = $state(false);
 
-  /** A version found while automatic updates are off, shown in the banner until it installs. */
+  /** A version that waits for the user, shown in the banner until it installs. */
   const waiting = $derived(waitingVersion(updateView()));
   const downloading = $derived(updateView()?.status.state === 'downloading');
+  /** The waiting version could not be installed before: the banner offers to try again. */
+  const retry = $derived(waiting !== undefined && updateView()?.failed === waiting);
 
   const statusText = $derived.by(() => {
     if (!status) return t('settings.server.starting');
@@ -156,10 +158,12 @@
       <p role="status" class="text-sm">
         {downloading
           ? t('settings.updates.downloading', { version: waiting })
-          : t('settings.updateBanner', { version: waiting })}
+          : retry
+            ? t('settings.updates.notInstalled', { version: waiting })
+            : t('settings.updateBanner', { version: waiting })}
       </p>
       <Button size="sm" disabled={updating || downloading} onclick={() => void update()}>
-        {t('settings.updateBanner.install')}
+        {retry ? t('settings.updateBanner.retry') : t('settings.updateBanner.install')}
       </Button>
     </div>
   {/if}

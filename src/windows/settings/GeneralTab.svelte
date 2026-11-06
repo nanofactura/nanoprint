@@ -74,11 +74,13 @@
       case 'upToDate':
         return t('settings.updates.upToDate', { date: formatDate(status.checkedAt) });
       case 'available':
-        return t('settings.updates.available', { version: status.version });
+        return update?.failed === status.version
+          ? t('settings.updates.notInstalled', { version: status.version })
+          : t('settings.updates.available', { version: status.version });
       case 'downloading':
         return t('settings.updates.downloading', { version: status.version });
       case 'ready':
-        return update?.automatic
+        return update?.automatic && update.failed !== status.version
           ? t('settings.updates.readyAutomatic', { version: status.version })
           : t('settings.updates.ready', { version: status.version });
       case 'failed':

@@ -48,6 +48,9 @@ pub struct Settings {
     pub quiet_next_start: bool,
     /// The version an update was installing, so the next start can tell whether it installed.
     pub installing_update: Option<String>,
+    /// A version that could not be installed: it waits for the user instead of trying again by
+    /// itself (see `updates`).
+    pub failed_update: Option<String>,
 }
 
 impl Settings {
@@ -242,7 +245,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             json,
-            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"networkPrinters":[],"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false,"installingUpdate":null}"#
+            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"networkPrinters":[],"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false,"installingUpdate":null,"failedUpdate":null}"#
         );
     }
 
