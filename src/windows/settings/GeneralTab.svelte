@@ -3,7 +3,6 @@
   import { onMount } from 'svelte';
   import {
     checkForUpdates,
-    getUpdateStatus,
     installCertificate,
     installUpdate,
     openLogFolder,
@@ -11,7 +10,6 @@
     setAutomaticUpdates,
     showLicenses,
     type ServerStatus,
-    type UpdateView,
   } from '$lib/agent';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
@@ -23,6 +21,7 @@
   import { formatDate } from '$lib/format';
   import { describeError } from '$lib/errors';
   import { locales, t } from '$lib/i18n/index.svelte';
+  import { setUpdateView, updateView } from '$lib/updates.svelte';
   import {
     isLanguagePreference,
     restart,
@@ -59,7 +58,7 @@
   let portError = $state('');
   /** New ports were saved: they apply once NanoPrint restarts. */
   let portsSaved = $state(false);
-  let update = $state<UpdateView>();
+  const update = $derived(updateView());
   let checking = $state(false);
 
   const updateText = $derived.by(() => {
@@ -74,6 +73,8 @@
         return t('settings.updates.checking');
       case 'upToDate':
         return t('settings.updates.upToDate', { date: formatDate(status.checkedAt) });
+      case 'available':
+        return t('settings.updates.available', { version: status.version });
       case 'downloading':
         return t('settings.updates.downloading', { version: status.version });
       case 'ready':
@@ -104,11 +105,6 @@
   onMount(() => {
     insecurePort = portText(settings.insecurePort);
     securePort = portText(settings.securePort);
-    getUpdateStatus()
-      .then((view) => (update = view))
-      .catch((e: unknown) => {
-        onerror(t('error.load', { message: describeError(e) }));
-      });
     autostart
       .isEnabled()
       .then((enabled) => (autostartEnabled = enabled))
@@ -137,18 +133,18 @@
 
   async function onAutomaticUpdatesChange(automatic: boolean): Promise<void> {
     try {
-      update = await setAutomaticUpdates(automatic);
+      setUpdateView(await setAutomaticUpdates(automatic));
     } catch (e) {
       onerror(t('error.save', { message: describeError(e) }));
     }
   }
 
-  /** Checks and downloads; the command resolves when both are done. */
+  /** Checks, and downloads if updates are automatic; the command resolves when done. */
   async function checkUpdates(): Promise<void> {
     checking = true;
-    if (update) update = { ...update, status: { state: 'checking' } };
+    if (update) setUpdateView({ ...update, status: { state: 'checking' } });
     try {
-      update = await checkForUpdates();
+      setUpdateView(await checkForUpdates());
     } catch (e) {
       onerror(describeError(e));
     } finally {
@@ -300,14 +296,14 @@
           </div>
           <Switch
             id="automatic-updates"
-            bind:checked={update.automatic}
+            checked={update.automatic}
             onCheckedChange={onAutomaticUpdatesChange}
           />
         </div>
         <Separator />
         <div class="flex items-center justify-between gap-4">
           <p role="status" class="text-sm text-muted-foreground">{updateText}</p>
-          {#if update.status.state === 'ready'}
+          {#if update.status.state === 'available' || update.status.state === 'ready'}
             <Button
               size="sm"
               onclick={() => {
