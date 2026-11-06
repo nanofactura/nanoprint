@@ -12,6 +12,10 @@ Var NanoPrintExe
 Var NanoPrintHadDesktopShortcut
 ; The start-with-the-system entry when the installer started, or empty.
 Var NanoPrintAutostart
+; Set by NanoPrintExeInUse: 1 while some process holds NanoPrint's executable.
+Var NanoPrintExeBusy
+; Seconds an update has waited for the executable to be free.
+Var NanoPrintWaited
 
 ; The finish page offers the desktop shortcut unchecked: NanoPrint lives in the tray and starts with
 ; the system. An upgrade keeps the shortcut if the user had it (see NSIS_HOOK_POSTINSTALL).
@@ -49,8 +53,38 @@ Function .onInstFailed
   ${EndIf}
 FunctionEnd
 
+; Asks Restart Manager, as the installer's own check does, whether a process holds the executable.
+Function NanoPrintExeInUse
+  StrCpy $NanoPrintExeBusy 0
+  !insertmacro RestartManager_StartSession $R0
+  ${If} $R0 != ""
+    !insertmacro RestartManager_RegisterFile $R0 "$NanoPrintExe"
+    ${If} $0 = 0
+      System::Call 'RSTRTMGR::RmGetList(p R0, *i .r1, *i .r2, p 0, *i .r3) i .r0'
+      ${IfThen} $0 = ${ERROR_MORE_DATA} ${|} StrCpy $NanoPrintExeBusy 1 ${|}
+    ${EndIf}
+    !insertmacro RestartManager_EndSession $R0
+  ${EndIf}
+FunctionEnd
+
+; The installer then checks whether anything holds the executable and fails if it cannot close it.
+; During an update NanoPrint has just exited, and an antivirus may still be scanning the file; an
+; antivirus runs as a service the installer cannot close. Both let go within seconds, so an update
+; waits up to 30 seconds for the executable to be free before that check.
 !macro NSIS_HOOK_PREINSTALL
   StrCpy $NanoPrintExe "$INSTDIR\${MAINBINARYNAME}.exe"
+  ${If} $UpdateMode = 1
+    StrCpy $NanoPrintWaited 0
+    ${Do}
+      Call NanoPrintExeInUse
+      ${If} $NanoPrintExeBusy = 0
+      ${OrIf} $NanoPrintWaited >= 30
+        ${ExitDo}
+      ${EndIf}
+      Sleep 1000
+      IntOp $NanoPrintWaited $NanoPrintWaited + 1
+    ${Loop}
+  ${EndIf}
 !macroend
 
 ; Uninstalling the previous version during an upgrade removed its desktop shortcut and its
