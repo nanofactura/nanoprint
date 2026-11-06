@@ -81,7 +81,7 @@ export type UpdateStatus =
   | { state: 'idle' }
   | { state: 'checking' }
   | { state: 'upToDate'; checkedAt: number }
-  /** Found while automatic updates are off: waits for the user to install it. */
+  /** Found but not downloaded: waits for the user to install it. */
   | { state: 'available'; version: string }
   | { state: 'downloading'; version: string }
   | { state: 'ready'; version: string }
@@ -92,6 +92,8 @@ export interface UpdateView {
   status: UpdateStatus;
   /** Downloads and installs on its own; otherwise it lets the user know and waits. */
   automatic: boolean;
+  /** The version that could not be installed: it waits for the user even with `automatic`. */
+  failed: string | null;
 }
 
 /** Sent with an `UpdateView` whenever it changes. Mirrors `STATUS_CHANGED` in `updates.rs`. */

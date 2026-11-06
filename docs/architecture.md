@@ -253,8 +253,11 @@ carries X.509 name constraints limiting it to those loopback names and a path le
    free (NanoPrint finishing closing, an antivirus scanning it) before it checks that nothing runs
    it. If the installation still fails, it starts the installed version again instead of leaving
    NanoPrint closed ([hooks.nsh](../src-tauri/windows/hooks.nsh)).
-   The settings record which version was being installed: a start that is still on the previous
-   version waits six hours before trying again, so a blocked update does not retry every minute.
+   The settings record which version was being installed. When it did not install, or its
+   installer could not even start (an antivirus removing it), NanoPrint does not try that version
+   again by itself, which would only meet the antivirus again: it waits for the user like a
+   version found with automatic updates off, and the banner says it could not be installed and
+   offers to try again. A newer version installs by itself as usual.
 4. Preferences → Updates shows the state, checks on request and installs an update at once. With
    automatic updates off, NanoPrint still checks but does not download: a version it finds puts a
    dot on the tray icon and a banner in the settings window, and NanoPrint stops checking until

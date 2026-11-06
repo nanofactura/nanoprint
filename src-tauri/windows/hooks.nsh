@@ -40,9 +40,9 @@ FunctionEnd
 ; An update that fails (an antivirus blocking it, for example) leaves NanoPrint closed, because the
 ; updater exits before the installer runs and only a successful installation starts it again.
 ; Start the installed version, with the same arguments a successful update would use, so it keeps
-; printing and tries the update again later. NanoPrint installs per user and the updater runs the
-; installer unelevated, so a plain Exec starts it as the user (Tauri's RunAsUser plugin is not
-; loaded yet where this file is included).
+; printing and offers the user to try the update again. NanoPrint installs per user and the updater
+; runs the installer unelevated, so a plain Exec starts it as the user (Tauri's RunAsUser plugin is
+; not loaded yet where this file is included).
 Function .onInstFailed
   ClearErrors
   ${GetOptions} $CMDLINE "/UPDATE" $0

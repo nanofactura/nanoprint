@@ -11,8 +11,10 @@
 //! downloads and verifies it first, or turns automatic updates back on.
 //!
 //! If an update did not install (an antivirus blocked the installer, for example), the installer
-//! starts the previous version again (`src-tauri/windows/hooks.nsh`), which waits six hours before
-//! it tries again instead of a minute.
+//! starts the previous version again (`src-tauri/windows/hooks.nsh`). NanoPrint does not try that
+//! version again by itself, which would only meet the antivirus again: it waits for the user, as
+//! with automatic updates off, and the banner says it could not be installed. A newer version
+//! installs by itself again.
 
 use std::{
     sync::{Mutex, MutexGuard, PoisonError},
@@ -53,7 +55,7 @@ pub enum Status {
     UpToDate {
         checked_at: i64,
     },
-    /// Found while automatic updates are off: waits for the user to install it.
+    /// Found but not downloaded: waits for the user to install it (see [`waiting`]).
     Available {
         version: String,
     },
@@ -91,10 +93,13 @@ fn unsupported() -> Option<Unsupported> {
 
 pub struct Updates {
     status: Mutex<Status>,
-    /// A newer version found while automatic updates are off, not downloaded yet.
+    /// A newer version that waits for the user, not downloaded yet.
     available: Mutex<Option<Update>>,
     /// The verified download, ready to install.
     pending: Mutex<Option<(Update, Vec<u8>)>>,
+    /// The version that could not be installed (`Settings::failed_update`). Kept here too, so a
+    /// failure to save the settings never makes NanoPrint try it again and again.
+    failed: Mutex<Option<String>>,
     /// One check or download at a time, whether automatic or asked for.
     checking: tokio::sync::Mutex<()>,
     /// When a job last printed (see [`Updates::printed`]).
@@ -108,6 +113,7 @@ impl Updates {
             status: Mutex::new(status),
             available: Mutex::default(),
             pending: Mutex::default(),
+            failed: Mutex::default(),
             checking: tokio::sync::Mutex::new(()),
             last_print: Mutex::default(),
         }
@@ -125,6 +131,10 @@ impl Updates {
 
     fn pending(&self) -> MutexGuard<'_, Option<(Update, Vec<u8>)>> {
         self.pending.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    fn failed(&self) -> MutexGuard<'_, Option<String>> {
+        self.failed.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// Whether a newer version is known, downloaded or not.
@@ -149,23 +159,25 @@ impl Updates {
 }
 
 pub fn start(app: &AppHandle) {
-    app.manage(Updates::new());
-    let first_check = first_check(app);
+    let updates = Updates::new();
+    *updates.failed() = after_update(app);
+    app.manage(updates);
     if unsupported().is_some() {
         return;
     }
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
-        tokio::time::sleep(first_check).await;
+        tokio::time::sleep(FIRST_CHECK).await;
         let mut next_check = Instant::now();
         loop {
             let automatic = automatic(&app);
             let updates = app.state::<Updates>();
             if Instant::now() >= next_check && keeps_checking(automatic, updates.found()) {
                 next_check = Instant::now() + CHECK_EVERY;
-                check(&app, automatic).await;
+                check(&app).await;
             }
-            if automatic {
+            // A version that could not be installed waits for the user even here.
+            if automatic && waiting_for_user(&app).is_none() {
                 // Found while automatic updates were off. A failure is logged and shown in the
                 // status, and the next check finds the version again.
                 if updates.available().is_some() {
@@ -189,25 +201,31 @@ fn keeps_checking(automatic: bool, found: bool) -> bool {
     automatic || !found
 }
 
-/// When to check first: soon, unless the update this start follows did not install.
-fn first_check(app: &AppHandle) -> Duration {
-    let settings = app.state::<SettingsStore>();
-    let Some(attempted) = settings.get().installing_update else {
-        return FIRST_CHECK;
+/// Records whether the update this start follows installed. Returns the version that could not be
+/// installed, now or before, if any.
+fn after_update(app: &AppHandle) -> Option<String> {
+    let store = app.state::<SettingsStore>();
+    let settings = store.get();
+    let Some(attempted) = settings.installing_update else {
+        return settings.failed_update;
     };
-    if let Err(error) = settings.update(|settings| settings.installing_update = None) {
-        log::warn!("could not save the settings: {error}");
-    }
     let running = app.package_info().version.to_string();
-    if installed(&attempted, &running) {
+    let failed = if installed(&attempted, &running) {
         log::info!("updated to NanoPrint {running}");
-        FIRST_CHECK
+        None
     } else {
         log::warn!(
-            "NanoPrint {attempted} did not install; still on {running}, trying again in six hours"
+            "NanoPrint {attempted} did not install; still on {running}, waiting for the user to try again"
         );
-        CHECK_EVERY
+        Some(attempted)
+    };
+    if let Err(error) = store.update(|settings| {
+        settings.installing_update = None;
+        settings.failed_update.clone_from(&failed);
+    }) {
+        log::warn!("could not save the settings: {error}");
     }
+    failed
 }
 
 fn installed(attempted: &str, running: &str) -> bool {
@@ -235,16 +253,18 @@ fn changed(app: &AppHandle) {
 /// The version that waits for the user to install it, if any.
 pub fn waiting_for_user(app: &AppHandle) -> Option<String> {
     let updates = app.try_state::<Updates>()?;
-    waiting(automatic(app), &updates.status()).map(str::to_owned)
+    let failed = updates.failed().clone();
+    waiting(automatic(app), failed.as_deref(), &updates.status()).map(str::to_owned)
 }
 
-/// Automatic updates install by themselves: only a version found with them off waits for the user.
-fn waiting(automatic: bool, status: &Status) -> Option<&str> {
+/// Automatic updates install by themselves: a version waits for the user when they are off, or
+/// when it is the version that `failed` to install.
+fn waiting<'a>(automatic: bool, failed: Option<&str>, status: &'a Status) -> Option<&'a str> {
     match status {
         Status::Available { version }
         | Status::Downloading { version }
         | Status::Ready { version }
-            if !automatic =>
+            if !automatic || failed == Some(version.as_str()) =>
         {
             Some(version)
         }
@@ -252,49 +272,66 @@ fn waiting(automatic: bool, status: &Status) -> Option<&str> {
     }
 }
 
-/// Checks for a newer version, and downloads it if `download`. Leaves the outcome in the status.
-async fn check(app: &AppHandle, download: bool) {
+/// Checks for a newer version. With automatic updates it downloads it, unless it could not be
+/// installed before; otherwise it waits for the user. Leaves the outcome in the status.
+async fn check(app: &AppHandle) {
     let updates = app.state::<Updates>();
     let _one_at_a_time = updates.checking.lock().await;
-    if updates.found() {
+    let automatic = automatic(app);
+    // A version that waits for the user stays. With automatic updates, a newer one replaces it.
+    let waiting = updates.available().is_some();
+    if updates.pending().is_some() || (waiting && !automatic) {
         return;
     }
-    publish(app, Status::Checking);
+    if !waiting {
+        publish(app, Status::Checking);
+    }
     let found = match app.updater() {
         Ok(client) => client.check().await,
         Err(error) => Err(error),
     };
     match found {
-        Ok(Some(update)) if download => {
+        Ok(Some(update))
+            if automatic && updates.failed().as_deref() != Some(update.version.as_str()) =>
+        {
             log::info!("NanoPrint {} is available; downloading it", update.version);
+            *updates.available() = None;
             // A failure is logged and left in the status.
             let _ = fetch(app, update).await;
         }
         Ok(Some(update)) => {
             let version = update.version.clone();
-            log::info!("NanoPrint {version} is available; waiting for the user to install it");
+            if !waiting {
+                log::info!("NanoPrint {version} is available; waiting for the user to install it");
+            }
             *updates.available() = Some(update);
             publish(app, Status::Available { version });
         }
-        Ok(None) => publish(
-            app,
-            Status::UpToDate {
-                checked_at: time::OffsetDateTime::now_utc().unix_timestamp(),
-            },
-        ),
-        Err(error) => {
-            log::warn!("could not check for updates: {error}");
+        Ok(None) => {
+            *updates.available() = None;
             publish(
                 app,
-                Status::Failed {
-                    message: error.to_string(),
+                Status::UpToDate {
+                    checked_at: time::OffsetDateTime::now_utc().unix_timestamp(),
                 },
             );
+        }
+        Err(error) => {
+            log::warn!("could not check for updates: {error}");
+            // The banner keeps showing a version that waits for the user.
+            if !waiting {
+                publish(
+                    app,
+                    Status::Failed {
+                        message: error.to_string(),
+                    },
+                );
+            }
         }
     }
 }
 
-/// Downloads the version found while automatic updates were off. Returns why it failed, if it did.
+/// Downloads the version that waits for the user. Returns why it failed, if it did.
 async fn download(app: &AppHandle) -> Result<(), String> {
     let updates = app.state::<Updates>();
     let _one_at_a_time = updates.checking.lock().await;
@@ -341,32 +378,32 @@ fn install(app: &AppHandle) -> Result<(), UiError> {
     let Some((update, bytes)) = updates.pending().take() else {
         return Err(UiError::new("update_not_ready"));
     };
-    log::info!("installing NanoPrint {}", update.version);
+    let version = update.version.clone();
+    log::info!("installing NanoPrint {version}");
     // The installer starts NanoPrint again with the arguments it has now; the next start stays
-    // in the tray whatever they are.
-    app.state::<SettingsStore>()
+    // in the tray whatever they are, and tells whether the update installed (`after_update`).
+    let settings = app.state::<SettingsStore>();
+    settings
         .update(|settings| {
             settings.quiet_next_start = true;
-            settings.installing_update = Some(update.version.clone());
+            settings.installing_update = Some(version.clone());
         })
         .map_err(|error| UiError::with_detail("settings", &error))?;
     if let Err(error) = update.install(bytes) {
         // The installer did not start (an antivirus removing it, for example) and NanoPrint keeps
-        // running, so the next start is an ordinary one. `installing_update` stays: like a failed
-        // installation, it makes that start wait before trying again.
-        log::warn!("could not install NanoPrint {}: {error}", update.version);
-        if let Err(error) = app
-            .state::<SettingsStore>()
-            .update(|settings| settings.quiet_next_start = false)
-        {
+        // running. As after an installation that failed, the version waits for the user. If the
+        // settings cannot be saved, `installing_update` still tells the next start.
+        log::warn!("could not install NanoPrint {version}: {error}");
+        *updates.failed() = Some(version.clone());
+        if let Err(error) = settings.update(|settings| {
+            settings.quiet_next_start = false;
+            settings.installing_update = None;
+            settings.failed_update = Some(version.clone());
+        }) {
             log::warn!("could not save the settings: {error}");
         }
-        publish(
-            app,
-            Status::Failed {
-                message: error.to_string(),
-            },
-        );
+        *updates.available() = Some(update);
+        publish(app, Status::Available { version });
         return Err(UiError::with_detail("update_failed", &error));
     }
     app.restart();
@@ -378,12 +415,18 @@ fn install(app: &AppHandle) -> Result<(), UiError> {
 pub struct UpdateView {
     status: Status,
     automatic: bool,
+    /// The version that could not be installed: it waits for the user even with automatic updates.
+    failed: Option<String>,
 }
 
 fn view(app: &AppHandle) -> UpdateView {
+    let updates = app.state::<Updates>();
+    let failed = updates.failed().clone();
+    let status = updates.status().clone();
     UpdateView {
-        status: app.state::<Updates>().status().clone(),
+        status,
         automatic: automatic(app),
+        failed,
     }
 }
 
@@ -397,7 +440,7 @@ pub fn get_update_status(app: AppHandle) -> UpdateView {
 #[tauri::command]
 pub async fn check_for_updates(app: AppHandle) -> UpdateView {
     if unsupported().is_none() {
-        check(&app, automatic(&app)).await;
+        check(&app).await;
     }
     view(&app)
 }
@@ -460,7 +503,7 @@ mod tests {
     }
 
     #[test]
-    fn only_a_version_found_with_automatic_updates_off_waits_for_the_user() {
+    fn a_version_waits_for_the_user_without_automatic_updates_or_after_failing() {
         let available = Status::Available {
             version: "0.4.0".to_owned(),
         };
@@ -471,15 +514,28 @@ mod tests {
             version: "0.4.0".to_owned(),
         };
         for status in [&available, &downloading, &ready] {
-            assert_eq!(waiting(false, status), Some("0.4.0"), "{status:?}");
+            assert_eq!(waiting(false, None, status), Some("0.4.0"), "{status:?}");
             assert_eq!(
-                waiting(true, status),
+                waiting(true, None, status),
                 None,
                 "installs by itself: {status:?}"
             );
+            assert_eq!(
+                waiting(true, Some("0.4.0"), status),
+                Some("0.4.0"),
+                "could not be installed: {status:?}"
+            );
+            assert_eq!(
+                waiting(true, Some("0.3.9"), status),
+                None,
+                "a newer version than the one that failed installs by itself: {status:?}"
+            );
         }
-        assert_eq!(waiting(false, &Status::Checking), None);
-        assert_eq!(waiting(false, &Status::UpToDate { checked_at: 1 }), None);
+        assert_eq!(waiting(false, None, &Status::Checking), None);
+        assert_eq!(
+            waiting(false, None, &Status::UpToDate { checked_at: 1 }),
+            None
+        );
     }
 
     #[test]
