@@ -23,6 +23,12 @@
      SHA-256 (`gh release view v1.2.3 --json assets` shows each asset's `digest`), the
      `gh attestation verify` command below, and that the installer is not code-signed yet.
 
+   Microsoft Defender Antivirus may also flag the installer, even hours after it installed fine:
+   its machine-learning detections (names ending in `!ml`, such as `Trojan:Win32/Bearfoos.A!ml`
+   on 0.3.0) remove it and block updates. Submit it again with product **Microsoft Defender
+   Antivirus (Windows 11)**, that detection name, and the definition version
+   (`Get-MpComputerStatus` shows it as `AntivirusSignatureVersion`).
+
 Assets keep version-less names (`NanoPrint_<arch><-setup><ext>`, for example
 `NanoPrint_x64-setup.exe`), so `https://github.com/nanofactura/nanoprint/releases/latest/download/<name>`
 always serves the newest release and the landing page never needs a redeploy. Check the exact names
