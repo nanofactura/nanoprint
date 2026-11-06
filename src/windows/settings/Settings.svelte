@@ -5,6 +5,7 @@
   import {
     getServerStatus,
     installCertificate,
+    installUpdate,
     listSites,
     revokeSite,
     type ServerStatus,
@@ -15,6 +16,7 @@
   import { describeError } from '$lib/errors';
   import { setLocale, t } from '$lib/i18n/index.svelte';
   import { getSettings, type SettingsView } from '$lib/settings';
+  import { updateView, waitingVersion, watchUpdates } from '$lib/updates.svelte';
   import GeneralTab from './GeneralTab.svelte';
   import HistoryTab from './HistoryTab.svelte';
   import PrintersTab from './PrintersTab.svelte';
@@ -28,6 +30,13 @@
   let activating = $state(false);
   /** Bumped when the panel regains focus: sites and history change while it is open. */
   let refreshKey = $state(0);
+  let updating = $state(false);
+
+  /** A version that waits for the user, shown in the banner until it installs. */
+  const waiting = $derived(waitingVersion(updateView()));
+  const downloading = $derived(updateView()?.status.state === 'downloading');
+  /** The waiting version could not be installed before: the banner offers to try again. */
+  const retry = $derived(waiting !== undefined && updateView()?.failed === waiting);
 
   const statusText = $derived.by(() => {
     if (!status) return t('settings.server.starting');
@@ -76,6 +85,18 @@
     }
   }
 
+  /** Downloads and installs it; NanoPrint then closes and starts again with the new version. */
+  async function update(): Promise<void> {
+    updating = true;
+    try {
+      await installUpdate();
+    } catch (e) {
+      error = describeError(e);
+    } finally {
+      updating = false;
+    }
+  }
+
   async function revoke(origin: string): Promise<void> {
     try {
       await revokeSite(origin);
@@ -96,9 +117,13 @@
         error = t('error.load', { message: describeError(e) });
       }
     })();
+    const stopWatchingUpdates = watchUpdates((e) => {
+      error = t('error.load', { message: describeError(e) });
+    });
     const onFocus = () => void refresh();
     window.addEventListener('focus', onFocus);
     return () => {
+      stopWatchingUpdates();
       window.removeEventListener('focus', onFocus);
     };
   });
@@ -124,6 +149,23 @@
 
   {#if error}
     <p role="alert" class="text-sm text-destructive select-text">{error}</p>
+  {/if}
+
+  {#if waiting}
+    <div
+      class="flex shrink-0 items-center justify-between gap-3 rounded-lg border border-notice/40 bg-notice/10 p-3"
+    >
+      <p role="status" class="text-sm">
+        {downloading
+          ? t('settings.updates.downloading', { version: waiting })
+          : retry
+            ? t('settings.updates.notInstalled', { version: waiting })
+            : t('settings.updateBanner', { version: waiting })}
+      </p>
+      <Button size="sm" disabled={updating || downloading} onclick={() => void update()}>
+        {retry ? t('settings.updateBanner.retry') : t('settings.updateBanner.install')}
+      </Button>
+    </div>
   {/if}
 
   {#if status?.secure.state === 'listening' && status.certificate?.trusted === false}

@@ -41,12 +41,16 @@ pub struct Settings {
     /// Fixed ports, or `None` for the first free one of the ports qz-tray.js clients look for.
     pub insecure_port: Option<u16>,
     pub secure_port: Option<u16>,
-    /// Updates only when the user asks (Preferences); otherwise NanoPrint checks and installs them.
+    /// Installs updates only when the user asks (Preferences): NanoPrint still checks and lets the
+    /// user know. Otherwise it checks and installs them by itself.
     pub manual_updates: bool,
     /// Set before installing an update, so the start that follows stays quietly in the tray.
     pub quiet_next_start: bool,
     /// The version an update was installing, so the next start can tell whether it installed.
     pub installing_update: Option<String>,
+    /// A version that could not be installed: it waits for the user instead of trying again by
+    /// itself (see `updates`).
+    pub failed_update: Option<String>,
 }
 
 impl Settings {
@@ -241,7 +245,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             json,
-            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"networkPrinters":[],"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false,"installingUpdate":null}"#
+            r#"{"language":"es","onboarded":true,"sharedPrinters":{},"networkPrinters":[],"insecurePort":null,"securePort":null,"manualUpdates":false,"quietNextStart":false,"installingUpdate":null,"failedUpdate":null}"#
         );
     }
 

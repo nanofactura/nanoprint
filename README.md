@@ -78,7 +78,7 @@ by [SignPath.io](https://about.signpath.io/), certificate by
 - Approvers: Mariano Paulin ([@marianopaulin02](https://github.com/marianopaulin02)).
 - Privacy: see [Privacy](#privacy). NanoPrint does not transfer any information to other networked
   systems unless specifically requested by the person using it. The one exception, from version
-  0.2.0, is checking GitHub for updates, which can be turned off in Preferences.
+  0.2.0, is checking GitHub for new versions, a minute after it starts and every six hours.
 
 ## Printing from your web application
 
@@ -109,9 +109,10 @@ design and [docs/releasing.md](docs/releasing.md) for releases. The website live
 ## Privacy
 
 NanoPrint has no telemetry, analytics or crash reports. The only connection it makes on its own
-is checking GitHub Releases for a newer version, which, like visiting any web page, shows GitHub
-your IP address; turn it off in Preferences → Updates, and NanoPrint connects to nothing. Web
-pages reach it only on this computer. Its history (which site
+is checking GitHub Releases for a newer version, a minute after it starts and every six hours,
+which, like visiting any web page, shows GitHub your IP address. With automatic updates off
+(Preferences → Updates), it stops checking once it finds a new version and downloads it only when
+you install it. Web pages reach it only on this computer. Its history (which site
 printed, when and on which printer, never the content) and its diagnostic log stay on the computer
 and are deleted after 30 days.
 
