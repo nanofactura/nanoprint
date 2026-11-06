@@ -39,7 +39,7 @@
         "https://github.com/nanofactura/nanoprint/releases/latest/download/latest.json"
       ],
       "windows": {
-        "installMode": "passive"
+        "installMode": "quiet"
       }
     }
   },

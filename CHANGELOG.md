@@ -7,6 +7,12 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Windows: updates install without showing the installer. If one cannot install, NanoPrint starts
+  again with the installed version and tries later, with no message to dismiss. This applies to
+  updates installed from this version on.
+
 ### Fixed
 
 - Windows: an update no longer fails with "could not close NanoPrint" while something still holds
