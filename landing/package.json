@@ -28,7 +28,7 @@
     "svelte": "^5.57.3"
   },
   "devDependencies": {
-    "@lucide/svelte": "^1.64.0",
+    "@lucide/svelte": "^1.65.0",
     "@resvg/resvg-js": "^2.6.2",
     "@sveltejs/adapter-static": "^4.0.1",
     "@sveltejs/kit": "^3.1.1",
