@@ -33,6 +33,37 @@ time it runs with no window open, so its footprint is one Rust process and a tra
 | LAN mode                        | Planned         | Opt-in listener on the LAN with device pairing                                                                                                                                              |
 | Updater                         | Done            | Signed updates from GitHub Releases, installed when no job is printing, or with automatic updates off announced on the tray icon and in the panel                                           |
 
+Linux arm64 enables `tray-icon`'s native `ksni` backend through a target-specific dependency.
+It exports the icon as `IconPixmap` over D-Bus, avoiding AppIndicator's absolute `IconName`
+paths, which do not resolve through `wf-panel-pi`'s icon-theme lookup. The existing Tauri tray
+menu and click handlers are retained; other platform backends are unchanged. Keep the direct
+`tray-icon` version aligned with Tauri's dependency when upgrading it, so Cargo enables `ksni`
+on the same crate instance; CI checks that the ARM64 dependency tree contains only one
+`tray-icon` version. The dependency policy and license notices include a crate-specific Unlicense
+exception for `ksni`; it is not allowed globally.
+
+Tray creation waits asynchronously for the D-Bus watcher and its registered host, subscribing to
+name-owner and host-registration signals before checking readiness. This avoids login startup
+ordering failures without sleeps or polling, and does not block the GUI or print servers. Once
+the host is ready, the icon is built on Tauri's main thread and reflects any update already
+waiting for the user. If the session bus, watcher, or tray cannot be used, NanoPrint logs the
+problem and continues printing without a tray. `ksni` handles subsequent watcher restarts.
+
+### Raspberry Pi rendering
+
+On a Pi 400 running Raspberry Pi OS Trixie, WebKitGTK 2.54.0 and Mesa 26.2.6, the default
+DMA-BUF path produced corrupted windows. A standalone GTK/WebKit test with static colored
+quadrants reproduced it without NanoPrint; disabling DMA-BUF restored the expected image.
+The exact faulty WebKit/Mesa/kernel change has not been identified.
+
+NanoPrint applies a process-local fallback only on ARM64 Raspberry Pi under Wayland, preserving
+explicit renderer settings and leaving X11 and non-Pi systems unchanged. This is a compatibility
+workaround, not a graphics-engine fix. A separate [WebKitGTK 2.54 regression report][dmabuf-regression]
+shows that forcing the same override on other hardware can itself break rendering; it is not
+evidence of the Pi issue's root cause.
+
+[dmabuf-regression]: https://github.com/CapSoftware/Cap/issues/2624
+
 ## Compatibility with qz-tray.js clients
 
 NanoPrint implements, in its own code, the part of the qz-tray.js wire protocol that raw printing
@@ -176,7 +207,10 @@ carries X.509 name constraints limiting it to those loopback names and a path le
   `8181, 8282, 8383, 8484`.
 - The panel shows whether the computer trusts the authority and installs or removes it on request
   (`src-tauri/src/trust.rs`), with the system's own confirmation: `certutil -user` on Windows,
-  `security` on the macOS login keychain, NSS `certutil` on `~/.pki/nssdb` (Chrome) on Linux.
+  `security` on the macOS login keychain, NSS `certutil` on the Chromium shared database on Linux.
+  The existing legacy `~/.pki/nssdb` takes precedence; otherwise an existing
+  `${XDG_DATA_HOME:-~/.local/share}/pki/nssdb` is used. If neither exists, the legacy location is
+  created for compatibility with older Chromium releases.
 - Onboarding (`src-tauri/src/onboarding.rs`): the first-run welcome offers to enable secure sites.
   Later, when a browser ends a `wss://` handshake because it does not trust the certificate,
   NanoPrint opens the same window on top, once per run; the panel also shows a banner until the
@@ -278,9 +312,9 @@ Built by the [release workflow](../.github/workflows/release.yml); see
   the ones the user had ([hooks.nsh](../src-tauri/windows/hooks.nsh)). An MSI for managed fleets would need a per-machine install and is left out for now.
 - macOS: universal (Apple silicon and Intel) DMG, signed with a stable self-signed identity (or
   ad-hoc without it) until there is a Developer ID; tray-only (no Dock icon).
-- Linux: `.deb` and `.rpm` (depending on the NSS tools for the certificate; udev rules for USB
-  printers will come with direct USB) and AppImage. Snap and Flatpak are avoided because their
-  sandboxes block serial and USB access.
+- Linux x64: `.deb`, `.rpm` and AppImage; Linux arm64: `.deb` and AppImage. The packages depend
+  on the NSS tools for the certificate; udev rules for USB printers will come with direct USB.
+  Snap and Flatpak are avoided because their sandboxes block serial and USB access.
 
 ## Landing page and downloads
 

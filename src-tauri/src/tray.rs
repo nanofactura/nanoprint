@@ -10,19 +10,36 @@ use tauri::{
 
 use crate::{i18n, settings::SettingsStore, updates, window};
 
+#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+mod host;
+
 const TRAY_ID: &str = "main";
 const MENU_OPEN: &str = "open";
 const MENU_QUIT: &str = "quit";
 
+// Other backends initialize synchronously and can return an error.
+#[cfg_attr(
+    all(target_os = "linux", target_arch = "aarch64"),
+    allow(clippy::unnecessary_wraps)
+)]
 pub fn create(app: &AppHandle) -> tauri::Result<()> {
-    TrayIconBuilder::with_id(TRAY_ID)
+    #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+    {
+        host::create(app);
+        Ok(())
+    }
+    #[cfg(not(all(target_os = "linux", target_arch = "aarch64")))]
+    build(app)
+}
+
+fn build(app: &AppHandle) -> tauri::Result<()> {
+    let builder = TrayIconBuilder::with_id(TRAY_ID)
         .icon(icon(app, false))
         // macOS tints template images for light and dark menu bars; ignored elsewhere.
         .icon_as_template(cfg!(target_os = "macos"))
         .tooltip("NanoPrint")
         .menu(&menu(app)?)
-        // Left click opens the settings window and right click shows the menu. Linux has no tray
-        // click events, so there the menu is the only entry point.
+        // AppIndicator only exposes the menu; native SNI also delivers click events.
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
             MENU_OPEN => window::show_settings(app),
@@ -38,8 +55,11 @@ pub fn create(app: &AppHandle) -> tauri::Result<()> {
             {
                 window::show_settings(tray.app_handle());
             }
-        })
-        .build(app)?;
+        });
+    #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+    let builder = builder.title("NanoPrint");
+    builder.build(app)?;
+    show_update(app, updates::waiting_for_user(app).as_deref());
     Ok(())
 }
 

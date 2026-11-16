@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest, macos-latest]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -75,7 +75,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev libssl-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev libssl-dev libnss3-tools dbus-daemon
       # rustup comes with the runners: no third-party action needed (see rust-toolchain.toml).
       - run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
@@ -87,6 +87,20 @@ jobs:
       # The Rust build embeds the web UI from dist/.
       - run: npm run build
       - run: cargo fmt --all --check
+      - name: Check tray-icon version alignment
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          versions="$(cargo tree --locked --target aarch64-unknown-linux-gnu --prefix none | sed -n 's/^tray-icon v\([^ ]*\).*/\1/p' | sort -u)"
+          count=0
+          if [[ -n "$versions" ]]; then
+            count="$(printf '%s\n' "$versions" | wc -l)"
+          fi
+          if [[ -z "$versions" || "$count" -ne 1 ]]; then
+            echo "::error::Expected exactly one tray-icon version for Linux ARM64, found: ${versions:-none}"
+            exit 1
+          fi
+          echo "Linux ARM64 uses tray-icon $versions"
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
 

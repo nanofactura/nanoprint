@@ -7,8 +7,8 @@
 2. Commit, then tag and push: `git tag -s v1.2.3 -m "NanoPrint 1.2.3" && git push origin v1.2.3`.
    Tags with a hyphen (`v1.2.3-1`) become pre-releases.
 3. The [release workflow](../.github/workflows/release.yml) builds Windows, macOS (universal) and
-   Linux installers from scratch, generates the third-party license notices, attests the build
-   provenance of every file and attaches an SBOM, all to a **draft** release.
+   Linux x64 and arm64 installers from scratch, generates the third-party license notices, attests
+   the build provenance of every file and attaches an SBOM, all to a **draft** release.
 4. A maintainer checks the draft (install it on at least one system) and publishes it.
 5. While Windows installers are unsigned, submit the published `NanoPrint_x64-setup.exe` to
    [Microsoft](https://www.microsoft.com/en-us/wdsi/filesubmission) as a software developer.
