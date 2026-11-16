@@ -7,6 +7,8 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-16
+
 ### Added
 
 - With automatic updates off, a new version puts a dot on the tray icon, its number in the
@@ -24,6 +26,7 @@ and versions follow [Semantic Versioning](https://semver.org/).
   again by itself, which only raised the antivirus alert again: the dot on the tray icon and the
   banner say it could not be installed, with a button to try again. A newer version installs
   automatically as usual.
+- Updated Tailwind CSS, bits-ui, the Lucide icons and other dependencies.
 
 ### Fixed
 
@@ -116,7 +119,8 @@ First public release.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/nanofactura/nanoprint/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/nanofactura/nanoprint/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/nanofactura/nanoprint/compare/v0.1.0...v0.2.0
