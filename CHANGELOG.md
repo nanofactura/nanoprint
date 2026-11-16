@@ -11,8 +11,9 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Linux arm64: `.deb` and AppImage builds, including for 64-bit Raspberry Pi OS (tested on a
-  Raspberry Pi 400 by a contributor). On arm64:
+- Linux arm64: `.deb` and AppImage builds, including for 64-bit Raspberry Pi OS. Contributed and
+  tested on a Raspberry Pi 400 by [@IcToxi](https://github.com/IcToxi)
+  ([#33](https://github.com/nanofactura/nanoprint/pull/33)). On arm64:
   - The tray icon goes through native StatusNotifierItem instead of AppIndicator, so panels such
     as Raspberry Pi OS's `wf-panel-pi` can show it.
   - At login, NanoPrint waits for the panel instead of failing when it starts first. Without a
