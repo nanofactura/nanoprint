@@ -7,20 +7,25 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-16
+
 ### Added
 
-- Linux arm64: `.deb` and AppImage builds, including for 64-bit Raspberry Pi OS.
+- Linux arm64: `.deb` and AppImage builds, including for 64-bit Raspberry Pi OS (tested on a
+  Raspberry Pi 400 by a contributor). On arm64:
+  - The tray icon goes through native StatusNotifierItem instead of AppIndicator, so panels such
+    as Raspberry Pi OS's `wf-panel-pi` can show it.
+  - At login, NanoPrint waits for the panel instead of failing when it starts first. Without a
+    tray, it keeps printing.
+  - On a Raspberry Pi under Wayland, NanoPrint turns off WebKit's DMA-BUF renderer for its own
+    windows, which otherwise show corrupted. An explicit `WEBKIT_DISABLE_DMABUF_RENDERER` value
+    is respected.
 
 ### Fixed
 
-- Linux arm64: send tray icon pixels through native StatusNotifierItem instead of AppIndicator's
-  absolute icon filename, so panels such as Raspberry Pi OS's `wf-panel-pi` can display the icon.
-- Linux arm64: wait asynchronously for the StatusNotifier watcher and host at login instead of
-  exiting when NanoPrint starts before the panel.
-- Linux arm64: default to the WebKit DMA-BUF workaround on Raspberry Pi under Wayland to avoid
-  corrupted windows, while preserving explicit renderer overrides.
-- Linux: install the local authority into Chromium's existing shared NSS database, including the
-  newer XDG data location, instead of creating a separate legacy database.
+- Linux: the HTTPS certificate goes into the database Chromium already uses. Since Chromium 146
+  that is `~/.local/share/pki/nssdb` when `~/.pki/nssdb` does not exist. NanoPrint used to create
+  `~/.pki/nssdb`, which made Chromium switch to it and stop seeing the certificates in the other.
 
 ## [0.4.0] - 2026-11-16
 
@@ -134,7 +139,8 @@ First public release.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/nanofactura/nanoprint/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/nanofactura/nanoprint/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/nanofactura/nanoprint/compare/v0.2.0...v0.2.1
