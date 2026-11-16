@@ -25,3 +25,7 @@ targets = [
 ]
 # NanoPrint itself (`publish = false`, GPL-3.0-only) is not a third party.
 private = { ignore = true }
+
+# Same crate-specific exception as deny.toml; do not allow Unlicense globally.
+[ksni]
+accepted = ["Unlicense"]

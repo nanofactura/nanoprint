@@ -69,6 +69,11 @@ apple-native-keyring-store = { version = "1", features = ["keychain"] }
 [target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
 zbus-secret-service-keyring-store = { version = "1", features = ["crypto-rust"] }
 
+[target.'cfg(all(target_os = "linux", target_arch = "aarch64"))'.dependencies]
+# Match Tauri's tray-icon version; native SNI sends pixels instead of absolute icon filenames.
+tray-icon = { version = "0.25", default-features = false, features = ["ksni"] }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "process", "rt-multi-thread"] }
 tokio-tungstenite = { version = "0.30", default-features = false, features = ["connect", "handshake"] }

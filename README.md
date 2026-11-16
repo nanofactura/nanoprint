@@ -41,7 +41,14 @@ Installers are not code-signed yet, so the system warns on first launch:
 - **Windows:** "Windows protected your PC" → **More info** → **Run anyway**.
 - **macOS:** open NanoPrint once, then **System Settings → Privacy & Security → Open Anyway**.
 - **Linux:** `.deb`, `.rpm` or AppImage. Enabling secure sites uses `certutil` (`libnss3-tools` or
-  `nss-tools`, installed with the `.deb` and `.rpm` packages).
+  `nss-tools`, installed with the `.deb` and `.rpm` packages). Linux arm64 builds provide `.deb`
+  and AppImage packages for 64-bit Raspberry Pi OS. AppImage requires FUSE 2 (`libfuse2` or
+  `libfuse2t64`); the tray requires a StatusNotifierItem-capable panel such as `wf-panel-pi`.
+  On ARM64 Raspberry Pi devices using Wayland, NanoPrint defaults to
+  `WEBKIT_DISABLE_DMABUF_RENDERER=1` to work around WebKitGTK DMA-BUF rendering corruption.
+  This applies only to NanoPrint and its child processes, not the desktop or other applications.
+  An existing value is always respected; launch with `WEBKIT_DISABLE_DMABUF_RENDERER=0` to opt out
+  after a graphics-stack update. X11 and non-Pi devices keep WebKit's default renderer.
 
 You can check that a download was built by this repository with
 `gh attestation verify <file> --repo nanofactura/nanoprint`.
@@ -93,6 +100,8 @@ transport. Sites can also send a name and logo for NanoPrint's permission prompt
 
 Prerequisites: Node.js 24, Rust (stable) and the
 [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your system.
+Linux NSS integration tests also require `certutil` (`libnss3-tools` on Debian/Ubuntu,
+`nss-tools` on Fedora). Linux arm64 tray startup tests require `dbus-daemon`.
 
 ```sh
 npm install

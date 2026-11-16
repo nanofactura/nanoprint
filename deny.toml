@@ -39,6 +39,8 @@ allow = [
   "Zlib",
 ]
 confidence-threshold = 0.9
+# Native SNI avoids AppIndicator's absolute-icon-path incompatibility on Raspberry Pi.
+exceptions = [{ crate = "ksni@0.3.7", allow = ["Unlicense"] }]
 
 [licenses.private]
 # Our own crates are `publish = false`.

@@ -4,7 +4,9 @@
 //!
 //! - Windows: `certutil -user` on the user's Root store (security warning dialog).
 //! - macOS: `security` on the login keychain (password prompt).
-//! - Linux: NSS `certutil` on `~/.pki/nssdb`, the store used by Chrome and Chromium.
+//! - Linux: NSS `certutil` on the shared store used by Chrome and Chromium. Since M146, Chromium
+//!   prefers `${XDG_DATA_HOME:-~/.local/share}/pki/nssdb`, unless `~/.pki/nssdb` already exists;
+//!   see <https://chromium.googlesource.com/chromium/src/+/main/docs/linux/cert_management.md>.
 //!
 //! Firefox keeps its own store and is not handled yet.
 
@@ -155,61 +157,204 @@ mod imp {
 
 #[cfg(all(unix, not(target_os = "macos")))]
 mod imp {
-    use std::process::Command;
+    use std::{
+        ffi::OsString,
+        path::{Path, PathBuf},
+        process::Command,
+    };
 
     use super::{Error, check, run};
     use crate::tls::{Certificate, Meta};
 
-    fn nss_db() -> String {
-        let home = std::env::var("HOME").unwrap_or_default();
-        format!("sql:{home}/.pki/nssdb")
+    fn nss_dirs(home: &Path, xdg_data_home: Option<&Path>) -> (PathBuf, PathBuf) {
+        let legacy = home.join(".pki/nssdb");
+        let data = xdg_data_home
+            .filter(|path| path.is_absolute())
+            .map_or_else(|| home.join(".local/share"), Path::to_path_buf);
+        let modern = data.join("pki/nssdb");
+        (legacy, modern)
+    }
+
+    fn nss_dir(home: &Path, xdg_data_home: Option<&Path>) -> PathBuf {
+        let (legacy, modern) = nss_dirs(home, xdg_data_home);
+        if legacy.is_dir() || !modern.is_dir() {
+            legacy
+        } else {
+            modern
+        }
+    }
+
+    fn paths() -> Result<(PathBuf, PathBuf, PathBuf), Error> {
+        let home = std::env::var_os("HOME")
+            .filter(|home| !home.is_empty())
+            .ok_or_else(|| Error::Failed("HOME is not set".into()))?;
+        let xdg_data_home = std::env::var_os("XDG_DATA_HOME");
+        let home = Path::new(&home);
+        let xdg_data_home = xdg_data_home.as_deref().map(Path::new);
+        let (legacy, modern) = nss_dirs(home, xdg_data_home);
+        Ok((nss_dir(home, xdg_data_home), legacy, modern))
+    }
+
+    fn nss_db(dir: &Path) -> OsString {
+        let mut db = OsString::from("sql:");
+        db.push(dir);
+        db
+    }
+
+    fn contains_in(dir: &Path, meta: &Meta) -> Result<bool, Error> {
+        let output = run(Command::new("certutil")
+            .env("LC_ALL", "C")
+            .arg("-d")
+            .arg(nss_db(dir))
+            .args(["-L", "-n", &meta.ca_name]))?;
+        if output.status.success() {
+            Ok(true)
+        } else if String::from_utf8_lossy(&output.stderr).contains("Could not find cert:")
+            && String::from_utf8_lossy(&output.stderr).contains("PR_FILE_NOT_FOUND_ERROR")
+        {
+            Ok(false)
+        } else {
+            check(&output)?;
+            Ok(false)
+        }
+    }
+
+    fn contains_or_log(dir: &Path, meta: &Meta) -> bool {
+        if !dir.is_dir() {
+            return false;
+        }
+        match contains_in(dir, meta) {
+            Ok(found) => found,
+            Err(error) => {
+                log::warn!("could not check NSS database {}: {error}", dir.display());
+                false
+            }
+        }
     }
 
     pub fn is_trusted(certificate: &Certificate) -> bool {
-        contains(&certificate.meta)
+        match paths() {
+            Ok((active, _, _)) => contains_or_log(&active, &certificate.meta),
+            Err(error) => {
+                log::warn!("could not locate NSS database: {error}");
+                false
+            }
+        }
     }
 
     pub fn contains(meta: &Meta) -> bool {
-        run(Command::new("certutil").args(["-d", &nss_db(), "-L", "-n", &meta.ca_name]))
-            .is_ok_and(|output| output.status.success())
+        match paths() {
+            Ok((_, legacy, modern)) => [legacy, modern]
+                .iter()
+                .any(|dir| contains_or_log(dir, meta)),
+            Err(error) => {
+                log::warn!("could not locate NSS database: {error}");
+                false
+            }
+        }
     }
 
     pub fn install(certificate: &Certificate) -> Result<(), Error> {
+        let (dir, _, _) = paths()?;
+        install_in(&dir, certificate)
+    }
+
+    fn install_in(dir: &Path, certificate: &Certificate) -> Result<(), Error> {
         // Chrome creates the database on first run; create it if the user never opened Chrome.
-        let home = std::env::var("HOME").unwrap_or_default();
-        let dir = std::path::Path::new(&home).join(".pki/nssdb");
+        let db = nss_db(dir);
         if !dir.join("cert9.db").exists() {
-            std::fs::create_dir_all(&dir).map_err(|error| Error::Failed(error.to_string()))?;
-            check(&run(Command::new("certutil").args([
-                "-d",
-                &nss_db(),
-                "-N",
-                "--empty-password",
-            ]))?)?;
+            std::fs::create_dir_all(dir).map_err(|error| Error::Failed(error.to_string()))?;
+            check(&run(Command::new("certutil")
+                .arg("-d")
+                .arg(&db)
+                .args(["-N", "--empty-password"]))?)?;
         }
         let mut command = Command::new("certutil");
         command
-            .args([
-                "-d",
-                &nss_db(),
-                "-A",
-                "-t",
-                "C,,",
-                "-n",
-                &certificate.meta.ca_name,
-                "-i",
-            ])
+            .arg("-d")
+            .arg(db)
+            .args(["-A", "-t", "C,,", "-n", &certificate.meta.ca_name, "-i"])
             .arg(&certificate.ca_path);
         check(&run(&mut command)?)
     }
 
     pub fn remove(meta: &Meta) -> Result<(), Error> {
-        check(&run(Command::new("certutil").args([
-            "-d",
-            &nss_db(),
-            "-D",
-            "-n",
-            &meta.ca_name,
-        ]))?)
+        let (active, legacy, modern) = paths()?;
+        remove_from(meta, &active, &[legacy, modern])
+    }
+
+    fn remove_from(meta: &Meta, active: &Path, dirs: &[PathBuf]) -> Result<(), Error> {
+        let mut removed = false;
+        for dir in dirs {
+            if dir.is_dir() && contains_in(dir, meta)? {
+                check(&run(Command::new("certutil")
+                    .arg("-d")
+                    .arg(nss_db(dir))
+                    .args(["-D", "-n", &meta.ca_name]))?)?;
+                removed = true;
+            }
+        }
+        if removed {
+            Ok(())
+        } else {
+            check(&run(Command::new("certutil")
+                .arg("-d")
+                .arg(nss_db(active))
+                .args(["-D", "-n", &meta.ca_name]))?)
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn selects_chromiums_existing_nss_database() {
+            let home = std::env::temp_dir().join(format!("nanoprint-nss-{}", std::process::id()));
+            let legacy = home.join(".pki/nssdb");
+            let modern = home.join(".local/share/pki/nssdb");
+            let custom_data = home.join("custom-data");
+            let custom = custom_data.join("pki/nssdb");
+            std::fs::create_dir_all(&home).unwrap();
+            assert_eq!(nss_dir(&home, None), legacy);
+            std::fs::create_dir_all(&modern).unwrap();
+            assert_eq!(nss_dir(&home, None), modern);
+            std::fs::create_dir_all(&custom).unwrap();
+            assert_eq!(nss_dir(&home, Some(&custom_data)), custom);
+            assert_eq!(nss_dir(&home, Some(Path::new("relative"))), modern);
+            std::fs::create_dir_all(&legacy).unwrap();
+            assert_eq!(nss_dir(&home, Some(&custom_data)), legacy);
+            std::fs::remove_dir_all(home).unwrap();
+        }
+
+        #[test]
+        fn removes_authority_from_both_databases() {
+            Command::new("certutil")
+                .arg("-H")
+                .output()
+                .expect("NSS integration tests require certutil (libnss3-tools or nss-tools)");
+            let home =
+                std::env::temp_dir().join(format!("nanoprint-nss-cert-{}", std::process::id()));
+            let legacy = home.join("legacy");
+            let modern = home.join("modern");
+            let broken = home.join("broken");
+            let (certificate, _) = crate::tls::load_or_create(&home.join("tls")).unwrap();
+            install_in(&legacy, &certificate).unwrap();
+            install_in(&modern, &certificate).unwrap();
+            assert!(contains_in(&legacy, &certificate.meta).unwrap());
+            assert!(contains_in(&modern, &certificate.meta).unwrap());
+            std::fs::create_dir_all(&broken).unwrap();
+            assert!(contains_in(&broken, &certificate.meta).is_err());
+            assert!(remove_from(&certificate.meta, &legacy, &[broken]).is_err());
+            remove_from(
+                &certificate.meta,
+                &legacy,
+                &[legacy.clone(), modern.clone()],
+            )
+            .unwrap();
+            assert!(!contains_in(&legacy, &certificate.meta).unwrap());
+            assert!(!contains_in(&modern, &certificate.meta).unwrap());
+            std::fs::remove_dir_all(home).unwrap();
+        }
     }
 }

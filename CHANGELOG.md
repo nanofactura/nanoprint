@@ -7,6 +7,10 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Linux arm64: `.deb` and AppImage builds, including for 64-bit Raspberry Pi OS.
+
 ## [0.4.0] - 2026-11-16
 
 ### Added
@@ -30,6 +34,14 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Linux arm64: send tray icon pixels through native StatusNotifierItem instead of AppIndicator's
+  absolute icon filename, so panels such as Raspberry Pi OS's `wf-panel-pi` can display the icon.
+- Linux arm64: wait asynchronously for the StatusNotifier watcher and host at login instead of
+  exiting when NanoPrint starts before the panel.
+- Linux arm64: default to the WebKit DMA-BUF workaround on Raspberry Pi under Wayland to avoid
+  corrupted windows, while preserving explicit renderer overrides.
+- Linux: install the local authority into Chromium's existing shared NSS database, including the
+  newer XDG data location, instead of creating a separate legacy database.
 - Windows: an update no longer fails with "could not close NanoPrint" while something still holds
   NanoPrint's program file, such as an antivirus scanning it right after the download or NanoPrint
   itself finishing closing. The installer waits up to 30 seconds for the file to be free.
