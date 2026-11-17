@@ -25,6 +25,8 @@ export const downloads = {
   deb: `${LATEST}NanoPrint_amd64.deb`,
   rpm: `${LATEST}NanoPrint_x86_64.rpm`,
   appImage: `${LATEST}NanoPrint_amd64.AppImage`,
+  debArm: `${LATEST}NanoPrint_arm64.deb`,
+  appImageArm: `${LATEST}NanoPrint_aarch64.AppImage`,
 } as const;
 
 export type Platform = 'windows' | 'mac' | 'linux';

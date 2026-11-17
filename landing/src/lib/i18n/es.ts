@@ -19,6 +19,7 @@ export const es: Messages = {
     windows: 'Descargar para Windows',
     mac: 'Descargar para macOS',
     linux: 'Descargar para Linux',
+    linuxDetail: 'Ubuntu, Debian, Fedora, Raspberry Pi OS y otras distribuciones',
     otherPlatforms: 'Otros sistemas',
     previousVersions: 'Versiones anteriores',
     desktopOnly: 'NanoPrint es para computadoras con Windows, macOS o Linux.',
@@ -33,7 +34,7 @@ export const es: Messages = {
     hero: {
       title: 'Imprimí tickets y comandas desde la web, directo a tu impresora térmica',
       lead: 'NanoPrint es un programa gratuito y liviano que conecta tu sistema web con las impresoras de tickets de la computadora. Cada sitio pide permiso una vez, no en cada ticket.',
-      platforms: 'Windows · macOS · Linux',
+      platforms: 'Windows · macOS · Linux · Raspberry Pi',
       free: 'Gratis',
       openSource: 'Código abierto',
       videoLabel:
@@ -50,6 +51,7 @@ export const es: Messages = {
             'Windows 10 y 11',
             'macOS 10.15 o posterior, Intel y Apple Silicon',
             'Ubuntu, Debian, Fedora y otras distribuciones',
+            'Raspberry Pi con Raspberry Pi OS de 64 bits',
           ],
         },
         {
@@ -156,16 +158,24 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
       },
       linux: {
         name: 'Linux',
-        requirements: '64 bits: Ubuntu 22.04, Debian 12, Fedora 38+',
+        requirements: 'Intel o AMD de 64 bits: Ubuntu 22.04, Debian 12, Fedora 38+',
         files: [
           { label: '.deb (Ubuntu, Debian)', download: 'deb' },
           { label: '.rpm (Fedora, openSUSE)', download: 'rpm' },
           { label: 'AppImage (otras)', download: 'appImage' },
         ],
+        arm: {
+          title: 'ARM64: Raspberry Pi OS de 64 bits',
+          files: [
+            { label: '.deb (Raspberry Pi OS)', download: 'debArm' },
+            { label: 'AppImage (otras)', download: 'appImageArm' },
+          ],
+        },
         steps: [
           'Ubuntu o Debian: `sudo apt install ./NanoPrint_amd64.deb`',
           'Fedora: `sudo dnf install ./NanoPrint_x86_64.rpm`',
-          'AppImage: `chmod +x NanoPrint_amd64.AppImage` y abrilo.',
+          'Raspberry Pi OS: `sudo apt install ./NanoPrint_arm64.deb`',
+          'AppImage: `chmod +x NanoPrint_amd64.AppImage` (en ARM64, `NanoPrint_aarch64.AppImage`) y abrilo.',
         ],
       },
       afterTitle: 'Después de instalar',
@@ -241,6 +251,10 @@ await qz.print(config, [{ type: 'raw', format: 'command', flavor: 'base64', data
         {
           q: '¿Funciona por Escritorio remoto?',
           a: 'NanoPrint imprime en las impresoras instaladas en la computadora donde corre. Las impresoras redirigidas por Escritorio remoto con «Easy Print» no pueden recibir tickets: instalá el driver de la impresora en la computadora remota y desactivá Easy Print.',
+        },
+        {
+          q: '¿Funciona en una Raspberry Pi?',
+          a: 'Sí, desde la versión 0.5.0, con Raspberry Pi OS de 64 bits y escritorio: descargá el .deb para ARM64. El sistema web tiene que abrirse en el navegador de la misma Raspberry Pi, porque NanoPrint solo acepta conexiones de la computadora donde está instalado. La impresora se conecta por USB o por red, como en cualquier computadora.',
         },
         {
           q: '¿Puedo imprimir desde un celular o una tablet?',
@@ -413,7 +427,7 @@ qz.security.setCertificatePromise((resolve) => {
     legal: [
       'NanoPrint se distribuye sin ninguna garantía, según los términos de la licencia GPL-3.0.',
       'QZ Tray es una marca de QZ Industries, LLC. NanoPrint es un proyecto independiente, no afiliado ni respaldado por QZ Industries; lo menciona solo para describir la compatibilidad.',
-      'Windows es una marca de Microsoft Corporation. macOS es una marca de Apple Inc. Linux es una marca registrada de Linus Torvalds. Las demás marcas pertenecen a sus dueños.',
+      'Windows es una marca de Microsoft Corporation. macOS es una marca de Apple Inc. Linux es una marca registrada de Linus Torvalds. Raspberry Pi es una marca de Raspberry Pi Ltd. Las demás marcas pertenecen a sus dueños.',
     ],
     privacy: 'Este sitio no usa cookies ni herramientas de seguimiento.',
   },

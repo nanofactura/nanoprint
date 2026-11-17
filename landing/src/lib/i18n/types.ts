@@ -16,10 +16,17 @@ export interface Step {
   text: string;
 }
 
+export interface DownloadFile {
+  label: string;
+  download: keyof typeof downloads;
+}
+
 export interface PlatformInfo {
   name: string;
   requirements: string;
-  files: { label: string; download: keyof typeof downloads }[];
+  files: DownloadFile[];
+  /** Packages for ARM64 processors, such as a Raspberry Pi's, under their own heading. */
+  arm?: { title: string; files: DownloadFile[] };
   steps: string[];
 }
 
@@ -54,6 +61,8 @@ export interface Messages {
     windows: string;
     mac: string;
     linux: string;
+    /** Under the Linux button, which leads to the packages for every processor. */
+    linuxDetail: string;
     otherPlatforms: string;
     previousVersions: string;
     desktopOnly: string;
@@ -89,7 +98,7 @@ export interface Messages {
       install: string;
       windows: PlatformInfo;
       mac: PlatformInfo;
-      linux: PlatformInfo;
+      linux: PlatformInfo & Required<Pick<PlatformInfo, 'arm'>>;
       afterTitle: string;
       afterText: string;
       previous: string;
