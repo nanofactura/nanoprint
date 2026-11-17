@@ -44,7 +44,8 @@
       url: `${SITE_URL}${pages.home[lang]}`,
       image: `${SITE_URL}/og-${lang}.png`,
       applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Windows 10, Windows 11, macOS 10.15+, Linux',
+      operatingSystem:
+        'Windows 10, Windows 11, macOS 10.15+, Linux (x86-64, ARM64), Raspberry Pi OS',
       downloadUrl: RELEASES_URL,
       license: 'https://www.gnu.org/licenses/gpl-3.0.html',
       isAccessibleForFree: true,
@@ -226,6 +227,20 @@
               </a>
             {/each}
           </div>
+          {#if platform.arm}
+            <div class="-mt-1 flex flex-col gap-2">
+              <h4 class="text-sm font-medium">{platform.arm.title}</h4>
+              {#each platform.arm.files as file (file.download)}
+                <a
+                  href={downloads[file.download]}
+                  class="inline-flex items-center justify-center gap-2 rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-fg transition-colors hover:border-muted"
+                >
+                  <Download class="size-4" aria-hidden="true" />
+                  {file.label}
+                </a>
+              {/each}
+            </div>
+          {/if}
           <div class="border-t border-line pt-4">
             <h4 class="text-sm font-medium">{home.downloads.install}</h4>
             <ol

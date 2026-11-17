@@ -50,7 +50,7 @@
         return {
           href: '#download-linux',
           label: t.download.linux,
-          detail: t.home.downloads.linux.requirements,
+          detail: t.download.linuxDetail,
         };
       default:
         return { href: '#download', label: t.download.generic, detail: t.home.hero.platforms };

@@ -36,7 +36,7 @@ ${home.printers.note}
 
 ## ${home.downloads.title}
 
-${platforms.map((platform) => `### ${platform.name}\n\n${home.downloads.requirements}: ${platform.requirements}\n\n${platform.steps.map((step, index) => `${String(index + 1)}. ${step}`).join('\n')}`).join('\n\n')}
+${platforms.map((platform) => `### ${platform.name}\n\n${home.downloads.requirements}: ${platform.requirements}${platform.arm ? `; ${platform.arm.title}` : ''}\n\n${platform.steps.map((step, index) => `${String(index + 1)}. ${step}`).join('\n')}`).join('\n\n')}
 
 ${home.downloads.afterText}
 

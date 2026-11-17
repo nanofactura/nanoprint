@@ -19,7 +19,7 @@ NanoPrint is made by NanoFactura and published under the GPL-3.0 license. It run
 tray, listens only on this computer (wss://localhost:8181 and ws://localhost:8182, the ports
 qz-tray.js uses) and asks the user before any website may print. It never stores printed content.
 
-- Platforms: ${en.home.downloads.windows.requirements}; ${en.home.downloads.mac.requirements}; Linux ${en.home.downloads.linux.requirements}.
+- Platforms: ${en.home.downloads.windows.requirements}; ${en.home.downloads.mac.requirements}; Linux ${en.home.downloads.linux.requirements}; Linux ${en.home.downloads.linux.arm.title}.
 - Printers: ESC/POS thermal receipt printers (58 and 80 mm) installed in the operating system, or
   network printers the user adds in NanoPrint by IP address and port (raw TCP, usually 9100).
 - Compatible client libraries: qz-tray (2.2 or later), @point-of-sale/receipt-printer-encoder, web-escpos-printer.
@@ -37,6 +37,7 @@ qz-tray.js uses) and asks the user before any website may print. It never stores
 - [Windows installer](${downloads.windows})
 - [macOS disk image, universal](${downloads.mac})
 - [Linux .deb](${downloads.deb}), [.rpm](${downloads.rpm}), [AppImage](${downloads.appImage})
+- [Linux ARM64 .deb](${downloads.debArm}) (64-bit Raspberry Pi OS), [ARM64 AppImage](${downloads.appImageArm})
 - [All releases](${RELEASES_URL})
 
 ## Documentation
