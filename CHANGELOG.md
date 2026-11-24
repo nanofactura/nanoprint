@@ -7,6 +7,11 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Brazilian Portuguese for the app and Windows installer. The app uses it automatically for
+  Portuguese system languages, and users can also choose it in Preferences.
+
 ## [0.5.0] - 2026-11-17
 
 ### Added

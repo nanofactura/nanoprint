@@ -63,7 +63,10 @@
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "languages": ["English", "Spanish"],
+        "languages": ["English", "Spanish", "PortugueseBR"],
+        "customLanguageFiles": {
+          "PortugueseBR": "./windows/PortugueseBR.nsh"
+        },
         "installerHooks": "./windows/hooks.nsh"
       }
     },

@@ -37,6 +37,7 @@
   "error.save": "Could not save the change: {message}",
   "language.en": "English",
   "language.es": "Español",
+  "language.pt-BR": "Português (Brasil)",
   "settings.tabs.sites": "Sites",
   "settings.tabs.printers": "Printers",
   "settings.tabs.history": "History",

@@ -25,6 +25,8 @@ pub enum LanguagePreference {
     System,
     En,
     Es,
+    #[serde(rename = "pt-BR")]
+    PtBr,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]

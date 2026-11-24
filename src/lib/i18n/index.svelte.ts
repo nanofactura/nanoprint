@@ -1,13 +1,14 @@
 import en from '$locales/en.json';
 import es from '$locales/es.json';
+import ptBR from '$locales/pt-BR.json';
 
-export const locales = ['en', 'es'] as const;
+export const locales = ['en', 'es', 'pt-BR'] as const;
 export type Locale = (typeof locales)[number];
 export type MessageKey = keyof typeof en;
 type Catalog = Record<MessageKey, string>;
 
 // Typing every catalog as a full `Catalog` turns a missing translation into a compile error.
-const catalogs: Record<Locale, Catalog> = { en, es };
+const catalogs: Record<Locale, Catalog> = { en, es, 'pt-BR': ptBR };
 
 let current = $state<Locale>('en');
 

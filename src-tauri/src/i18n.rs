@@ -12,12 +12,15 @@ use crate::settings::LanguagePreference;
 pub enum Locale {
     En,
     Es,
+    #[serde(rename = "pt-BR")]
+    PtBr,
 }
 
 type Catalog = HashMap<String, String>;
 
 static EN: LazyLock<Catalog> = LazyLock::new(|| parse(include_str!("../../locales/en.json")));
 static ES: LazyLock<Catalog> = LazyLock::new(|| parse(include_str!("../../locales/es.json")));
+static PT_BR: LazyLock<Catalog> = LazyLock::new(|| parse(include_str!("../../locales/pt-BR.json")));
 
 fn parse(json: &str) -> Catalog {
     // The catalogs are embedded at compile time and covered by tests: invalid JSON is a build
@@ -30,11 +33,13 @@ pub fn system_locale() -> Locale {
     sys_locale::get_locale().map_or(Locale::En, |tag| from_tag(&tag))
 }
 
-/// Maps a BCP 47 or POSIX language tag (`es-AR`, `es_ES.UTF-8`, `en-US`) to a supported locale.
+/// Maps a BCP 47 or POSIX tag by language, using Brazilian Portuguese for all Portuguese regions.
 fn from_tag(tag: &str) -> Locale {
     let language = tag.split(['-', '_', '.']).next().unwrap_or_default();
     if language.eq_ignore_ascii_case("es") {
         Locale::Es
+    } else if language.eq_ignore_ascii_case("pt") {
+        Locale::PtBr
     } else {
         Locale::En
     }
@@ -45,6 +50,7 @@ pub fn resolve(preference: LanguagePreference) -> Locale {
         LanguagePreference::System => system_locale(),
         LanguagePreference::En => Locale::En,
         LanguagePreference::Es => Locale::Es,
+        LanguagePreference::PtBr => Locale::PtBr,
     }
 }
 
@@ -53,6 +59,7 @@ pub fn t(locale: Locale, key: &str) -> String {
     let catalog = match locale {
         Locale::En => &*EN,
         Locale::Es => &*ES,
+        Locale::PtBr => &*PT_BR,
     };
     catalog
         .get(key)
@@ -68,10 +75,12 @@ mod tests {
     #[test]
     fn catalogs_define_the_same_keys() {
         let mut en: Vec<_> = EN.keys().collect();
-        let mut es: Vec<_> = ES.keys().collect();
         en.sort();
-        es.sort();
-        assert_eq!(en, es);
+        for catalog in [&*ES, &*PT_BR] {
+            let mut keys: Vec<_> = catalog.keys().collect();
+            keys.sort();
+            assert_eq!(en, keys);
+        }
     }
 
     #[test]
@@ -80,9 +89,23 @@ mod tests {
         assert_eq!(from_tag("es_ES.UTF-8"), Locale::Es);
         assert_eq!(from_tag("ES"), Locale::Es);
         assert_eq!(from_tag("en-US"), Locale::En);
-        assert_eq!(from_tag("pt-BR"), Locale::En);
+        assert_eq!(from_tag("pt-BR"), Locale::PtBr);
+        assert_eq!(from_tag("pt-PT"), Locale::PtBr);
+        assert_eq!(from_tag("pt_BR.UTF-8"), Locale::PtBr);
+        assert_eq!(from_tag("PT"), Locale::PtBr);
         assert_eq!(from_tag("eu-ES"), Locale::En);
         assert_eq!(from_tag(""), Locale::En);
+    }
+
+    #[test]
+    fn resolves_and_serializes_brazilian_portuguese() {
+        let tag = r#""pt-BR""#;
+        let preference: LanguagePreference = serde_json::from_str(tag).unwrap();
+        assert_eq!(preference, LanguagePreference::PtBr);
+        assert_eq!(serde_json::to_string(&preference).unwrap(), tag);
+        let locale = resolve(preference);
+        assert_eq!(serde_json::to_string(&locale).unwrap(), tag);
+        assert_eq!(t(locale, "tray.open"), "Abrir painel");
     }
 
     #[test]
