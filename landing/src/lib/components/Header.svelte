@@ -1,12 +1,12 @@
 <script lang="ts">
+  import Globe from '@lucide/svelte/icons/globe';
   import Menu from '@lucide/svelte/icons/menu';
-  import { messages, pages, type Lang, type Page } from '#lib/i18n/index.ts';
+  import { languages, messages, pages, type Lang, type Page } from '#lib/i18n/index.ts';
   import { REPO_URL } from '#lib/site.ts';
 
   let { lang, page }: { lang: Lang; page: Page } = $props();
 
   const t = $derived(messages(lang));
-  const other = $derived<Lang>(lang === 'es' ? 'en' : 'es');
   // Section links work from every page: they lead back to the home page when needed.
   const home = $derived(page === 'home' ? '' : pages.home[lang]);
   const links = $derived([
@@ -60,16 +60,37 @@
     </nav>
 
     <div class="flex items-center gap-2">
-      <a
-        href={pages[page][other]}
-        hreflang={other}
-        lang={other}
-        aria-label={t.nav.languageLabel}
-        class="rounded-md border border-line px-3 py-1.5 text-sm text-muted transition-colors hover:border-muted hover:text-fg"
-        >{t.nav.otherLanguage}</a
-      >
+      <!-- The same page in every language, each named in itself. Sharing a name with the menu
+           below keeps at most one of the two open. -->
+      <details name="header-menu" class="relative">
+        <summary
+          class="flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-md border border-line px-3 text-sm text-muted transition-colors hover:border-muted hover:text-fg [&::-webkit-details-marker]:hidden"
+        >
+          <Globe class="size-4" aria-hidden="true" />
+          <span class="sr-only">{t.nav.language}:</span>
+          {lang.toUpperCase()}
+        </summary>
+        <ul
+          class="absolute right-0 mt-2 flex w-40 flex-col rounded-lg border border-line bg-surface p-2 shadow-xl"
+        >
+          {#each languages as language (language)}
+            <li>
+              <a
+                href={pages[page][language]}
+                hreflang={language}
+                lang={language}
+                aria-current={language === lang ? 'page' : undefined}
+                class={[
+                  'block rounded-md px-3 py-2 text-sm hover:bg-surface-2',
+                  language === lang ? 'font-medium text-fg' : 'text-muted hover:text-fg',
+                ]}>{messages(language).nav.languageName}</a
+              >
+            </li>
+          {/each}
+        </ul>
+      </details>
       <!-- No JavaScript needed: the menu is a disclosure element. -->
-      <details class="group relative md:hidden">
+      <details name="header-menu" class="group relative md:hidden">
         <summary
           class="flex size-9 cursor-pointer list-none items-center justify-center rounded-md border border-line text-muted hover:text-fg [&::-webkit-details-marker]:hidden"
           aria-label={t.nav.menu}

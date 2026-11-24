@@ -50,7 +50,8 @@
       license: 'https://www.gnu.org/licenses/gpl-3.0.html',
       isAccessibleForFree: true,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      inLanguage: ['es', 'en'],
+      // The app's languages.
+      inLanguage: ['es', 'en', 'pt-BR'],
       sameAs: [REPO_URL],
       publisher: { '@type': 'Organization', name: 'NanoFactura', url: NANOFACTURA_URL },
     },

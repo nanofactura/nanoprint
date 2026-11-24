@@ -1,7 +1,10 @@
 import type { Handle } from '@sveltejs/kit/hooks';
 import { languageOf } from '#lib/i18n/index.ts';
 
-/** Runs while prerendering: each page's <html lang> follows its URL (`/en/…` is English). */
+/**
+ * Runs while prerendering: each page's <html lang> follows its URL (`/en/…` is English, `/pt/…`
+ * Portuguese).
+ */
 export const handle: Handle = ({ event, resolve }) =>
   resolve(event, {
     transformPageChunk: ({ html }) => html.replace('%lang%', languageOf(event.url.pathname)),

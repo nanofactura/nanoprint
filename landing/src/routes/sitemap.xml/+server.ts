@@ -4,7 +4,7 @@ import { SITE_URL } from '#lib/site.ts';
 export const prerender = true;
 export const trailingSlash = 'never';
 
-/** Every page, with its other language and the version for everyone else (x-default). */
+/** Every page, with its other languages and the version for everyone else (x-default). */
 export function GET(): Response {
   const urls = Object.values(pages).flatMap((page) =>
     languages.map((lang) => {

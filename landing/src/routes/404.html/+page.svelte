@@ -14,8 +14,10 @@
   <h1 class="text-3xl font-semibold">404</h1>
   <p class="text-muted" lang="es">Esta página no existe.</p>
   <p class="text-muted" lang="en">This page does not exist.</p>
-  <p class="flex gap-6">
+  <p class="text-muted" lang="pt">Esta página não existe.</p>
+  <p class="flex flex-wrap justify-center gap-x-6 gap-y-2">
     <a href={pages.home.es} class="link" lang="es">Ir al inicio</a>
     <a href={pages.home.en} class="link" lang="en">Go to the home page</a>
+    <a href={pages.home.pt} class="link" lang="pt">Ir para o início</a>
   </p>
 </main>

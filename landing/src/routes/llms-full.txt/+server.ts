@@ -94,12 +94,15 @@ ${list(dev.requirements.items)}
 `;
 }
 
-/** The whole site as plain text for AI assistants (https://llmstxt.org), in both languages. */
+/** The whole site as plain text for AI assistants (https://llmstxt.org), in every language. */
 export function GET(): Response {
   const text = `${section('en')}
 ---
 
 ${section('es')}
+---
+
+${section('pt')}
 ---
 
 Source code and documentation: ${REPO_URL}

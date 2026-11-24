@@ -13,8 +13,15 @@
 
   let { lang }: { lang: Lang } = $props();
 
+  /** How the sample receipt writes dates and prices in each language, and in which currency. */
+  const formats: Record<Lang, { locale: string; currency: string }> = {
+    es: { locale: 'es-AR', currency: 'ARS' },
+    en: { locale: 'en-US', currency: 'USD' },
+    pt: { locale: 'pt-BR', currency: 'BRL' },
+  };
+
   const t = $derived(messages(lang).developers.demo);
-  const locale = $derived(lang === 'es' ? 'es-AR' : 'en-US');
+  const locale = $derived(formats[lang].locale);
 
   let status = $state<'idle' | 'connecting' | 'connected'>('idle');
   let printers = $state<string[]>([]);
@@ -68,7 +75,7 @@
     try {
       qz ??= await loadQz();
       const icon = await logo();
-      const name = lang === 'es' ? 'Demo de NanoPrint' : 'NanoPrint demo';
+      const name = t.siteName;
       qz.security.setCertificatePromise((resolve) => {
         resolve(JSON.stringify({ nanoprint: { name, icon } }));
       });
@@ -106,7 +113,7 @@
   function money(amount: number): string {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: lang === 'es' ? 'ARS' : 'USD',
+      currency: formats[lang].currency,
     })
       .format(amount)
       .replaceAll(' ', ' ');

@@ -1,7 +1,8 @@
 # NanoPrint website
 
 The site at [nanoprint.nanofactura.com](https://nanoprint.nanofactura.com): a home page and a page
-for developers, in Spanish (`/`, `/desarrolladores/`) and English (`/en/`, `/en/developers/`).
+for developers, in Spanish (`/`, `/desarrolladores/`), English (`/en/`, `/en/developers/`) and
+Brazilian Portuguese (`/pt/`, `/pt/desenvolvedores/`).
 Built with SvelteKit, Svelte 5, Tailwind CSS 4 and Vite, rendered to static HTML at build time, and
 served by Cloudflare (Pages, now part of Workers as static assets). It is a separate npm package
 from the app: its dependencies, including Wrangler, never reach the app's build.
@@ -17,8 +18,10 @@ npm run build     # static site in build/
 npm run preview   # serves build/ at http://localhost:4173
 ```
 
-All text lives in `src/lib/i18n/es.ts` and `src/lib/i18n/en.ts`; TypeScript fails the build when one
-language misses an entry. Text between backticks renders as inline code.
+All text lives in `src/lib/i18n/` (`es.ts`, `en.ts` and `pt.ts`); TypeScript fails the build when
+one language misses an entry. Text between backticks renders as inline code. The developer demo
+prints with the encoder's default code page (CP437): keep its sample items to characters it has
+(Portuguese `ã` and `Á` print as `?`).
 
 ## Deploying
 
@@ -66,15 +69,16 @@ The grade suits a background near `#1c1c1c`; adjust the curve for another one.
 ## Search engines and AI assistants
 
 - Every page is complete HTML, readable without JavaScript.
-- Each page links its other language with `hreflang` and names itself as canonical; English is the
-  `x-default` for other languages. `sitemap.xml` repeats these pairs. Both come from `pages` in
-  `src/lib/i18n/index.ts`: add a page there and in `src/routes/`.
+- Each page links its other languages with `hreflang` and names itself as canonical; English is the
+  `x-default` for other languages. Portuguese is tagged `pt`, so it also reaches Portugal.
+  `sitemap.xml` repeats these sets. Both come from `pages` in `src/lib/i18n/index.ts`: add a page
+  there and in `src/routes/`.
 - Structured data (schema.org): `SoftwareApplication` and `FAQPage` on the home page, `TechArticle`
   and `BreadcrumbList` on the developer page.
 - `llms.txt` summarizes the product for AI assistants and `llms-full.txt` carries every page's text
-  in both languages; both are built from the same text as the pages. `robots.txt` allows every
+  in every language; both are built from the same text as the pages. `robots.txt` allows every
   crawler and points to the sitemap.
-- Social previews: `static/og-es.png` and `static/og-en.png`.
+- Social previews: `static/og-es.png`, `static/og-en.png` and `static/og-pt.png`.
 
 ## Icons and preview images
 
