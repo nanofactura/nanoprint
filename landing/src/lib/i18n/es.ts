@@ -9,8 +9,8 @@ export const es: Messages = {
     developers: 'Desarrolladores',
     faq: 'Preguntas',
     github: 'GitHub',
-    otherLanguage: 'English',
-    languageLabel: 'Read in English',
+    language: 'Idioma',
+    languageName: 'Español',
     skip: 'Saltar al contenido',
     menu: 'Menú',
   },
@@ -379,6 +379,7 @@ qz.security.setCertificatePromise((resolve) => {
         'NanoPrint no permitió la conexión. Si bloqueaste este sitio, desbloquealo en la pestaña Sitios de NanoPrint.',
       failed: 'No se pudo imprimir: {message}',
       download: 'Descargar NanoPrint',
+      siteName: 'Demo de NanoPrint',
       ticket: {
         title: 'Ticket de ejemplo',
         items: [

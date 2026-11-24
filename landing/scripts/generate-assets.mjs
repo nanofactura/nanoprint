@@ -105,3 +105,11 @@ render(
   1200,
   'og-en.png',
 );
+render(
+  socialImage(
+    ['Imprima cupons e comandas', 'na sua impressora térmica'],
+    'Do seu sistema web · Grátis · Windows, macOS e Linux',
+  ),
+  1200,
+  'og-pt.png',
+);

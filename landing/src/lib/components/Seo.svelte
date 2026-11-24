@@ -1,6 +1,6 @@
 <!--
   Head tags of a page: title and description, the canonical URL, the same page in the other
-  language (hreflang, with English for every other language), social previews and structured data.
+  languages (hreflang, with English for every other language), social previews and structured data.
 -->
 <script lang="ts">
   import {
@@ -28,7 +28,7 @@
   } = $props();
 
   const url = (language: Lang) => `${SITE_URL}${pages[page][language]}`;
-  const other = $derived<Lang>(lang === 'es' ? 'en' : 'es');
+  const others = $derived(languages.filter((language) => language !== lang));
   // `<` is escaped so no text can close the script element early.
   const blocks = $derived(
     structuredData.map(
@@ -58,7 +58,9 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content={title} />
   <meta property="og:locale" content={messages(lang).meta.locale} />
-  <meta property="og:locale:alternate" content={messages(other).meta.locale} />
+  {#each others as language (language)}
+    <meta property="og:locale:alternate" content={messages(language).meta.locale} />
+  {/each}
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- JSON built above, with `<` escaped. -->

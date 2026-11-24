@@ -31,6 +31,8 @@ qz-tray.js uses) and asks the user before any website may print. It never stores
 - [Developers (English)](${SITE_URL}${pages.developers.en}): libraries, code example and live demo.
 - [Inicio (español)](${SITE_URL}${pages.home.es}): la misma información en español.
 - [Desarrolladores (español)](${SITE_URL}${pages.developers.es}): integración en español.
+- [Início (português)](${SITE_URL}${pages.home.pt}): as mesmas informações em português.
+- [Desenvolvedores (português)](${SITE_URL}${pages.developers.pt}): integração em português.
 
 ## Downloads
 
@@ -42,7 +44,7 @@ qz-tray.js uses) and asks the user before any website may print. It never stores
 
 ## Documentation
 
-- [Full text of the site](${SITE_URL}/llms-full.txt): every page, in English and Spanish.
+- [Full text of the site](${SITE_URL}/llms-full.txt): every page, in English, Spanish and Portuguese.
 
 - [Source code](${REPO_URL})
 - [Integration guide](${docs.integration})

@@ -38,7 +38,7 @@ export interface Library {
   note: string;
 }
 
-/** Everything the site says, in one language. Both languages must define every entry. */
+/** Everything the site says, in one language. Every language must define every entry. */
 export interface Messages {
   meta: {
     /** Open Graph locale, such as `es_AR`. */
@@ -50,9 +50,10 @@ export interface Messages {
     developers: string;
     faq: string;
     github: string;
-    /** The other language's name, in that language: the switch reads in the visitor's tongue. */
-    otherLanguage: string;
-    languageLabel: string;
+    /** Names the language menu, in this language. */
+    language: string;
+    /** This language's own name: the menu lists each language in itself, so visitors find theirs. */
+    languageName: string;
     skip: string;
     menu: string;
   };
@@ -138,6 +139,8 @@ export interface Messages {
       blocked: string;
       failed: string;
       download: string;
+      /** The name the demo gives itself in NanoPrint's permission prompt. */
+      siteName: string;
       ticket: {
         title: string;
         items: [string, number, number][];
