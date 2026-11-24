@@ -538,8 +538,13 @@ pub fn normalize_origin(value: &str) -> Option<String> {
         && url.path() == "/"
         && url.query().is_none()
         && url.fragment().is_none();
+    // `origin()` only ever sees a plain http(s) URL: before url 2.5.9 it recursed into nested
+    // `blob:` URLs until the stack overflowed (RUSTSEC-2026-0592).
+    if !plain {
+        return None;
+    }
     let origin = url.origin();
-    (plain && origin.is_tuple()).then(|| origin.ascii_serialization())
+    origin.is_tuple().then(|| origin.ascii_serialization())
 }
 
 #[cfg(test)]
