@@ -166,11 +166,15 @@ async fn refuses_hosts_other_than_loopback() {
 #[tokio::test]
 async fn refuses_origins_that_are_not_web_pages() {
     let (port, _) = start(true).await;
+    // Just under the length limit; a nested `blob:` origin once overflowed the stack.
+    let nested_blob = format!("{}https://shop.example", "blob:".repeat(98));
     for origin in [
         "null",
         "file://",
         "chrome-extension://abcdef",
         "https://user@shop.example",
+        "blob:https://shop.example",
+        nested_blob.as_str(),
     ] {
         assert_forbidden(connect(port, Some(origin), None).await);
     }
