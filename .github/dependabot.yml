@@ -47,6 +47,13 @@ updates:
       # Does not build on Linux; see the pin in src-tauri/Cargo.toml.
       - dependency-name: tauri-plugin-deep-link
         versions: ['2.6.2']
+      # On Linux ARM64 these must be the versions Tauri itself uses (see src-tauri/Cargo.toml; CI
+      # checks tray-icon). Move them by hand when Tauri does. tray-icon is still 0.x, where a minor
+      # release breaks compatibility, so its minor updates are skipped too.
+      - dependency-name: tray-icon
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: zbus
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
