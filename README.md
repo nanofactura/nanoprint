@@ -25,7 +25,8 @@ signing certificates. It is compatible with qz-tray.js clients.
 - Sites ask for permission once; the user approves or blocks them and can revoke access later.
 - Listens only on the local machine. Opt-in LAN access with device pairing is planned.
 - Small footprint: a Rust core with native webviews (Tauri 2) instead of a bundled browser.
-- English and Spanish UI that follows the system language.
+- English, Spanish, and Brazilian Portuguese UI that follows the system language and can be
+  changed in Preferences.
 - Windows, macOS and Linux, with signed automatic updates (the AppImage on Linux).
 
 ## Installing

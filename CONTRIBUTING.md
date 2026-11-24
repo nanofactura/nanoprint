@@ -10,8 +10,8 @@ project rules live in [CLAUDE.md](CLAUDE.md) and apply to every contributor, hum
   updater.
 - **Scope.** NanoPrint transports print jobs. Invoicing, tax rules and receipt templates belong to
   the applications that use it.
-- **English** for code, comments, docs and commits. UI text goes in `locales/` (English and
-  Spanish).
+- **English** for code, comments, docs and commits. UI text goes in `locales/` (English, Spanish,
+  and Brazilian Portuguese).
 
 > QZ Tray and qz-tray.js are products of QZ Industries, LLC; QZ Tray is its trademark. NanoPrint is an independent project, not affiliated with or endorsed by QZ Industries, and mentions them only to describe compatibility.
 

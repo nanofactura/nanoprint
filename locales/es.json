@@ -37,6 +37,7 @@
   "error.save": "No se pudo guardar el cambio: {message}",
   "language.en": "English",
   "language.es": "Español",
+  "language.pt-BR": "Português (Brasil)",
   "settings.tabs.sites": "Sitios",
   "settings.tabs.printers": "Impresoras",
   "settings.tabs.history": "Historial",
