@@ -100,11 +100,13 @@
         bind:ref={blockButton}
         variant="outline"
         disabled={answering}
-        onclick={() => void answer(false)}>{t('permission.block')}</Button
+        onclick={() => void answer(false)}
       >
-      <Button disabled={!allowEnabled || answering} onclick={() => void answer(true)}
-        >{t('permission.allow')}</Button
-      >
+        {t('permission.block')}
+      </Button>
+      <Button disabled={!allowEnabled || answering} onclick={() => void answer(true)}>
+        {t('permission.allow')}
+      </Button>
     </div>
   {/if}
 </main>

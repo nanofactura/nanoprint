@@ -260,14 +260,18 @@
               variant="outline"
               size="sm"
               disabled={waitingForSystem}
-              onclick={() => void changeCertificate(false)}>{t('settings.https.remove')}</Button
+              onclick={() => void changeCertificate(false)}
             >
+              {t('settings.https.remove')}
+            </Button>
           {:else}
             <Button
               size="sm"
               disabled={waitingForSystem}
-              onclick={() => void changeCertificate(true)}>{t('settings.https.install')}</Button
+              onclick={() => void changeCertificate(true)}
             >
+              {t('settings.https.install')}
+            </Button>
           {/if}
         </div>
       {/if}
@@ -312,15 +316,19 @@
                 installUpdate().catch((e: unknown) => {
                   onerror(describeError(e));
                 });
-              }}>{t('settings.updates.install')}</Button
+              }}
             >
+              {t('settings.updates.install')}
+            </Button>
           {:else}
             <Button
               variant="outline"
               size="sm"
               disabled={checking || update.status.state === 'downloading'}
-              onclick={() => void checkUpdates()}>{t('settings.updates.check')}</Button
+              onclick={() => void checkUpdates()}
             >
+              {t('settings.updates.check')}
+            </Button>
           {/if}
         </div>
       {/if}
@@ -367,15 +375,19 @@
               restart().catch((e: unknown) => {
                 onerror(describeError(e));
               });
-            }}>{t('settings.ports.restart')}</Button
+            }}
           >
+            {t('settings.ports.restart')}
+          </Button>
         {/if}
         <Button
           variant="outline"
           size="sm"
           disabled={!portsChanged}
-          onclick={() => void savePorts()}>{t('settings.ports.save')}</Button
+          onclick={() => void savePorts()}
         >
+          {t('settings.ports.save')}
+        </Button>
       </div>
     </Card.Content>
   </Card.Root>
@@ -383,9 +395,9 @@
   <Card.Root>
     <Card.Header>
       <Card.Title>{t('settings.about.title')}</Card.Title>
-      <Card.Description class="select-text"
-        >{t('settings.about.version', { version })}</Card.Description
-      >
+      <Card.Description class="select-text">
+        {t('settings.about.version', { version })}
+      </Card.Description>
     </Card.Header>
     <Card.Content class="flex flex-col gap-4">
       <p class="text-sm text-muted-foreground">
@@ -397,8 +409,10 @@
             showLicenses().catch((e: unknown) => {
               onerror(t('error.load', { message: describeError(e) }));
             });
-          }}>{t('settings.about.licenses')}</button
+          }}
         >
+          {t('settings.about.licenses')}
+        </button>
       </p>
       <Separator />
       <div class="flex items-center justify-between gap-4">
@@ -413,8 +427,10 @@
             openLogFolder().catch((e: unknown) => {
               onerror(t('error.load', { message: describeError(e) }));
             });
-          }}>{t('settings.about.openLogs')}</Button
+          }}
         >
+          {t('settings.about.openLogs')}
+        </Button>
       </div>
     </Card.Content>
   </Card.Root>
