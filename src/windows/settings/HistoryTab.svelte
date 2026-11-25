@@ -153,8 +153,9 @@
               <time class="text-xs text-muted-foreground">{formatDateTime(entry.at)}</time>
             </div>
             <p class="truncate text-xs" title={entry.origin ?? ''}>
-              <span class={[entry.origin !== null && 'font-mono select-text']}>{source(entry)}</span
-              >
+              <span class={[entry.origin !== null && 'font-mono select-text']}>
+                {source(entry)}
+              </span>
               {#if entry.siteName}
                 <span class="text-muted-foreground">· «{entry.siteName}»</span>
               {/if}

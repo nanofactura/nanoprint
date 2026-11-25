@@ -138,9 +138,9 @@
           <li class="flex flex-col gap-2 py-3">
             <div class="flex min-w-0 flex-col gap-0.5">
               <p class="flex min-w-0 items-center gap-2">
-                <span class="truncate text-sm font-medium select-text" title={printer.name}
-                  >{printer.name}</span
-                >
+                <span class="truncate text-sm font-medium select-text" title={printer.name}>
+                  {printer.name}
+                </span>
                 {#if printer.default}
                   <Badge variant="secondary">{t('settings.printers.default')}</Badge>
                 {/if}
@@ -247,14 +247,17 @@
             onclick={() => {
               adding = undefined;
               addError = '';
-            }}>{t('settings.printers.cancel')}</Button
+            }}
           >
+            {t('settings.printers.cancel')}
+          </Button>
           <Button
             type="submit"
             size="sm"
             disabled={saving || !adding.name.trim() || !adding.host.trim()}
-            >{t('settings.printers.confirmAdd')}</Button
           >
+            {t('settings.printers.confirmAdd')}
+          </Button>
         </div>
       </form>
     {:else if printers}
