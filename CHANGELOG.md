@@ -7,11 +7,14 @@ and versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-24
+
 ### Added
 
 - Brazilian Portuguese for the app and Windows installer. The app uses it automatically for
   Portuguese system languages, and users can also choose it in Preferences. Contributed by
   [@juliolobo](https://github.com/juliolobo)
+  ([#44](https://github.com/nanofactura/nanoprint/pull/44))
 
 ### Security
 
@@ -154,7 +157,8 @@ First public release.
 - Windows uninstaller cleanup: removes the certificate from the trust store and the signing key
   when the user deletes NanoPrint's data.
 
-[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/nanofactura/nanoprint/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/nanofactura/nanoprint/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/nanofactura/nanoprint/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/nanofactura/nanoprint/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/nanofactura/nanoprint/compare/v0.2.1...v0.3.0
