@@ -7,5 +7,6 @@
 
 {#each parts as part, index (index)}{#if index % 2 === 1}<code
       class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[0.9em] break-words text-fg"
-      >{part}</code
-    >{:else}{part}{/if}{/each}
+    >
+      {part}
+    </code>{:else}{part}{/if}{/each}

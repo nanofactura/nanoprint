@@ -137,8 +137,10 @@
           <li class="flex flex-col gap-3">
             <span
               class="flex size-10 items-center justify-center rounded-full border border-accent/40 font-mono text-accent-soft"
-              aria-hidden="true">{index + 1}</span
+              aria-hidden="true"
             >
+              {index + 1}
+            </span>
             <h3 class="text-lg font-semibold">{step.title}</h3>
             <p class="text-muted">{step.text}</p>
           </li>

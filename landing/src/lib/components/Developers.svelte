@@ -67,12 +67,12 @@
       </h1>
       <p class="text-lg leading-relaxed text-muted">{dev.hero.lead}</p>
       <p class="flex flex-wrap gap-x-6 gap-y-2">
-        <a href={docs.integration} class="inline-flex items-center gap-1 link"
-          >{dev.hero.guide}<ArrowUpRight class="size-4" aria-hidden="true" /></a
-        >
-        <a href={docs.protocol} class="inline-flex items-center gap-1 link"
-          >{dev.hero.protocol}<ArrowUpRight class="size-4" aria-hidden="true" /></a
-        >
+        <a href={docs.integration} class="inline-flex items-center gap-1 link">
+          {dev.hero.guide}<ArrowUpRight class="size-4" aria-hidden="true" />
+        </a>
+        <a href={docs.protocol} class="inline-flex items-center gap-1 link">
+          {dev.hero.protocol}<ArrowUpRight class="size-4" aria-hidden="true" />
+        </a>
       </p>
     </div>
   </section>
@@ -85,8 +85,9 @@
         <article class="rounded-xl border border-line bg-surface p-5">
           <div class="flex flex-wrap items-baseline justify-between gap-2">
             <h3 class="font-mono text-base font-medium">
-              <a href={library.href} class="hover:text-brand-soft hover:underline">{library.name}</a
-              >
+              <a href={library.href} class="hover:text-brand-soft hover:underline">
+                {library.name}
+              </a>
             </h3>
             <span class="text-xs text-muted">{dev.libraries.license}: {library.license}</span>
           </div>
@@ -137,9 +138,9 @@
           </li>
         {/each}
       </ul>
-      <a href={`${REPO_URL}/issues`} class="mt-6 inline-flex items-center gap-1 link"
-        >{dev.adopt.issues}<ArrowUpRight class="size-4" aria-hidden="true" /></a
-      >
+      <a href={`${REPO_URL}/issues`} class="mt-6 inline-flex items-center gap-1 link">
+        {dev.adopt.issues}<ArrowUpRight class="size-4" aria-hidden="true" />
+      </a>
     </div>
   </section>
 
@@ -153,9 +154,9 @@
         </li>
       {/each}
     </ul>
-    <a href={docs.integration} class="mt-8 inline-flex items-center gap-1 link"
-      >{dev.more}<ArrowUpRight class="size-4" aria-hidden="true" /></a
-    >
+    <a href={docs.integration} class="mt-8 inline-flex items-center gap-1 link">
+      {dev.more}<ArrowUpRight class="size-4" aria-hidden="true" />
+    </a>
   </section>
 </main>
 
