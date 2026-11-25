@@ -249,8 +249,10 @@
         <button
           type="button"
           class="rounded-lg px-3 py-2.5 text-sm text-muted transition-colors hover:text-fg"
-          onclick={() => void disconnect()}>{t.disconnect}</button
+          onclick={() => void disconnect()}
         >
+          {t.disconnect}
+        </button>
       </div>
     </div>
   {/if}
@@ -269,8 +271,10 @@
           <button
             type="button"
             class="rounded-lg border border-line bg-surface-2 px-4 py-2 font-medium text-fg transition-colors hover:border-muted"
-            onclick={() => void wake()}>{t.wake}</button
+            onclick={() => void wake()}
           >
+            {t.wake}
+          </button>
           <a href={`${pages.home[lang]}#download`} class="link">{t.download}</a>
         </div>
       {/if}

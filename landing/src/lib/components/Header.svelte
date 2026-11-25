@@ -49,14 +49,17 @@
             'rounded-md px-3 py-2 text-sm text-muted transition-colors hover:text-fg',
             link.href === pages[page][lang] && 'text-fg',
           ]}
-          aria-current={link.href === pages[page][lang] ? 'page' : undefined}>{link.label}</a
+          aria-current={link.href === pages[page][lang] ? 'page' : undefined}
         >
+          {link.label}
+        </a>
       {/each}
       <a
         href={REPO_URL}
         class="rounded-md px-3 py-2 text-sm text-muted transition-colors hover:text-fg"
-        >{t.nav.github}</a
       >
+        {t.nav.github}
+      </a>
     </nav>
 
     <div class="flex items-center gap-2">
@@ -83,8 +86,10 @@
                 class={[
                   'block rounded-md px-3 py-2 text-sm hover:bg-surface-2',
                   language === lang ? 'font-medium text-fg' : 'text-muted hover:text-fg',
-                ]}>{messages(language).nav.languageName}</a
+                ]}
               >
+                {messages(language).nav.languageName}
+              </a>
             </li>
           {/each}
         </ul>
@@ -105,12 +110,14 @@
             <a
               href={link.href}
               class="rounded-md px-3 py-2 text-sm hover:bg-surface-2"
-              onclick={close}>{link.label}</a
+              onclick={close}
             >
+              {link.label}
+            </a>
           {/each}
-          <a href={REPO_URL} class="rounded-md px-3 py-2 text-sm hover:bg-surface-2"
-            >{t.nav.github}</a
-          >
+          <a href={REPO_URL} class="rounded-md px-3 py-2 text-sm hover:bg-surface-2">
+            {t.nav.github}
+          </a>
         </nav>
       </details>
     </div>
