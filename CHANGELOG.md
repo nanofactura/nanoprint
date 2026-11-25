@@ -13,6 +13,14 @@ and versions follow [Semantic Versioning](https://semver.org/).
   Portuguese system languages, and users can also choose it in Preferences. Contributed by
   [@juliolobo](https://github.com/juliolobo)
 
+### Security
+
+- A connection's origin is read only when it is a plain http(s) address, and url 2.5.9 no longer
+  overflows the stack on nested `blob:` URLs (RUSTSEC-2026-0592). Only a program on the same
+  computer could send such an origin; web pages cannot.
+- cookie 0.18.3 (RUSTSEC-2026-0594), which Tauri uses. NanoPrint does not use private cookies, so
+  it was not affected.
+
 ## [0.5.0] - 2026-11-17
 
 ### Added
